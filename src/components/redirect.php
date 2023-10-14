@@ -30,6 +30,7 @@
 			exit;
 		}
 
+		// TO DO - ROUTE REDIRECT
 		/**
 		 * REDIRECT TO A NAMED ROUTE.
 		 *
@@ -63,7 +64,8 @@
 			$url = $_SERVER['REQUEST_URI'];
 			self::to($url);
 		}
-		
+
+		// TO DO - FLASH MESSAGE AND REDIRECT
 		/**
 		 * SET A FLASH MESSAGE AND REDIRECT.
 		 *
