@@ -2,7 +2,5 @@ parameters:
     paths:
         - src/
     level: 9
-    ignoreErrors:
-        - '#Variable \$(.*) might not be defined#'
     bootstrapFiles:
         - vendor/autoload.php
