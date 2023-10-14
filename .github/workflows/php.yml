@@ -1,0 +1,55 @@
+name: Test Circle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --no-check-all --strict
+
+    - name: Setup PHP
+      id: setup-php
+      uses: shivammathur/setup-php@2.26.0
+      with:
+        php-version: '8.2'
+        extensions: mbstring, intl
+        ini-values: post_max_size=256M, max_execution_time=180
+        coverage: xdebug3
+        tools: phpstan, phpunit
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Print PHP Version
+      run: echo ${{ steps.setup-php.outputs.php-version }}
+
+    - name: Setup Cache for Composer
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install Dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run PHPStan (Static Analysis)
+      run: |
+        vendor/bin/phpstan analyse
+      shell: bash
+      
+    - name: Run Tests with Coverage
+      run: vendor/bin/phpunit --coverage-text
