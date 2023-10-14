@@ -1,0 +1,12 @@
+parameters:
+    paths:
+        - app/
+    level: 9
+    excludePaths:
+        - app/assets/library
+        - app/backend/mail.php
+    ignoreErrors:
+        - '#Variable \$(.*) might not be defined#'
+        - '#^Parameter \#2 ...\$arrays of function array_merge expects array, array<int, string>\|false given\.$#'
+    bootstrapFiles:
+        - vendor/autoload.php
