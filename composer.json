@@ -4,7 +4,7 @@
 	"description": "A PHP website framework for small and medium websites.",
 	"homepage": "https://clipstack.net",
 	"readme": "https://github.com/MineHubs-Studios/ClipStack/blob/main/README.md",
-	"license": "TO DO",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Jacob Joergensen",
