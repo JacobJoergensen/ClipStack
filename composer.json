@@ -1,0 +1,42 @@
+{
+	"name": "clipstack/clipstack",
+	"type": "project",
+	"description": "A PHP website framework for small and medium websites.",
+	"homepage": "https://clipstack.net",
+	"readme": "https://github.com/MineHubs-Studios/ClipStack/blob/main/README.md",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Jacob Joergensen",
+			"email": "jj@minehubsstudios.com",
+			"homepage": "https://jacobjoergensen.net",
+			"role": "Lead Developer"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/MineHubs-Studios/ClipStack/issues",
+		"source": "https://github.com/MineHubs-Studios/ClipStack"
+	},
+	"require": {
+		"php": ">=8.2"
+	},
+	"keywords": [
+		"framework",
+		"php",
+		"website"
+	],
+	"require-dev": {
+		"phpstan/phpstan": "^1.10.38",
+		"phpunit/phpunit": "^10.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"App\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/"
+		}
+	}
+}

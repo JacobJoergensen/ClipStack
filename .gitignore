@@ -1,0 +1,60 @@
+# FOLDER VIEW CONFIGURATION FILES
+.DS_Store
+
+# LOCAL HISTORY FOR VISUAL STUDIO
+.localhistory/
+
+# VISUAL STUDIO HISTORY (VSHISTORY) FILES
+.vshistory/
+
+# VS CODE FILES FOR THOSE WORKING ON MULTIPLE TOOLS
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# LOCAL HISTORY FOR VISUAL STUDIO CODE
+.history/
+
+# IDE/EDITOR FILES
+*.sublime-workspace
+*.idea/
+.vs/
+*.suo
+*.ntvs*
+*.njsproj.user
+*.sln.docstates
+*.sw*
+
+# DEPENDENCIES AND BUILD ARTIFACTS
+/vendor/
+/node_modules/
+/yarn-error.log
+/yarn.lock
+/package-lock.json
+
+# LOGS AND TEMPORARY FILES
+*.log
+*.tmp
+*.temp
+
+# BUILD OUTPUT
+/build/
+/dist/
+/out/
+
+# COMPILED OUTPUT FILES
+*.class
+*.dll
+*.exe
+
+# COMPOSER PHP DEPENDENCY MANAGER
+composer.lock
+/vendor/
+
+# NPM (NODE.JS) AND YARN (JAVASCRIPT) DEPENDENCY MANAGER
+/node_modules/
+/yarn-error.log
+/yarn.lock
