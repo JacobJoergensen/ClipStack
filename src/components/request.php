@@ -173,7 +173,7 @@
 		/**
 		 * RETRIEVE ALL REQUEST HEADERS.
 		 *
-		 * @return @return array<string, string>
+		 * @return array<string, string>
 		 *
 		 * @example
 		 * $request = Request::getInstance();
