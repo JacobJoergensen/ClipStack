@@ -155,7 +155,7 @@
 			$message = $this -> get('_flash_' . $key);
 			$this -> remove('_flash_' . $key);
 
-			return $message;
+			return is_string($message) ? $message : null;
 		}
 
 		/**
