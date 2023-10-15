@@ -138,17 +138,23 @@
 			$to = new \DateTime($date_to, $this -> timezone);
 			$diff = $from -> diff($to);
 
+			$result = null;
+
 			switch ($unit) {
 				case 'days':
-					return $diff -> days;
+					$result = $diff->days;
+					break;
 				case 'hours':
-					return ($diff -> days * 24) + $diff -> h;
+					$result = ($diff->days * 24) + $diff->h;
+					break;
 				case 'minutes':
-					return ((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i;
+					$result = ((($diff->days * 24) + $diff->h) * 60) + $diff->i;
+					break;
 				case 'seconds':
-					return ((((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i) * 60) + $diff -> s;
-				default:
-					return null;
+					$result = ((((($diff->days * 24) + $diff->h) * 60) + $diff->i) * 60) + $diff->s;
+					break;
 			}
+
+			return is_int($result) ? $result : null;
 		}
 	}
