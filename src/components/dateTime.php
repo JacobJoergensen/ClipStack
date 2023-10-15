@@ -142,16 +142,16 @@
 
 			switch ($unit) {
 				case 'days':
-					$result = $diff->days;
+					$result = $diff -> days;
 					break;
 				case 'hours':
-					$result = ($diff->days * 24) + $diff->h;
+					$result = ($diff -> days * 24) + $diff -> h;
 					break;
 				case 'minutes':
-					$result = ((($diff->days * 24) + $diff->h) * 60) + $diff->i;
+					$result = ((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i;
 					break;
 				case 'seconds':
-					$result = ((((($diff->days * 24) + $diff->h) * 60) + $diff->i) * 60) + $diff->s;
+					$result = ((((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i) * 60) + $diff -> s;
 					break;
 			}
 
