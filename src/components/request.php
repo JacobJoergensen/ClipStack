@@ -92,17 +92,17 @@
 		/**
 		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
-		 * @return array<int|string, array|string>
+		 * @return array<string, string>
 		 * 
 		 * @example
 		 * $request = Request::getInstance();
 		 * print_r($request->getQueryParameters());
 		 */
 		public function getQueryParameters(): array {
-			$queryString = is_scalar($this->server['QUERY_STRING'] ?? null) 
-				? strval($this->server['QUERY_STRING']) 
+			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
+				? strval($this -> server['QUERY_STRING'])
 				: '';
-			parse_str($queryString, $params);
+			parse_str($query_string, $params);
 			return $params;
 		}
 
