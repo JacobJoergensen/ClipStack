@@ -17,6 +17,9 @@
 
 		/**
 		 * PRIVATE CONSTRUCTOR FOR SINGLETON PATTERN.
+		 * 
+		 * @param array<string, mixed> $server
+		 * @param array<string, mixed> $post
 		 */
 		private function __construct(array $server, array $post) {
 			$this -> server = $server;
@@ -30,11 +33,20 @@
 
 		/**
 		 * SAFETY FOR SINGLETON PATTERN: PREVENT UNSERIALIZATION.
+		 *
+		 * @throws \Exception
 		 */
-		private function __wakeup() {}
+		private function __wakeup() {
+			throw new \Exception('Cannot unserialize a singleton.');
+		}
 
 		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE REQUEST CLASS.
+		 * 
+		 * @param array<string, mixed> $server - AN ASSOCIATIVE ARRAY REPRESENTING SERVER DATA.
+		 * @param array<string, mixed> $post - AN ASSOCIATIVE ARRAY REPRESENTING POST DATA.
+		 * 
+		 * @return Request - THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 */
 		public static function getInstance(array $server = [], array $post = []): Request {
 			if (self::$instance === null) {
