@@ -1,5 +1,4 @@
 <?php
-
 	namespace ClipStack\Component;
 
 	class Request {
