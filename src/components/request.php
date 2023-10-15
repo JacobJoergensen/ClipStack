@@ -96,8 +96,8 @@
 		 * $request = Request::getInstance();
 		 * print_r($request->getQueryParameters());
 		 */
-		public function getQueryParameters(): array<string, string> {
-			parse_str($this->server['QUERY_STRING'] ?? '', $params);
+		public function getQueryParameters(): array {
+			parse_str($this -> server['QUERY_STRING'] ?? '', $params);
 			return $params;
 		}
 
