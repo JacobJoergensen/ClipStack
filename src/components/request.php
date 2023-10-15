@@ -84,7 +84,9 @@
 		 * echo $request->getUri();
 		 */
 		public function getUri(): string {
-			return strval($this -> server['REQUEST_URI'] ?? '');
+			return is_scalar($this->server['REQUEST_URI'] ?? null) 
+				? strval($this->server['REQUEST_URI']) 
+				: '';
 		}
 
 		/**
