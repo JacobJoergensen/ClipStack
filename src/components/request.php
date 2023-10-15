@@ -99,19 +99,15 @@
 		 * print_r($request->getQueryParameters());
 		 */
 		public function getQueryParameters(): array {
-			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
-				? strval($this -> server['QUERY_STRING'])
+			$query_string = is_scalar($this->server['QUERY_STRING'] ?? null)
+				? strval($this->server['QUERY_STRING'])
 				: '';
 			parse_str($query_string, $params);
 			
-			// Filter out any non-string values to ensure we return array<string, string>
-			foreach ($params as $key => $value) {
-				if (!is_string($value)) {
-					unset($params[$key]);
-				}
-			}
-
-			return $params;
+			// Filter the array to ensure that both keys and values are strings
+			return array_filter($params, function ($key, $value) {
+				return is_string($key) && is_string($value);
+			}, ARRAY_FILTER_USE_BOTH);
 		}
 
 		/**
