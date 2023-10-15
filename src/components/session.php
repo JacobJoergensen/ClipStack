@@ -3,7 +3,7 @@
 
 	class Session {
 		private const SESSION_PREFIX = 'clipstack_';
-		private const SESSION_LIFETIME = 3600; // 1 HOUR
+		private const SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
 
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
