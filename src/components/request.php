@@ -150,7 +150,8 @@
 		 * echo $request->getUserAgent();
 		 */
 		public function getUserAgent(): string {
-			return $this -> server['HTTP_USER_AGENT'] ?? '';
+			$userAgent = $this -> server['HTTP_USER_AGENT'] ?? '';
+			return is_string($userAgent) ? $userAgent : '';
 		}
 
 		/**
@@ -165,7 +166,8 @@
 		 */
 		public function getHeader(string $header): ?string {
 			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
-			return $this -> server[$key] ?? null;
+			$value = $this -> server[$key] ?? null;
+			return is_string($value) ? $value : null;
 		}
 
 		/**
