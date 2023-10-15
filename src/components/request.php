@@ -71,6 +71,7 @@
 		 */
 		public function getFullUrl(): string {
 			$protocol = (isset($this -> server['HTTPS']) && $this -> server['HTTPS'] === 'on') ? "https" : "http";
+
 			return $protocol . "://" . ($this -> server['HTTP_HOST'] ?? '') . ($this -> server['REQUEST_URI'] ?? '');
 		}
 
@@ -99,12 +100,12 @@
 		 * print_r($request->getQueryParameters());
 		 */
 		public function getQueryParameters(): array {
-			$query_string = is_scalar($this->server['QUERY_STRING'] ?? null)
-				? strval($this->server['QUERY_STRING'])
+			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
+				? strval($this -> server['QUERY_STRING'])
 				: '';
 			parse_str($query_string, $params);
 			
-			// Filter the array to ensure that both keys and values are strings
+			// FILTER THE ARRAY TO ENSURE THAT BOTH KEYS AND VALUES ARE STRINGS.
 			return array_filter($params, function ($key, $value) {
 				return is_string($key) && is_string($value);
 			}, ARRAY_FILTER_USE_BOTH);
@@ -141,6 +142,7 @@
 			if ($key === null) {
 				return $this -> post;
 			}
+
 			return $this -> post[$key] ?? null;
 		}
 
@@ -155,6 +157,7 @@
 		 */
 		public function getUserAgent(): string {
 			$userAgent = $this -> server['HTTP_USER_AGENT'] ?? '';
+
 			return is_string($userAgent) ? $userAgent : '';
 		}
 
@@ -171,6 +174,7 @@
 		public function getHeader(string $header): ?string {
 			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
 			$value = $this -> server[$key] ?? null;
+
 			return is_string($value) ? $value : null;
 		}
 
@@ -188,12 +192,14 @@
 				return getallheaders();
 			} else {
 				$headers = [];
+
 				foreach ($this -> server as $key => $value) {
 					if (substr($key, 0, 5) === 'HTTP_') {
 						$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
 						$headers[$header_key] = is_string($value) ? $value : '';
 					}
 				}
+
 				return $headers;
 			}
 		}
