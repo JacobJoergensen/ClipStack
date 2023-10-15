@@ -101,7 +101,7 @@
 		 *
 		 * @param string $time - A DATE/TIME STRING.
 		 * @param int|null $now - A UNIX TIMESTAMP REPRESENTING THE PRESENT MOMENT.
-		 * @return int|false - RETURNS A TIMESTAMP ON SUCCESS, FALSE OTHERWISE.
+		 * @return int|null - RETURNS A TIMESTAMP ON SUCCESS, NULL OTHERWISE.
 		 */
 		public function toTimestamp(string $time, ?int $now = null): ?int {
 			$dateTime = new \DateTime($time, $this -> timezone);
@@ -144,9 +144,9 @@
 				case 'hours':
 					return ($diff -> days * 24) + $diff -> h;
 				case 'minutes':
-					return ((($diff -> days * 24) + $diff -> h) * 60) + $diff->i;
+					return ((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i;
 				case 'seconds':
-					return ((((($diff -> days * 24) + $diff -> h) * 60) + $diff->i) * 60) + $diff->s;
+					return ((((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i) * 60) + $diff -> s;
 				default:
 					return null;
 			}
