@@ -126,14 +126,14 @@
 		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
 		 *
 		 * @param string|null $key - THE KEY FOR THE POST DATA.
-		 * @return array|string|null
+		 * @return mixed 
 		 *
 		 * @example
 		 * $request = Request::getInstance();
 		 * echo $request->getPostData('username');  // GET SPECIFIC POST DATA BY KEY
 		 * print_r($request->getPostData());        // GET ALL POST DATA
 		 */
-		public function getPostData(string $key = null): array|string|null {
+		public function getPostData(string $key = null): mixed {
 			if ($key === null) {
 				return $this -> post;
 			}
