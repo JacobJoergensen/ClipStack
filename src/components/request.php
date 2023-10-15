@@ -173,7 +173,7 @@
 		/**
 		 * RETRIEVE ALL REQUEST HEADERS.
 		 *
-		 * @return array
+		 * @return @return array<string, string>
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -187,7 +187,7 @@
 				foreach ($this -> server as $key => $value) {
 					if (substr($key, 0, 5) === 'HTTP_') {
 						$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-						$headers[$header_key] = $value;
+						$headers[$header_key] = is_string($value) ? $value : '';
 					}
 				}
 				return $headers;
