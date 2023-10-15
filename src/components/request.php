@@ -5,7 +5,14 @@
 	class Request {
 		private static ?Request $instance = null;
 
+		/** 
+		 * @var array<string, mixed>
+		 */
 		private array $server;
+
+		/** 
+		 * @var array<string, mixed>
+		 */
 		private array $post;
 
 		/**
