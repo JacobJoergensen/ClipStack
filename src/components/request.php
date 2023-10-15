@@ -51,10 +51,12 @@
 		public static function getInstance(array $server = [], array $post = []): Request {
 			if (self::$instance === null) {
 				// SAFELY CHECK IF SUPERGLOBALS ARE SET AND USE THEM IF NOT OVERRIDDEN BY THE PROVIDED PARAMETERS.
-				$server = !empty($server) ? $server : (isset($_SERVER) ? $_SERVER : []);
-				$post = !empty($post) ? $post : (isset($_POST) ? $_POST : []);
+				$server = !empty($server) ? $server : $_SERVER;
+				$post = !empty($post) ? $post : $_POST;
+		
 				self::$instance = new self($server, $post);
 			}
+
 			return self::$instance;
 		}
 
@@ -82,20 +84,20 @@
 		 * echo $request->getUri();
 		 */
 		public function getUri(): string {
-			return $this -> server['REQUEST_URI'] ?? '';
+			return strval($this -> server['REQUEST_URI'] ?? '');
 		}
 
 		/**
 		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
-		 * @return array
+		 * @return array<string, string>
 		 * 
 		 * @example
 		 * $request = Request::getInstance();
 		 * print_r($request->getQueryParameters());
 		 */
-		public function getQueryParameters(): array {
-			parse_str($this -> server['QUERY_STRING'] ?? '', $params);
+		public function getQueryParameters(): array<string, string> {
+			parse_str($this->server['QUERY_STRING'] ?? '', $params);
 			return $params;
 		}
 
