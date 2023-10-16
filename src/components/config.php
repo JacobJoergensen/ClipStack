@@ -141,7 +141,7 @@
 			$temp = $this -> configurations;
 
 			foreach ($keys as $k) {
-				if (!isset($temp[$k])) {
+				if (!is_array($temp) || !isset($temp[$k])) {
 					return false;
 				}
 
