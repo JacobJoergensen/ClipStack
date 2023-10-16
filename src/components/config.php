@@ -108,7 +108,8 @@
 		 */
 		public function set(string $key, $value): void {
 			$keys = explode('.', $key);
-			$temp =& $this -> configurations;
+			/** @var array $temp */
+			$temp = $this -> configurations;
 
 			foreach ($keys as $index => $k) {
 				if ($index === count($keys) - 1) {
