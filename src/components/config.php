@@ -91,6 +91,7 @@
 					return $default;
 				}
 
+				/** @var array $temp */
 				$temp = $temp[$k];
 			}
 
@@ -108,7 +109,6 @@
 		 */
 		public function set(string $key, $value): void {
 			$keys = explode('.', $key);
-			/** @var array $temp */
 			$temp = $this -> configurations;
 
 			foreach ($keys as $index => $k) {
