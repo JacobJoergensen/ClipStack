@@ -10,14 +10,14 @@
 		private static $instance = null;
 
 		/**
-		 * @var array - HOLDS THE LOADED CONFIGURATIONS.
+		 * @var array<string, mixed> - HOLDS THE LOADED CONFIGURATIONS.
 		 */
 		private $configurations;
 
 		/**
 		 * CONFIG CONSTRUCTOR. PRIVATE TO PREVENT MULTIPLE INSTANCES.
 		 *
-		 * @param array $config - THE LOADED CONFIGURATION ARRAY.
+		 * @param array<string, mixed> $config - THE LOADED CONFIGURATION ARRAY.
 		 */
 		private function __construct(array $config) {
 			$this -> configurations = $config;
@@ -27,7 +27,7 @@
 		 * GET THE SINGLETON INSTANCE OF THE CONFIG CLASS.
 		 * IF IT DOESN'T EXIST, IT'S CREATED WITH THE PROVIDED CONFIG.
 		 *
-		 * @param array $config - CONFIGURATION DATA.
+		 * @param array<string, mixed> $config - CONFIGURATION DATA.
 		 * @return Config - THE CONFIG SINGLETON INSTANCE.
 		 * 
 		 * @example
