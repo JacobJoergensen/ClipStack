@@ -82,7 +82,7 @@
 			$temp = $this -> configurations;
 		
 			foreach ($keys as $k) {
-				if (!isset($temp[$k])) {
+				if (!is_array($temp) || !isset($temp[$k])) {
 					// IF NO DEFAULT VALUE IS PROVIDED, THROW AN EXCEPTION.
 					if ($default === null) {
 						throw new \InvalidArgumentException("Configuration key '{$key}' not found!");
@@ -91,7 +91,6 @@
 					return $default;
 				}
 
-				/** @var array $temp */
 				$temp = $temp[$k];
 			}
 
