@@ -19,7 +19,14 @@
 		 */
 		public static function isNewVersionAvailable(): string|bool {
 			$latest_version = file_get_contents('https://yourserver.com/latest_version.txt');
-			if (version_compare(self::CURRENT_VERSION, $latest_version, '<')) {
+
+			// CHECK IF $latest_version IS A VALID STRING.
+			if ($latest_version === false || !is_string($latest_version)) {
+				// NO NEW VERSION.
+				return false;
+			}
+
+			if (version_compare(self::CURRENT_VERSION, trim($latest_version), '<')) {
 				return $latest_version;
 			}
 
