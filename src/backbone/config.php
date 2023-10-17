@@ -1,7 +1,7 @@
 <?php
 	declare(strict_types = 1);
 
-	namespace ClipStack\Component;
+	namespace ClipStack\Backbone;
 
 	class Config {
 		/**
