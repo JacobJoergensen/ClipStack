@@ -18,7 +18,7 @@
 		 * }
 		 */
 		public static function isNewVersionAvailable(): string|bool {
-			$latest_version = file_get_contents('https://yourserver.com/latest_version.txt');
+			$latest_version = file_get_contents('TODO - ADD URL TO THE VERSION FILE HERE ON GITHUB');
 
 			// CHECK IF $latest_version IS A VALID STRING.
 			if ($latest_version === false || !is_string($latest_version)) {
