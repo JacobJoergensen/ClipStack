@@ -41,7 +41,6 @@
 	 */
 	if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get_modules())) {
 		throw new \RuntimeException('mod_rewrite module is not enabled in Apache. Please enable mod_rewrite to continue.');
-		exit();
 	}
 
 	/**
@@ -78,7 +77,8 @@
 	$environment = $config_instance -> get('app.env');
 
 	if (!in_array($environment, ['development', 'production'])) {
-		throw new \RuntimeException("The specified environment setting '{$environment}' is not recognized. Valid environments are 'development' or 'production'.");
+		$env_string = var_export($environment, true);
+		throw new \RuntimeException("The specified environment setting '{$env_string}' is not recognized. Valid environments are 'development' or 'production'.");
 	}
 
 	/**
