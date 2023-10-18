@@ -11,12 +11,10 @@
 
 	if (version_compare($php_version, '8.0.0', '<')) {
 		throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.0.0!");
-		exit();
 	}
 	
 	if (version_compare($php_version, '8.2.0', '>')) {
 		throw new \RuntimeException("Your PHP version ($php_version) exceeds the maximum supported version. The system supports up to PHP 8.2.0!");
-		exit();
 	}
 	
 	echo "Your PHP version ($php_version) is supported!";
@@ -54,7 +52,6 @@
 	foreach ($required_extensions as $extension) {
 		if (!extension_loaded($extension)) {
 			throw new \RuntimeException("The {$extension} extension is not installed or enabled. This extension is required for ClipStack to function properly.");
-			exit();
 		}
 	}
 
@@ -63,7 +60,6 @@
 	 */
 	if ((!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && $_SERVER['SERVER_PORT'] !== '443') {
 		throw new \RuntimeException('ClipStack requires a secure HTTPS connection. Please ensure SSL/TLS is correctly configured.');
-		exit();
 	}
 
 	/**
@@ -74,7 +70,6 @@
 
 	if (!is_array($config_array)) {
 		throw new \RuntimeException('Configuration file did not return a valid array.');
-		exit();
 	}
 
 	/**
@@ -84,7 +79,6 @@
 
 	if (!in_array($environment, ['development', 'production'])) {
 		throw new \RuntimeException("The specified environment setting '{$environment}' is not recognized. Valid environments are 'development' or 'production'.");
-		exit();
 	}
 
 	/**
