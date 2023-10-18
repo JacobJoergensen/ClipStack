@@ -9,12 +9,12 @@
 	 */
 	$php_version = phpversion();
 
-	if (version_compare($php_version, '8.0.0', '<')) {
-		throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.0.0!");
+	if (version_compare($php_version, '8.1.0', '<')) {
+		throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.1.0!");
 	}
 	
-	if (version_compare($php_version, '8.2.0', '>')) {
-		throw new \RuntimeException("Your PHP version ($php_version) exceeds the maximum supported version. The system supports up to PHP 8.2.0!");
+	if (version_compare($php_version, '8.3.0', '>=')) {
+		throw new \RuntimeException("Your PHP version ($php_version) exceeds the maximum supported version. The system supports up to PHP 8.2.X!");
 	}
 	
 	echo "Your PHP version ($php_version) is supported!";
