@@ -16,7 +16,7 @@
 		 * Redirect::to('https://www.example.com', true);
 		 */
 		public static function to(string $url, bool $permanent = false): void {
-			if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+			if ($url[0] !== '/' && filter_var($url, FILTER_VALIDATE_URL) === false) {
 				throw new InvalidArgumentException('Invalid URL provided.');
 			}
 
