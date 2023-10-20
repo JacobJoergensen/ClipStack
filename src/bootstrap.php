@@ -3,21 +3,22 @@
 
 	use ClipStack\Backbone\Version;
 	use ClipStack\Backbone\Config;
+	
+	require 'backbone/config.php';
+	require 'backbone/version.php';
 
 	/**
 	 * VALIDATE THAT THE SERVER'S PHP VERSION MEETS ClipStack'S REQUIREMENTS.
 	 */
 	$php_version = phpversion();
 
-	if (version_compare($php_version, '8.1.0', '<')) {
-		throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.1.0!");
+	if (version_compare($php_version, '8.2.0', '<')) {
+		throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.2.0!");
 	}
-	
+
 	if (version_compare($php_version, '8.3.0', '>=')) {
 		throw new \RuntimeException("Your PHP version ($php_version) exceeds the maximum supported version. The system supports up to PHP 8.2.X!");
 	}
-	
-	echo "Your PHP version ($php_version) is supported!";
 
 	/**
 	 * SETTING SECURITY HEADERS:
@@ -29,12 +30,12 @@
 	 * THESE HEADERS IN ALIGNMENT WITH EVOLVING SECURITY PRACTICES ENSURES THE APPLICATION REMAINS RESILIENT
 	 * AGAINST EMERGING THREATS.
 	 */
-	header("Content-Security-Policy: default-src 'self';");
-	header("X-Frame-Options: SAMEORIGIN");
-	header("X-XSS-Protection: 1; mode=block");
-	header("X-Content-Type-Options: nosniff");
-	header("Referrer-Policy: no-referrer-when-downgrade");
-	header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+	//header("Content-Security-Policy: default-src 'self';");
+	//header("X-Frame-Options: SAMEORIGIN");
+	//header("X-XSS-Protection: 1; mode=block");
+	//header("X-Content-Type-Options: nosniff");
+	//header("Referrer-Policy: no-referrer-when-downgrade");
+	//header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
 
 	/**
 	 * ENSURE THAT THE WEB SERVER CONFIGURATIONS ARE AS EXPECTED.
@@ -64,7 +65,7 @@
 	/**
 	 * LOAD AND VALIDATE THE CONFIGURATION FILE FOR ClipStack.
 	 */
-	$config_array = require __DIR__ . '/backbone/config.php';
+	$config_array = require 'config.php';
 	$config_instance = Config::getInstance($config_array);
 
 	if (!is_array($config_array)) {
@@ -84,19 +85,21 @@
 	/**
 	 * NOTIFY THE USER IF THERE IS A NEWER VERSION OF ClipStack AVAILABLE.
 	 */
-	$new_version = Version::isNewVersionAvailable();
+	if ($environment == 'production') {
+		//$new_version = Version::isNewVersionAvailable();
 
-	if ($new_version !== false) {
-		echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
+		//if ($new_version !== false) {
+			//echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
+		//}
 	}
 
 	// REGISTER THE AUTOLOADER.
 	spl_autoload_register(function ($class) {
 		// PROJECT NAMESPACE PREFIX.
-		$prefix = 'ClipStack\\';
+		$prefix = 'ClipStack\\Component\\';
 
 		// BASE DIRECTORY FOR THE NAMESPACE PREFIX.
-		$base_dir = __DIR__ . '/';
+		$base_dir = 'components/';
 
 		// CHECK IF THE CLASS USES THE NAMESPACE PREFIX.
 		$len = strlen($prefix);
