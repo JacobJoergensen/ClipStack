@@ -5,6 +5,11 @@
 		private ?\DateTimeZone $timezone = null;
 
 		public function __construct(?string $timezone = null) {
+			if ($timezone === null) {
+				$config = include '../config.php';
+				$timezone = $config_instance -> get('dateTime.timezone') ?? null;
+			}
+
 			if ($timezone !== null) {
 				// CHECK IF THE TIMEZONE IS VALID BEFORE SETTING.
 				if (in_array($timezone, \DateTimeZone::listIdentifiers())) {
