@@ -9,6 +9,11 @@
 	class Request {
 		use Singleton;
 
+		/**
+		 * @var self|null
+		 */
+		private static $instance = null;
+
 		/** 
 		 * @var array<string, mixed>
 		 */
