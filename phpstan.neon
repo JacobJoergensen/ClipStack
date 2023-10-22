@@ -2,7 +2,5 @@ parameters:
 	paths:
 		- src/
 	level: 9
-	ignoreErrors:
-		- '#Method ClipStack\\Component\\Request::__wakeup\(\) is unused\.#'
 	bootstrapFiles:
 		- vendor/autoload.php
