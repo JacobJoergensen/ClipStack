@@ -54,7 +54,13 @@
 			return self::$instance;
 		}
 
-		public function getServerValue(string $key) {
+		/**
+		 * RETRIEVES A VALUE FROM THE $server array BASED ON THE PROVIDED KEY.
+		 *
+		 * @param string $key - THE KEY TO LOOK UP IN THE $server array.
+		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
+		 */
+		public function getServerValue(string $key): mixed {
 			return $this -> server[$key] ?? null;
 		}
 
