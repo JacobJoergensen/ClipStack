@@ -2,13 +2,16 @@
 	namespace ClipStack\Component;
 
 	class Session {
+		private Request $request;
+
 		private const SESSION_PREFIX = 'clipstack_';
 		private const SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
 
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
 		 */
-		public function __construct() {
+		public function __construct(Request $request) {
+			$this -> request = $request;
 			$this -> initSessionConfigurations();
 			$this -> ensureSessionStarted();
 		}
@@ -22,9 +25,10 @@
 			ini_set('session.use_only_cookies', '1'); 
 			ini_set('session.cookie_httponly', '1');
 			ini_set('session.gc_maxlifetime', self::SESSION_LIFETIME);
-			
-			// ADD A CONFIG OPTION TO TOGGLE THE BELOW - If you're sure your site will only use HTTPS, uncomment below
-			// ini_set('session.cookie_secure', '1');
+
+			if ($this -> request -> isHttps()) {
+				ini_set('session.cookie_secure', '1');
+			}
 		}
 
 		/**

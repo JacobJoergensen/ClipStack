@@ -1,8 +1,18 @@
 <?php
 	namespace ClipStack\Component;
 
+	use ClipStack\Backbone\Singleton;
+
+	/**
+	 * @template-uses Singleton<Request>
+	 */
 	class Request {
-		private static ?Request $instance = null;
+		use Singleton;
+
+		/**
+		 * @var self|null
+		 */
+		private static $instance = null;
 
 		/** 
 		 * @var array<string, mixed>
@@ -26,20 +36,6 @@
 		}
 
 		/**
-		 * SAFETY FOR SINGLETON PATTERN: PREVENT CLONING.
-		 */
-		private function __clone() {}
-
-		/**
-		 * SAFETY FOR SINGLETON PATTERN: PREVENT UNSERIALIZATION.
-		 *
-		 * @throws \Exception
-		 */
-		private function __wakeup() {
-			throw new \Exception('Cannot unserialize a singleton.');
-		}
-
-		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 * 
 		 * @param array<string, mixed> $server - AN ASSOCIATIVE ARRAY REPRESENTING SERVER DATA.
@@ -49,14 +45,23 @@
 		 */
 		public static function getInstance(array $server = [], array $post = []): Request {
 			if (self::$instance === null) {
-				// SAFELY CHECK IF SUPERGLOBALS ARE SET AND USE THEM IF NOT OVERRIDDEN BY THE PROVIDED PARAMETERS.
 				$server = !empty($server) ? $server : $_SERVER;
 				$post = !empty($post) ? $post : $_POST;
 		
 				self::$instance = new self($server, $post);
 			}
-
+	
 			return self::$instance;
+		}
+
+		/**
+		 * RETRIEVES A VALUE FROM THE $server array BASED ON THE PROVIDED KEY.
+		 *
+		 * @param string $key - THE KEY TO LOOK UP IN THE $server array.
+		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
+		 */
+		public function getServerValue(string $key): mixed {
+			return $this -> server[$key] ?? null;
 		}
 
 		/**
@@ -84,30 +89,62 @@
 		 * echo $request->getUri();
 		 */
 		public function getUri(): string {
-			return is_scalar($this->server['REQUEST_URI'] ?? null) 
-				? strval($this->server['REQUEST_URI']) 
+			return is_scalar($this -> server['REQUEST_URI'] ?? null) 
+				? strval($this -> server['REQUEST_URI']) 
 				: '';
 		}
 
+		public function getHttpHost(): string {
+			$httpHost = $this -> server['HTTP_HOST'] ?? null;
+
+			return is_string($httpHost) ? $httpHost : '';
+		}
+
+		public function isHttps(): bool {
+			return isset($this -> server['HTTPS']) && ($this -> server['HTTPS'] === 'on' || $this -> server['HTTPS'] == 1);
+		}
+
 		/**
-		 * GET THE QUERY PARAMETERS OF THE REQUEST.
+		 * RETRIEVE A SPECIFIC REQUEST HEADER.
 		 *
-		 * @return array<string, string>
-		 * 
+		 * @param string $header - THE HEADER NAME.
+		 * @return string|null
+		 *
 		 * @example
 		 * $request = Request::getInstance();
-		 * print_r($request->getQueryParameters());
+		 * echo $request->getHeader('Accept-Language');
 		 */
-		public function getQueryParameters(): array {
-			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
-				? strval($this -> server['QUERY_STRING'])
-				: '';
-			parse_str($query_string, $params);
-			
-			// FILTER THE ARRAY TO ENSURE THAT BOTH KEYS AND VALUES ARE STRINGS.
-			return array_filter($params, function ($key, $value) {
-				return is_string($key) && is_string($value);
-			}, ARRAY_FILTER_USE_BOTH);
+		public function getHeader(string $header): ?string {
+			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
+			$value = $this -> server[$key] ?? null;
+
+			return is_string($value) ? $value : null;
+		}
+
+		/**
+		 * RETRIEVE ALL REQUEST HEADERS.
+		 *
+		 * @return array<string, string>
+		 *
+		 * @example
+		 * $request = Request::getInstance();
+		 * print_r($request->getAllHeaders());
+		 */
+		public function getAllHeaders(): array {
+			if (function_exists('getallheaders')) {
+				return getallheaders();
+			} else {
+				$headers = [];
+
+				foreach ($this -> server as $key => $value) {
+					if (substr($key, 0, 5) === 'HTTP_') {
+						$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+						$headers[$header_key] = is_string($value) ? $value : '';
+					}
+				}
+
+				return $headers;
+			}
 		}
 
 		/**
@@ -161,45 +198,34 @@
 		}
 
 		/**
-		 * RETRIEVE A SPECIFIC REQUEST HEADER.
+		 * FETCH THE CLIENT'S IP ADDRESS.
 		 *
-		 * @param string $header - THE HEADER NAME.
-		 * @return string|null
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request->getHeader('Accept-Language');
+		 * @return string
 		 */
-		public function getHeader(string $header): ?string {
-			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
-			$value = $this -> server[$key] ?? null;
+		public function getClientIp(): string {
+			$remoteAddr = $this -> server['REMOTE_ADDR'] ?? null;
 
-			return is_string($value) ? $value : null;
+			return is_string($remoteAddr) ? $remoteAddr : '';
 		}
 
 		/**
-		 * RETRIEVE ALL REQUEST HEADERS.
+		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
 		 * @return array<string, string>
-		 *
+		 * 
 		 * @example
 		 * $request = Request::getInstance();
-		 * print_r($request->getAllHeaders());
+		 * print_r($request->getQueryParameters());
 		 */
-		public function getAllHeaders(): array {
-			if (function_exists('getallheaders')) {
-				return getallheaders();
-			} else {
-				$headers = [];
-
-				foreach ($this -> server as $key => $value) {
-					if (substr($key, 0, 5) === 'HTTP_') {
-						$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-						$headers[$header_key] = is_string($value) ? $value : '';
-					}
-				}
-
-				return $headers;
-			}
+		public function getQueryParameters(): array {
+			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
+				? strval($this -> server['QUERY_STRING'])
+				: '';
+			parse_str($query_string, $params);
+			
+			// FILTER THE ARRAY TO ENSURE THAT BOTH KEYS AND VALUES ARE STRINGS.
+			return array_filter($params, function ($key, $value) {
+				return is_string($key) && is_string($value);
+			}, ARRAY_FILTER_USE_BOTH);
 		}
 	}
