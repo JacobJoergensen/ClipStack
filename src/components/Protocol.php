@@ -29,8 +29,8 @@
 		 * @return bool TRUE IF HTTPS, FALSE OTHERWISE.
 		 */
 		public function isSecure(): bool {
-			return $this -> request -> isHttps() || 
-				(isset($this -> request -> server['HTTP_X_FORWARDED_PROTO']) && $this -> request -> server['HTTP_X_FORWARDED_PROTO'] == 'https');
+			return $this->request->isHttps() || 
+				($this->request->getServerValue('HTTP_X_FORWARDED_PROTO') == 'https');
 		}
 
 		/**
