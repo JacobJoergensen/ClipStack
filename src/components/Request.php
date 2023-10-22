@@ -85,7 +85,9 @@
 		}
 
 		public function getHttpHost(): string {
-			return $this -> server['HTTP_HOST'] ?? '';
+			$httpHost = $this -> server['HTTP_HOST'] ?? null;
+
+			return is_string($httpHost) ? $httpHost : '';
 		}
 
 		public function isHttps(): bool {
@@ -191,7 +193,9 @@
 		 * @return string
 		 */
 		public function getClientIp(): string {
-			return $this -> server['REMOTE_ADDR'] ?? '';
+			$remoteAddr = $this -> server['REMOTE_ADDR'] ?? null;
+
+			return is_string($remoteAddr) ? $remoteAddr : '';
 		}
 
 		/**
