@@ -1,6 +1,8 @@
 <?php
 	namespace ClipStack\Component;
 
+	use ClipStack\Backbone\Config;
+
 	class DateTimeUtility {
 		private ?\DateTimeZone $timezone = null;
 
