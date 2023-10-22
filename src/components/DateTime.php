@@ -1,17 +1,16 @@
 <?php
 	namespace ClipStack\Component;
 
-	use ClipStack\Backbone\Config;
-
 	class DateTimeUtility {
 		private ?\DateTimeZone $timezone = null;
+		private Config $config;
 
-		public function __construct(?string $timezone = null) {
+		public function __construct(Config $config, ?string $timezone = null) {
+			$this -> config = $config;
+
 			if ($timezone === null) {
-				$config_array = require '../config.php';
-				$config_instance = Config::getInstance($config_array);
-				$timezoneValue = $config_instance -> get('dateTime.timezone');
-				$timezone = is_string($timezoneValue) ? $timezoneValue : null;
+				$timezone_value = $this -> config -> get('dateTime.timezone');
+				$timezone = is_string($timezone_value) ? $timezone_value : null;
 			}
 
 			if ($timezone !== null) {
