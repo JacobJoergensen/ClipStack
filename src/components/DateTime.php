@@ -6,7 +6,8 @@
 
 		public function __construct(?string $timezone = null) {
 			if ($timezone === null) {
-				$config = include '../config.php';
+				$config_array = require '../config.php';
+				$config_instance = Config::getInstance($config_array);
 				$timezone = $config_instance -> get('dateTime.timezone') ?? null;
 			}
 
