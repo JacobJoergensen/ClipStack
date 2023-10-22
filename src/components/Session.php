@@ -2,7 +2,7 @@
 	namespace ClipStack\Component;
 
 	class Session {
-		private $request;
+		private Request $request;
 
 		private const SESSION_PREFIX = 'clipstack_';
 		private const SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
