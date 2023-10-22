@@ -10,7 +10,8 @@
 			if ($timezone === null) {
 				$config_array = require '../config.php';
 				$config_instance = Config::getInstance($config_array);
-				$timezone = $config_instance -> get('dateTime.timezone') ?? null;
+				$timezoneValue = $config_instance -> get('dateTime.timezone');
+				$timezone = is_string($timezoneValue) ? $timezoneValue : null;
 			}
 
 			if ($timezone !== null) {
