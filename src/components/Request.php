@@ -4,7 +4,7 @@
 	use ClipStack\Backbone\Singleton;
 
 	/**
-	 * @template-extends Singleton<Request>
+	 * @template-use Singleton<Request>
 	 */
 	class Request {
 		use Singleton;
