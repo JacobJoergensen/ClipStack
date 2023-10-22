@@ -1,9 +1,12 @@
 <?php
 	namespace ClipStack\Backbone;
 
+	/**
+	 * @template T of object
+	 */
 	trait Singleton {
 		/**
-		 * @var static|null
+		 * @var T|null
 		 */
 		private static $instance = null;
 
