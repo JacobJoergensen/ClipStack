@@ -2,6 +2,9 @@
 	namespace ClipStack\Backbone;
 
 	trait Singleton {
+		/**
+		 * @var static|null
+		 */
 		private static $instance = null;
 
 		/**
