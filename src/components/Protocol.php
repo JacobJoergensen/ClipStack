@@ -58,6 +58,8 @@
 		 * @return int SERVER PORT NUMBER.
 		 */
 		public function getServerPort(): int {
-			return $this -> request -> server['SERVER_PORT'] ?? 80;
+			$port = $this -> request -> server['SERVER_PORT'] ?? 80;
+
+			return is_int($port) ? $port : 80;
 		}
 	}
