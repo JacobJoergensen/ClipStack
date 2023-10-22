@@ -49,10 +49,17 @@
 		 */
 		public function validateCSRFToken(string $token): bool {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
-			$this -> clearExpiredTokens();
+			$this->clearExpiredTokens();
 
-			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);
-			if ($token_data && hash_equals($token_data['token'], $token) && time() <= $token_data['expires']) {
+			$token_data = $this->session->get(self::CSRF_TOKEN_KEY);
+
+			// CHECK IF $token_data IS AN ARRAY AND HAS THE NECESSARY KEYS.
+			if (is_array($token_data) 
+				&& isset($token_data['token'], $token_data['expires'])
+				&& is_string($token_data['token'])
+				&& hash_equals($token_data['token'], $token) 
+				&& time() <= $token_data['expires']
+			) {
 				$this -> session -> remove(self::CSRF_TOKEN_KEY);
 				return true;
 			}
@@ -74,7 +81,9 @@
 		 */
 		public function clearExpiredTokens(): void {
 			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);
-			if ($token_data && time() > $token_data['expires']) {
+
+			// CHECK IF $token_data IS AN ARRAY AND HAS THE 'expires' KEY.
+			if (is_array($token_data) && isset($token_data['expires']) && time() > $token_data['expires']) {
 				$this -> session -> remove(self::CSRF_TOKEN_KEY);
 			}
 		}
