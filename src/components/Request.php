@@ -54,6 +54,10 @@
 			return self::$instance;
 		}
 
+		public function getServerValue(string $key) {
+			return $this -> server[$key] ?? null;
+		}
+
 		/**
 		 * GET THE CURRENT FULL URL OF THE WEBSITE.
 		 *
