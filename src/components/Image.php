@@ -137,7 +137,7 @@
 		 * FETCH METADATA OF AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
-		 * @return array|null METADATA AS AN ARRAY OR NULL ON FAILURE.
+		 * @return array<string, mixed>|null METADATA AS AN ASSOCIATIVE ARRAY OR NULL ON FAILURE.
 		 */
 		public function getMetadata(string $file_path): ?array {
 			if (file_exists($file_path) && function_exists('exif_read_data')) {
@@ -163,10 +163,20 @@
 
 			// DETERMINE THE TYPE OF THE MAIN IMAGE.
 			$file_info = pathinfo($file_path);
+
+			if (!isset($file_info['extension'])) {
+				return false;
+			}
+
 			$extension = strtolower($file_info['extension']);
 
 			// DETERMINE THE TYPE OF THE WATERMARK IMAGE.
 			$watermark_info = pathinfo($watermark_path);
+
+			if (!isset($watermark_info['extension'])) {
+				return false;
+			}
+
 			$watermark_extension = strtolower($watermark_info['extension']);
 
 			switch ($extension) {
