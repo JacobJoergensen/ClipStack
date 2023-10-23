@@ -198,10 +198,12 @@
 		 * @return array<string, mixed>|null - ASSOCIATIVE ARRAY REPRESENTING THE FETCHED ROW.
 		 */
 		public function result(): ?array {
-			if ($this -> stmt) {
-				$result = $this -> stmt -> fetch(PDO::FETCH_ASSOC);
+			if ($this->stmt) {
+				$result = $this->stmt->fetch(PDO::FETCH_ASSOC);
 
-				return $result !== false ? $result : null;
+				if (is_array($result)) {
+					return $result;
+				}
 			}
 
 			return null;
