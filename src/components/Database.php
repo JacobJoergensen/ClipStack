@@ -16,10 +16,7 @@
 		 */
 		private static ?Database $instance = null;
 
-		/**
-		 * @var PDO|null
-		 */
-		private ?PDO $pdo;
+		private PDO $pdo;
 		private ?PDOStatement $stmt = null;
 
 		private bool $is_connected = false;
@@ -341,7 +338,7 @@
 		 * @return void
 		 */
 		public function closeConnection(): void {
-			$this -> pdo = null;
+			$this -> pdo = new PDO('sqlite::memory:');
 		}
 
 		/**
