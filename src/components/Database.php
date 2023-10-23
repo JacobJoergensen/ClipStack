@@ -112,7 +112,7 @@
 			}
 
 			$query = "CREATE TABLE IF NOT EXISTS {$this -> prefixedTableName($table_name)} ({$fields})";
-			return $this -> pdo -> exec($query);
+			return (bool) $this -> pdo -> exec($query);
 		}
 
 
@@ -135,7 +135,7 @@
 			}
 
 			$query = "ALTER TABLE {$this -> prefixedTableName($table_name)} {$alterations}";
-			return $this -> pdo -> exec($query);
+			return (bool) $this -> pdo -> exec($query);
 		}
 
 		/**
