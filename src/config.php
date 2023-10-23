@@ -47,6 +47,9 @@
 			// THE NAME OF THE DATABASE YOUR APP CONNECTS TO
 			'name' => 'my_database',
 
+			// PREFIX FOR TABLES IN THE DATABASE
+			'prefix' => 'cs_',
+
 			// CHARACTER SET FOR THE DATABASE CONNECTION
 			'charset' => 'utf8mb4',
 
