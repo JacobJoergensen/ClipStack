@@ -11,6 +11,11 @@
 	class Database {
 		use Singleton;
 
+		/**
+		 * @var Database|null
+		 */
+		private static ?Database $instance = null;
+
 		private PDO $pdo;
 		private ?PDOStatement $stmt = null;
 
