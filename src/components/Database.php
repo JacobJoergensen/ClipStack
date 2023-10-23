@@ -16,7 +16,10 @@
 		 */
 		private static ?Database $instance = null;
 
-		private PDO $pdo;
+		/**
+		 * @var PDO|null
+		 */
+		private ?PDO $pdo;
 		private ?PDOStatement $stmt = null;
 
 		private bool $is_connected = false;
@@ -334,8 +337,10 @@
 
 		/**
 		 * CLOSE THE DATABASE CONNECTION.
+		 *
+		 * @return void
 		 */
-		public function closeConnection() {
+		public function closeConnection(): void {
 			$this -> pdo = null;
 		}
 
