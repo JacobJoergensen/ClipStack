@@ -14,7 +14,7 @@
 		private PDO $pdo;
 		private ?PDOStatement $stmt = null;
 
-		private $is_connected = false;
+		private bool $is_connected = false;
 		private string $prefix = '';
 
 		private Config $config;
