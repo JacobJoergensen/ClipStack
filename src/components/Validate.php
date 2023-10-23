@@ -271,7 +271,7 @@
 		 * VALIDATE AND FILTER A URL.
 		 *
 		 * @param string $url
-		 * @return string|false
+		 * @return string|null
 		 * 
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()), new ErrorHandler());
