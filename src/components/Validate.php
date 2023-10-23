@@ -38,7 +38,7 @@
 			foreach ($data as $key => $value) {
 				if (is_array($value)) {
 					$data[$key] = $this -> sanitizeArray($value);
-				} else {
+				} elseif (is_string($value)) {
 					$data[$key] = $this -> sanitizeString($value);
 				}
 			}
@@ -197,7 +197,7 @@
 		 * VALIDATE AND FILTER AN EMAIL ADDRESS.
 		 *
 		 * @param string $email
-		 * @return string|false
+		 * @return string|null
 		 * 
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()), new ErrorHandler());
