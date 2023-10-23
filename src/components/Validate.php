@@ -27,8 +27,8 @@
 		/**
 		 * RECURSIVELY SANITIZE AN ARRAY.
 		 *
-		 * @param array<string, string|array> $data
-		 * @return array<string, string|array>
+		 * @param array<mixed> $data - AN ARRAY CONTAINING STRINGS OR OTHER ARRAYS TO SANITIZE.
+		 * @return array<mixed> - THE SANITIZED ARRAY.
 		 * 
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()));
