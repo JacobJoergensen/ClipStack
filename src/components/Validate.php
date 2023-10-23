@@ -27,8 +27,8 @@
 		/**
 		 * RECURSIVELY SANITIZE AN ARRAY.
 		 *
-		 * @param array $data
-		 * @return array
+		 * @param array<string, string|array> $data
+		 * @return array<string, string|array>
 		 * 
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()));
@@ -164,8 +164,11 @@
 
 		/**
 		 * CONSOLIDATED EMAIL VALIDATION.
+		 * 
+		 * @param string $email - THE EMAIL TO BE VALIDATED.
+		 * @return string|false - THE VALIDATED EMAIL OR FALSE IF IT'S INVALID.
 		 */
-		private function performEmailValidation(string $email): ?string {
+		private function performEmailValidation(string $email): string|false {
 			return filter_var($email, FILTER_VALIDATE_EMAIL);
 		}
 
