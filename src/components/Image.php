@@ -215,8 +215,16 @@
 					return false;
 			}
 
+			if ($watermark === false) {
+				return false;
+			}
+
 			$watermark_width = imagesx($watermark);
 			$watermark_height = imagesy($watermark);
+
+			if ($image === false) {
+				return false;
+			}
 
 			$dest_x = imagesx($image) - $watermark_width - 5;
 			$dest_y = imagesy($image) - $watermark_height - 5;
