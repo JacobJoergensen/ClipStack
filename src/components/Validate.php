@@ -239,8 +239,11 @@
 
 		/**
 		 * CONSOLIDATED URL VALIDATION.
+		 *
+		 * @param string $url - THE URL TO BE VALIDATED.
+		 * @return string|false - THE VALIDATED URL OR FALSE IF IT'S INVALID.
 		 */
-		private function performURLValidation(string $url): ?string {
+		private function performURLValidation(string $url): string|false {
 			return filter_var($url, FILTER_VALIDATE_URL);
 		}
 
