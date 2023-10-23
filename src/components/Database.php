@@ -28,7 +28,15 @@
 		public function __construct(Config $config, Validate $validate) {
 			$this -> config = $config;
 			$this -> validate = $validate;
-			$this -> prefix = $this -> config -> get('database')['prefix'] ?? '';
+
+			$database_config = $this -> config -> get('database');
+
+			if (is_array($database_config) && isset($database_config['prefix'])) {
+				$this -> prefix = $database_config['prefix'];
+			} else {
+				$this -> prefix = '';
+			}
+
 			$this -> connect();
 		}
 
