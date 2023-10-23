@@ -5,8 +5,6 @@
 		private DateTimeUtility $dateTimeUtility;
 		private ErrorHandler $errorHandler;
 
-		private array $allowed_tables = ['users', 'orders', 'products'];
-
 		public function __construct(DateTimeUtility $dateTimeUtility, ErrorHandler $errorHandler) {
 			$this -> dateTimeUtility = $dateTimeUtility;
 			$this -> errorHandler = $errorHandler;
@@ -314,16 +312,6 @@
 			}
 
 			return $is_valid;
-		}
-
-		/**
-		 * VALIDATE IF THE PROVIDED TABLE NAME IS ALLOWED.
-		 * 
-		 * @param string $tableName - THE NAME OF THE TABLE.
-		 * @return bool - TRUE IF VALID, OTHERWISE FALSE.
-		 */
-		public function isValidTableName(string $table_name): bool {
-			return in_array($table_name, $this -> allowed_tables);
 		}
 
 		/**
