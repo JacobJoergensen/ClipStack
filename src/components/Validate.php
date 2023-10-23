@@ -354,4 +354,3 @@
 			return true;
 		}
 	}
-	}
