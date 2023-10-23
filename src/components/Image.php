@@ -7,9 +7,11 @@
 		/**
 		 * RESIZE AN IMAGE.
 		 *
-		 * @param string $filePath - THE PATH TO THE IMAGE.
+		 * @param string $file_path - THE PATH TO THE IMAGE.
 		 * @param int $width - THE DESIRED WIDTH.
 		 * @param int $height - THE DESIRED HEIGHT.
+		 * @param string $strategy - THE RESIZING STRATEGY.
+		 * @param int $quality - THE DESIRED QUALITY FOR JPEG IMAGES.
 		 * @return bool TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function resize(string $file_path, int $width, int $height, string $strategy = 'aspectRatio', int $quality = 75): bool {
@@ -18,9 +20,19 @@
 			}
 
 			$file_info = pathinfo($file_path);
-			$extension = strtolower($file_info['extension']);
 
-			list($original_width, $original_height) = getimagesize($file_path);
+			if (!isset($file_info['extension'])) {
+				return false;
+			}
+
+			$extension = strtolower($file_info['extension']);
+			$image_size = getimagesize($file_path);
+
+			if ($image_size === false) {
+				return false;
+			}
+
+			list($original_width, $original_height) = $image_size;
 
 			switch ($strategy) {
 				case 'width':
