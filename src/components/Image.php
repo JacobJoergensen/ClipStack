@@ -56,7 +56,7 @@
 					break;
 			}
 
-			$new_image = imagecreatetruecolor($width, $height);
+			$new_image = imagecreatetruecolor((int)$width, (int)$height);
 
 			switch ($extension) {
 				case 'jpeg':
@@ -77,20 +77,24 @@
 					return false;
 			}
 
-			imagecopyresampled($new_image, $source, 0, 0, 0, 0, $width, $height, $original_width, $original_height);
+			if ($new_image === false || $source === false) {
+				return false;
+			}
+
+			imagecopyresampled($new_image, $source, 0, 0, 0, 0, (int)$width, (int)$height, $original_width, $original_height);
 
 			switch ($extension) {
 				case 'jpeg':
 				case 'jpg':
-					$success = imagejpeg($new_image, $file_path, $quality);
+					$success = imagejpeg($new_image, $file_path, $quality); // fix this
 					break;
 
 				case 'png':
-					$success = imagepng($new_image, $file_path);
+					$success = imagepng($new_image, $file_path); // fix this
 					break;
 
 				case 'gif':
-					$success = imagegif($new_image, $file_path);
+					$success = imagegif($new_image, $file_path); // fix this
 					break;
 
 				default:
@@ -98,8 +102,8 @@
 					break;
 			}
 
-			imagedestroy($new_image);
-			imagedestroy($source);
+			imagedestroy($new_image); // fix this
+			imagedestroy($source); // fix this
 
 			return $success;
 		}
