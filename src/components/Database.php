@@ -292,12 +292,16 @@
 		private function connect(): void {
 			$configurations = $this -> config -> get('database');
 
-			$driver = $configurations['driver'];
-			$host = $configurations['host'];
-			$port = $configurations['port'];
-			$db = $configurations['name'];
-			$user = $configurations['username'];
-			$pass = $configurations['password'];
+			if (!is_array($configurations)) {
+				throw new \RuntimeException('Database configuration is not valid.');
+			}
+
+			$driver = $configurations['driver'] ?? '';
+			$host = $configurations['host'] ?? '';
+			$port = $configurations['port'] ?? '';
+			$db = $configurations['name'] ?? '';
+			$user = $configurations['username'] ?? '';
+			$pass = $configurations['password'] ?? '';
 			$charset = $configurations['charset'] ?? 'utf8mb4';
 			$collation = $configurations['collation'] ?? 'utf8mb4_unicode_ci';
 
