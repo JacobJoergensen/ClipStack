@@ -195,11 +195,13 @@
 		/**
 		 * FETCH A SINGLE ROW.
 		 *
-		 * @return array|null
+		 * @return array<string, mixed>|null - ASSOCIATIVE ARRAY REPRESENTING THE FETCHED ROW.
 		 */
 		public function result(): ?array {
 			if ($this -> stmt) {
-				return $this -> stmt -> fetch();
+				$result = $this -> stmt -> fetch(PDO::FETCH_ASSOC);
+
+				return $result !== false ? $result : null;
 			}
 
 			return null;
@@ -208,7 +210,7 @@
 		/**
 		 * FETCH ALL ROWS.
 		 *
-		 * @return array
+		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS.
 		 */
 		public function results(): array {
 			if ($this -> stmt) {
@@ -270,8 +272,10 @@
 
 		/**
 		 * ENSURE DATABASE CONNECTION IS ESTABLISHED.
+		 *
+		 * @return void
 		 */
-		private function ensureConnected() {
+		private function ensureConnected(): void {
 			if (!$this -> is_connected) {
 				$this -> connect();
 				$this -> is_connected = true;
@@ -280,8 +284,10 @@
 
 		/**
 		 * ESTABLISH A DATABASE CONNECTION.
+		 *
+		 * @return void
 		 */
-		private function connect() {
+		private function connect(): void {
 			$configurations = $this -> config -> get('database');
 
 			$driver = $configurations['driver'];
