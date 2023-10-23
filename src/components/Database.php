@@ -142,7 +142,7 @@
 		 * CHECK IF A ROW EXISTS BASED ON A QUERY.
 		 *
 		 * @param string $query
-		 * @param array $params
+		 * @param array<string, mixed> $params
 		 * @return bool
 		 */
 		public function exists(string $query, array $params = []): bool {
@@ -154,7 +154,7 @@
 		 * INSERT A NEW ROW INTO A TABLE.
 		 *
 		 * @param string $table
-		 * @param array $data
+		 * @param array<string, mixed> $data
 		 * @return bool
 		 */
 		public function insert(string $table, array $data): bool {
@@ -172,8 +172,8 @@
 		 * UPDATE A ROW IN A TABLE.
 		 *
 		 * @param string $table
-		 * @param array $data
-		 * @param array $where
+		 * @param array<string, mixed> $data
+		 * @param array<string, mixed> $where
 		 * @return bool
 		 */
 		public function update(string $table, array $data, array $where): bool {
