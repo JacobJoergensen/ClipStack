@@ -48,7 +48,7 @@
 			'name' => 'my_database',
 
 			// PREFIX FOR TABLES IN THE DATABASE
-			'prefix' => 'cs_'
+			'prefix' => 'cs_',
 
 			// CHARACTER SET FOR THE DATABASE CONNECTION
 			'charset' => 'utf8mb4',
