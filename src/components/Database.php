@@ -50,15 +50,19 @@
 		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE DATABASE CLASS.
 		 * 
+		 * @param Config $config - THE CONFIGURATION INSTANCE.
+		 * @param Validate $validate - THE VALIDATION INSTANCE.
+		 * 
 		 * @return Database - THE SINGLETON INSTANCE OF THE DATABASE CLASS.
 		 * 
 		 * @example
 		 * $config = new Config();
-		 * $db = Database::getInstance($config);
+		 * $validate = new Validate();
+		 * $db = Database::getInstance($config, $validate);
 		 */
-		public static function getInstance(Config $config): Database {
+		public static function getInstance(Config $config, Validate $validate): Database {
 			if (self::$instance === null) {
-				self::$instance = new self($config);
+				self::$instance = new self($config, $validate);
 			}
 
 			return self::$instance;
@@ -68,7 +72,8 @@
 		 * RUN A QUERY.
 		 *
 		 * @param string $query
-		 * @param array $params
+		 * @param array<string, mixed> $params Associative array of query parameters.
+		 * @param array<string, int> $types Associative array of parameter types.
 		 * @return bool
 		 */
 		public function query(string $query, array $params = [], array $types = []): bool {
