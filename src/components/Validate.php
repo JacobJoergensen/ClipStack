@@ -313,4 +313,45 @@
 
 			return $is_valid;
 		}
+
+		/**
+		 * VALIDATES A SQL TABLE OR FIELD NAME.
+		 * ASSUMES VALID NAMES ARE ALPHANUMERIC WITH UNDERSCORES.
+		 *
+		 * @param string $name
+		 * @return bool
+		 */
+		public function isValidSqlName(string $name): bool {
+			if (!preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
+				$this -> errorHandler -> setError('sqlName', 'Invalid SQL name provided.');
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * VALIDATES A LIST OF SQL FIELD DEFINITIONS OR ALTERATIONS.
+		 * THIS IS A BASIC VALIDATION ASSUMING FIELDS ARE SEPARATED BY COMMAS.
+		 *
+		 * @param string $definitions
+		 * @return bool
+		 */
+		public function isValidSqlFieldDefinitions(string $definitions): bool {
+			$field_array = explode(',', $definitions);
+
+			foreach ($field_array as $field) {
+				$field = trim($field);
+
+				// SPLIT FIELD DEFINITION INTO NAME AND TYPE/CONSTRAINT.
+				$field_parts = explode(' ', $field, 2);
+				if (!$this -> isValidSqlName($field_parts[0])) {
+					return false;
+				}
+				// TODO: Further validations for type/constraints can be added here.
+			}
+
+			return true;
+		}
+	}
 	}
