@@ -86,15 +86,15 @@
 			switch ($extension) {
 				case 'jpeg':
 				case 'jpg':
-					$success = imagejpeg($new_image, $file_path, $quality); // fix this
+					$success = imagejpeg($new_image, $file_path, $quality);
 					break;
 
 				case 'png':
-					$success = imagepng($new_image, $file_path); // fix this
+					$success = imagepng($new_image, $file_path);
 					break;
 
 				case 'gif':
-					$success = imagegif($new_image, $file_path); // fix this
+					$success = imagegif($new_image, $file_path);
 					break;
 
 				default:
@@ -102,8 +102,8 @@
 					break;
 			}
 
-			imagedestroy($new_image); // fix this
-			imagedestroy($source); // fix this
+			imagedestroy($new_image);
+			imagedestroy($source);
 
 			return $success;
 		}
@@ -111,12 +111,12 @@
 		/**
 		 * RETRIEVE A LIST OF IMAGES FOR A GALLERY.
 		 *
-		 * @return array - A LIST OF IMAGE PATHS.
+		 * @return string[] - A LIST OF IMAGE PATHS.
 		 */
 		public function getGalleryImages(): array {
 			$images = glob($this -> upload_dir . '*.{jpg,jpeg,png,gif}', GLOB_BRACE);
 
-			return $images;
+			return $images !== false ? $images : [];
 		}
 
 		/**
@@ -137,14 +137,16 @@
 		 * FETCH METADATA OF AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
-		 * @return array|bool METADATA AS AN ARRAY OR FALSE ON FAILURE.
+		 * @return array|null METADATA AS AN ARRAY OR NULL ON FAILURE.
 		 */
 		public function getMetadata(string $file_path): ?array {
 			if (file_exists($file_path) && function_exists('exif_read_data')) {
-				return exif_read_data($file_path);
+				$metadata = exif_read_data($file_path);
+
+				return $metadata !== false ? $metadata : null;
 			}
 
-			return false;
+			return null;
 		}
 
 		/**
