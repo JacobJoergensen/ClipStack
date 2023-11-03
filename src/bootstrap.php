@@ -105,12 +105,9 @@
 	 * THESE HEADERS IN ALIGNMENT WITH EVOLVING SECURITY PRACTICES ENSURES THE APPLICATION REMAINS RESILIENT
 	 * AGAINST EMERGING THREATS.
 	 */
-	header("Content-Security-Policy: default-src 'self';");
-	header("X-Frame-Options: SAMEORIGIN");
 	header("X-XSS-Protection: 1; mode=block");
 	header("X-Content-Type-Options: nosniff");
 	header("Referrer-Policy: no-referrer-when-downgrade");
-	header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
 
 	/**
 	 * ENSURE ClipStack RUNS OVER A SECURE HTTPS CONNECTION.
