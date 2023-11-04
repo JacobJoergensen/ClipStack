@@ -1,5 +1,5 @@
 <?php
-	namespace MinehubsStudios\Backend;
+	namespace ClipStack\Component;
 
 	class StylesheetFile {
 		/**
