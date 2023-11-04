@@ -1,5 +1,5 @@
 <?php
-	namespace ClipStack\Component;
+	namespace MinehubsStudios\Backend;
 
 	class StylesheetFile {
 		/**
@@ -99,7 +99,7 @@
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE STYLESHEET.
 		 *
 		 * @example
-		 * $css->import('/path/to/style.css');
+		 * $css -> import('/path/to/style.css');
 		 */
 		public function import(string $path, ?string $integrity = null): void {
 			$this -> files[] = new StylesheetFile($path, $integrity);
@@ -111,7 +111,7 @@
 		 * @return string
 		 *
 		 * @example
-		 * echo $css->render();
+		 * echo $css -> render();
 		 */
 		public function render(): string {
 			$html = '';
@@ -147,7 +147,7 @@
 		 * @param bool $defer - INDICATES IF SCRIPT EXECUTION SHOULD BE DEFERRED.
 		 *
 		 * @example
-		 * $js->import('/path/to/script.js', null, true, false);
+		 * $js -> import('/path/to/script.js', null, true, false);
 		 */
 		public function import(string $path, ?string $integrity = null, bool $async = false, bool $defer = false): void {
 			$this -> files[] = new ScriptFile($path, $integrity, $async, $defer);
@@ -159,7 +159,7 @@
 		 * @return string
 		 *
 		 * @example
-		 * echo $js->render();
+		 * echo $js -> render();
 		 */
 		public function render(): string {
 			$html = '';
