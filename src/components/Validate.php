@@ -201,7 +201,7 @@
 		 *
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()), new ErrorHandler());
-		 * $filteredEmail = $validate -> filterEmail('test@example.com');  // 'test@example.com'
+		 * $filtered_email = $validate -> filterEmail('test@example.com');  // 'test@example.com'
 		 * $result = $validate -> filterEmail('test@example');  // false
 		 */
 		public function filterEmail(string $email): ?string {
@@ -275,7 +275,7 @@
 		 *
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()), new ErrorHandler());
-		 * $filteredURL = $validate -> filterURL('https://www.example.com');  // 'https://www.example.com'
+		 * $filtered_url = $validate -> filterURL('https://www.example.com');  // 'https://www.example.com'
 		 * $result = $validate -> filterURL('not a url');  // false
 		 */
 		public function filterURL(string $url): ?string {
