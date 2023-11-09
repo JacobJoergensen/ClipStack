@@ -29,9 +29,9 @@
 		 *
 		 * @param array<string, mixed> $config - CONFIGURATION DATA.
 		 * @return Config - THE CONFIG SINGLETON INSTANCE.
-		 * 
+		 *
 		 * @example
-		 * $configInstance = Config::getInstance($configArray);
+		 * $config_instance = Config::getInstance($config_array);
 		 */
 		public static function getInstance(array $config = []): Config {
 			if (self::$instance === null) {
@@ -43,20 +43,20 @@
 
 		/**
 		 * A COMBINED METHOD TO GET OR SET CONFIGURATIONS.
-		 * 
+		 *
 		 * If only key is provided, it acts as a getter.
 		 * If key and value are provided, it acts as a setter.
 		 *
 		 * @param string $key - THE KEY TO GET OR SET.
 		 * @param mixed|null $value - OPTIONAL VALUE TO SET.
 		 * @return mixed - THE CONFIGURATION VALUE (IF USED AS GETTER).
-		 * 
+		 *
 		 * @example
 		 * // AS A GETTER:
-		 * $appName = $configInstance->config('app.name');
-		 * 
+		 * $app_name = $configInstance -> config('app.name');
+		 *
 		 * // AS A SETTER:
-		 * $configInstance->config('app.name', 'NewAppName');
+		 * $config_instance -> config('app.name', 'NewAppName');
 		 */
 		public function config(string $key, $value = null) {
 			// IF $value IS NULL, WE ASSUME IT'S A GETTER.
@@ -73,14 +73,14 @@
 		 * @param string $key - THE KEY OF THE CONFIGURATION IN "DOT" NOTATION (E.G., 'APP.NAME').
 		 * @param mixed $default - A DEFAULT VALUE TO RETURN IF THE KEY DOESN'T EXIST.
 		 * @return mixed - THE CONFIGURATION VALUE.
-		 * 
+		 *
 		 * @example
-		 * $appName = $configInstance->get('app.name', 'DefaultAppName');
+		 * $app_name = $configInstance -> get('app.name', 'DefaultAppName');
 		 */
 		public function get(string $key, $default = null) {
 			$keys = explode('.', $key);
 			$temp = $this -> configurations;
-		
+
 			foreach ($keys as $k) {
 				if (!is_array($temp) || !isset($temp[$k])) {
 					// IF NO DEFAULT VALUE IS PROVIDED, THROW AN EXCEPTION.
@@ -99,12 +99,12 @@
 
 		/**
 		 * SET A CONFIGURATION VALUE USING "DOT" NOTATION.
-		 * 
+		 *
 		 * @param string $key - THE KEY TO SET.
 		 * @param mixed $value - THE VALUE TO SET.
-		 * 
+		 *
 		 * @example
-		 * $configInstance->set('app.version', '1.0.1');
+		 * $config_instance -> set('app.version', '1.0.1');
 		 */
 		public function set(string $key, $value): void {
 			$keys = explode('.', $key);
@@ -127,12 +127,12 @@
 
 		/**
 		 * CHECK IF A CONFIGURATION EXISTS.
-		 * 
+		 *
 		 * @param string $key - THE KEY TO CHECK.
 		 * @return bool - TRUE IF EXISTS, FALSE OTHERWISE.
-		 * 
+		 *
 		 * @example
-		 * if ($configInstance->has('app.version')) {
+		 * if ($config_instance -> has('app.version')) {
 		 *     echo "Version is set!";
 		 * }
 		 */
@@ -151,3 +151,4 @@
 			return true;
 		}
 	}
+
