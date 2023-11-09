@@ -17,17 +17,17 @@
 		private static ?Database $instance = null;
 
 		private PDO $pdo;
-		private ?PDOStatement $stmt = null;
+		private ?PDOStatement $statement = null;
 
 		private bool $is_connected = false;
 		private string $prefix = '';
 
 		private Config $config;
-		private Validate $validate; 
+		private Validate $validate;
 
 		/**
 		 * DATABASE CONSTRUCTOR.
-		 * 
+		 *
 		 * @param Config $config - THE CONFIGURATION INSTANCE.
 		 */
 		public function __construct(Config $config, Validate $validate) {
@@ -54,12 +54,12 @@
 
 		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE DATABASE CLASS.
-		 * 
+		 *
 		 * @param Config $config - THE CONFIGURATION INSTANCE.
 		 * @param Validate $validate - THE VALIDATION INSTANCE.
-		 * 
+		 *
 		 * @return Database - THE SINGLETON INSTANCE OF THE DATABASE CLASS.
-		 * 
+		 *
 		 * @example
 		 * $config = new Config();
 		 * $validate = new Validate();
@@ -77,19 +77,19 @@
 		 * RUN A QUERY.
 		 *
 		 * @param string $query
-		 * @param array<string, mixed> $params Associative array of query parameters.
-		 * @param array<string, int> $types Associative array of parameter types.
+		 * @param array<string, mixed> $params - Associative array of query parameters.
+		 * @param array<string, int> $types - Associative array of parameter types.
 		 * @return bool
 		 */
 		public function query(string $query, array $params = [], array $types = []): bool {
 			$this -> ensureConnected();
-			$this -> stmt = $this -> pdo -> prepare($query);
+			$this -> statement = $this -> pdo -> prepare($query);
 
 			foreach ($types as $param => $type) {
-				$this -> stmt -> bindParam($param, $params[$param], $type);
+				$this -> statement -> bindParam($param, $params[$param], $type);
 			}
 
-			return $this -> stmt -> execute($params);
+			return $this -> statement -> execute($params);
 		}
 
 
@@ -165,7 +165,7 @@
 
 			$sql = "INSERT INTO {$table} ({$fields}) VALUES ({$placeholders})";
 
-			return $this -> query($sql, $data);
+			return $this -> query($sql, $data) !== null;
 		}
 
 		/**
@@ -186,10 +186,10 @@
 
 			$data_params = array_combine(array_map(fn($k) => "data_{$k}", array_keys($data)), $data);
 			$where_params = array_combine(array_map(fn($k) => "where_{$k}", array_keys($where)), $where);
-		
+
 			$params = array_merge($data_params, $where_params);
 
-			return $this -> query($sql, $params);
+			return $this -> query($sql, $params) !== null;
 		}
 
 		/**
@@ -198,8 +198,8 @@
 		 * @return array<string, mixed>|null - ASSOCIATIVE ARRAY REPRESENTING THE FETCHED ROW.
 		 */
 		public function result(): ?array {
-			if ($this->stmt) {
-				$result = $this->stmt->fetch(PDO::FETCH_ASSOC);
+			if ($this -> statement) {
+				$result = $this -> statement -> fetch(PDO::FETCH_ASSOC);
 
 				if (is_array($result)) {
 					return $result;
@@ -212,11 +212,12 @@
 		/**
 		 * FETCH ALL ROWS.
 		 *
+		 * @param string[] $columns - OPTIONAL: AN ARRAY OF COLUMN NAMES TO FETCH. DEFAULT IS ['*'].
 		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS.
 		 */
-		public function results(): array {
-			if ($this -> stmt) {
-				return $this -> stmt -> fetchAll();
+		public function results(array $columns = ['*']): array {
+			if ($this -> statement) {
+				return $this -> statement -> fetchAll(PDO::FETCH_ASSOC);
 			}
 
 			return [];
@@ -228,8 +229,8 @@
 		 * @return int
 		 */
 		public function rowCount(): int {
-			if ($this -> stmt) {
-				return $this -> stmt -> rowCount();
+			if ($this -> statement) {
+				return $this -> statement -> rowCount();
 			}
 
 			return 0;
@@ -238,7 +239,7 @@
 
 		/**
 		 * BEGIN A DATABASE TRANSACTION.
-		 * 
+		 *
 		 * @return bool
 		 */
 		public function beginTransaction() {
@@ -247,7 +248,7 @@
 
 		/**
 		 * COMMIT A DATABASE TRANSACTION.
-		 * 
+		 *
 		 * @return bool
 		 */
 		public function commitTransaction() {
@@ -256,7 +257,7 @@
 
 		/**
 		 * ROLLBACK A DATABASE TRANSACTION.
-		 * 
+		 *
 		 * @return bool
 		 */
 		public function rollBackTransaction() {
@@ -305,6 +306,10 @@
 			$charset = $configurations['charset'] ?? 'utf8mb4';
 			$collation = $configurations['collation'] ?? 'utf8mb4_unicode_ci';
 
+			if (empty($driver) || empty($host) || empty($port) || empty($db) || empty($user) || empty($pass)) {
+				throw new \RuntimeException('Invalid database configuration.');
+			}
+
 			$dsn = "{$driver}:host={$host};port={$port};dbname={$db};charset={$charset}";
 
 			$options = [
@@ -322,9 +327,9 @@
 					$this -> pdo = new PDO($dsn, $user, $pass, $options);
 					$this -> pdo -> exec("SET NAMES '{$charset}' COLLATE '{$collation}'");
 					break;
-				} catch (PDOException $e) {
+				} catch (PDOException $exception) {
 					if ($attempt === $max_attempts - 1) {
-						throw new PDOException($e -> getMessage(), (int)$e -> getCode());
+						throw new PDOException($exception -> getMessage(), (int)$exception -> getCode());
 					}
 
 					$attempt++;
