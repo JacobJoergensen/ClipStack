@@ -3,7 +3,7 @@
 
 	use ClipStack\Backbone\Version;
 	use ClipStack\Backbone\Config;
-	
+
 	require 'backbone/config.php';
 	require 'backbone/version.php';
 
@@ -25,6 +25,7 @@
 
 	if (!in_array($environment, ['development', 'production'])) {
 		$env_string = var_export($environment, true);
+
 		throw new \RuntimeException("The specified environment setting '{$env_string}' is not recognized. Valid environments are 'development', 'production'.");
 	}
 
@@ -40,7 +41,7 @@
 	 */
 	if (!isset($_SESSION['previous_env']) || $_SESSION['previous_env'] !== $environment) {
 		$_SESSION['previous_env'] = $environment;
-		
+
 		// SET ERROR DISPLAY BASED ON THE NEW ENVIRONMENT.
 		if ($environment == 'production') {
 			ini_set('display_errors', '0');
@@ -96,14 +97,7 @@
 	}
 
 	/**
-	 * SETTING SECURITY HEADERS:
-	 *
-	 * SECURITY HEADERS PLAY A VITAL ROLE IN SAFEGUARDING WEB APPLICATIONS BY INSTRUCTING BROWSERS ON HOW TO
-	 * HANDLE CONTENT. PROPER CONFIGURATION CAN MITIGATE VARIOUS TYPES OF ATTACKS AND SECURITY VULNERABILITIES.
-	 * BY SETTING THESE HEADERS, WE ENHANCE THE APPLICATION'S DEFENSE MECHANISMS AGAINST THREATS LIKE 
-	 * CROSS-SITE SCRIPTING (XSS), CLICKJACKING, MIME TYPE SNIFFING, AND MORE. REGULARLY REVIEWING AND UPDATING
-	 * THESE HEADERS IN ALIGNMENT WITH EVOLVING SECURITY PRACTICES ENSURES THE APPLICATION REMAINS RESILIENT
-	 * AGAINST EMERGING THREATS.
+	 * SETTING SECURITY HEADERS.
 	 */
 	header("X-XSS-Protection: 1; mode=block");
 	header("X-Content-Type-Options: nosniff");
@@ -137,6 +131,7 @@
 
 		// CHECK IF THE CLASS USES THE NAMESPACE PREFIX.
 		$len = strlen($prefix);
+
 		if (strncmp($prefix, $class, $len) !== 0) {
 			// MOVE TO THE NEXT REGISTERED AUTOLOADER.
 			return;
