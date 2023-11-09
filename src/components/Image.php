@@ -12,7 +12,7 @@
 		 * @param int $height - THE DESIRED HEIGHT.
 		 * @param string $strategy - THE RESIZING STRATEGY.
 		 * @param int $quality - THE DESIRED QUALITY FOR JPEG IMAGES.
-		 * @return bool TRUE ON SUCCESS, FALSE OTHERWISE.
+		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function resize(string $file_path, int $width, int $height, string $strategy = 'aspectRatio', int $quality = 75): bool {
 			if (!file_exists($file_path)) {
@@ -44,6 +44,7 @@
 					break;
 
 				case 'aspectRatio':
+
 				default:
 					$aspect_ratio = $original_width / $original_height;
 
@@ -60,6 +61,7 @@
 
 			switch ($extension) {
 				case 'jpeg':
+
 				case 'jpg':
 					$source = imagecreatefromjpeg($file_path);
 					break;
@@ -71,7 +73,7 @@
 				case 'gif':
 					$source = imagecreatefromgif($file_path);
 					break;
-	
+
 				default:
 					// UNSUPPORTED FILE TYPE.
 					return false;
@@ -85,6 +87,7 @@
 
 			switch ($extension) {
 				case 'jpeg':
+
 				case 'jpg':
 					$success = imagejpeg($new_image, $file_path, $quality);
 					break;
@@ -123,7 +126,7 @@
 		 * DELETE AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
-		 * @return bool TRUE ON SUCCESS, FALSE OTHERWISE.
+		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function deleteImage(string $file_path): bool {
 			if (file_exists($file_path)) {
@@ -137,7 +140,7 @@
 		 * FETCH METADATA OF AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
-		 * @return array<string, mixed>|null METADATA AS AN ASSOCIATIVE ARRAY OR NULL ON FAILURE.
+		 * @return array<string, mixed>|null - METADATA AS AN ASSOCIATIVE ARRAY OR NULL ON FAILURE.
 		 */
 		public function getMetadata(string $file_path): ?array {
 			if (file_exists($file_path) && function_exists('exif_read_data')) {
@@ -154,7 +157,7 @@
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
 		 * @param string $watermark_path - THE PATH TO THE WATERMARK IMAGE.
-		 * @return bool TRUE ON SUCCESS, FALSE OTHERWISE.
+		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function addWatermark(string $file_path, string $watermark_path, int $opacity = 100): bool {
 			if (!file_exists($file_path) || !file_exists($watermark_path)) {
@@ -181,6 +184,7 @@
 
 			switch ($extension) {
 				case 'jpeg':
+
 				case 'jpg':
 					$image = imagecreatefromjpeg($file_path);
 					break;
@@ -199,6 +203,7 @@
 
 			switch ($watermark_extension) {
 				case 'jpeg':
+
 				case 'jpg':
 					$watermark = imagecreatefromjpeg($watermark_path);
 					break;
@@ -243,18 +248,19 @@
 
 			switch ($extension) {
 				case 'jpeg':
+
 				case 'jpg':
 					$success = imagejpeg($image, $file_path);
 					break;
-		
+
 				case 'png':
 					$success = imagepng($image, $file_path);
 					break;
-		
+
 				case 'gif':
 					$success = imagegif($image, $file_path);
 					break;
-		
+
 				default:
 					$success = false;
 					break;

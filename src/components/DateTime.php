@@ -51,9 +51,9 @@
 		 * @return string
 		 */
 		public function getCurrentDateTime(string $format = 'Y-m-d H:i:s'): string {
-			$dateTime = new \DateTime('now', $this -> timezone);
+			$date_time = new \DateTime('now', $this -> timezone);
 
-			return $dateTime -> format($format);
+			return $date_time -> format($format);
 		}
 
 		/**
@@ -63,9 +63,9 @@
 		 * @return string
 		 */
 		public function getCurrentTime(string $format = 'H:i:s'): string {
-			$dateTime = new \DateTime('now', $this -> timezone);
+			$date_time = new \DateTime('now', $this -> timezone);
 
-			return $dateTime -> format($format);
+			return $date_time -> format($format);
 		}
 
 		/**
@@ -75,9 +75,9 @@
 		 * @return string
 		 */
 		public function getCurrentDate(string $format = 'Y-m-d'): string {
-			$dateTime = new \DateTime('now', $this -> timezone);
+			$date_time = new \DateTime('now', $this -> timezone);
 
-			return $dateTime -> format($format);
+			return $date_time -> format($format);
 		}
 
 		/**
@@ -114,13 +114,13 @@
 		 * @return int|null - RETURNS A TIMESTAMP ON SUCCESS, NULL OTHERWISE.
 		 */
 		public function toTimestamp(string $time, ?int $now = null): ?int {
-			$dateTime = new \DateTime($time, $this -> timezone);
+			$date_time = new \DateTime($time, $this -> timezone);
 
 			if ($now) {
-				$dateTime -> setTimestamp($now);
+				$date_time -> setTimestamp($now);
 			}
 
-			return $dateTime -> getTimestamp();
+			return $date_time -> getTimestamp();
 		}
 
 		/**
@@ -130,9 +130,9 @@
 		 * @return bool
 		 */
 		public function isWeekend(string $date): bool {
-			$dateTime = new \DateTime($date, $this -> timezone);
+			$date_time = new \DateTime($date, $this -> timezone);
 
-			return in_array($dateTime -> format('N'), [6, 7]);
+			return in_array($date_time -> format('N'), [6, 7]);
 		}
 
 		/**
@@ -154,12 +154,15 @@
 				case 'days':
 					$result = $diff -> days;
 					break;
+
 				case 'hours':
 					$result = ($diff -> days * 24) + $diff -> h;
 					break;
+
 				case 'minutes':
 					$result = ((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i;
 					break;
+
 				case 'seconds':
 					$result = ((((($diff -> days * 24) + $diff -> h) * 60) + $diff -> i) * 60) + $diff -> s;
 					break;

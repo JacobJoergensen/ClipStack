@@ -3,16 +3,16 @@
 
 	class Version {
 		public const CURRENT_VERSION = '0.1.0';
-	
+
 		/**
 		 * CHECK IF THERE'S A NEW VERSION AVAILABLE.
-		 * 
+		 *
 		 * @return string|bool - RETURNS THE NEW VERSION IF AVAILABLE, OR FALSE IF THE CURRENT VERSION IS THE LATEST.
-		 * 
+		 *
 		 * @example
-		 * $newVersion = FrameworkVersion::isNewVersionAvailable();
-		 * if ($newVersion !== false) {
-		 *     echo "New version available: $newVersion";
+		 * $new_version = Version::isNewVersionAvailable();
+		 * if ($new_version !== false) {
+		 *     echo "New version available: $new_version";
 		 * } else {
 		 *     echo "You are using the latest version.";
 		 * }

@@ -15,10 +15,10 @@
 		 * GENERATE A NEW CSRF TOKEN AND STORE IT IN THE SESSION.
 		 *
 		 * @return string
-		 * 
+		 *
 		 * @example
 		 * $csrf = new CSRFToken();
-		 * $token = $csrf->generateCSRFToken();
+		 * $token = $csrf -> generateCSRFToken();
 		 * echo '<input type="hidden" name="_csrf_token" value="' . $token . '">';
 		 */
 		public function generateCSRFToken(): string {
@@ -33,6 +33,7 @@
 			];
 
 			$this -> session -> set(self::CSRF_TOKEN_KEY, $token_data);
+
 			return $token;
 		}
 
@@ -41,18 +42,18 @@
 		 *
 		 * @param string $token
 		 * @return bool
-		 * 
+		 *
 		 * @example
 		 * $csrf = new CSRFToken();
-		 * if (!$csrf->validateCSRFToken($_POST['_csrf_token'])) {
+		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
 		 *     die('CSRF token validation failed.');
 		 * }
 		 */
 		public function validateCSRFToken(string $token): bool {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
-			$this->clearExpiredTokens();
+			$this -> clearExpiredTokens();
 
-			$token_data = $this->session->get(self::CSRF_TOKEN_KEY);
+			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);
 
 			// CHECK IF $token_data IS AN ARRAY AND HAS THE NECESSARY KEYS.
 			if (is_array($token_data) 
@@ -62,6 +63,7 @@
 				&& time() <= $token_data['expires']
 			) {
 				$this -> session -> remove(self::CSRF_TOKEN_KEY);
+
 				return true;
 			}
 
@@ -78,7 +80,7 @@
 		 * 
 		 * @example
 		 * $csrf = new CSRFToken();
-		 * $csrf->clearExpiredTokens(); // THIS WILL CLEAR THE CSRF TOKEN IF IT'S EXPIRED.
+		 * $csrf -> clearExpiredTokens();  // THIS WILL CLEAR THE CSRF TOKEN IF IT'S EXPIRED.
 		 */
 		public function clearExpiredTokens(): void {
 			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);

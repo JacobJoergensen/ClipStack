@@ -2,7 +2,7 @@
 	namespace ClipStack\Component;
 
 	class ErrorHandler {
-		/** 
+		/**
 		 * @var array<string, string> - AN ASSOCIATIVE ARRAY TO HOLD ERRORS, INDEXED BY FIELD NAMES.
 		 */
 		private array $errors = [];
@@ -35,7 +35,6 @@
 		public function hasErrors(): bool {
 			return !empty($this -> errors);
 		}
-
 
 		/**
 		 * CLEAR ALL ERROR MESSAGES.
