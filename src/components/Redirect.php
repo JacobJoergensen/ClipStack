@@ -1,8 +1,8 @@
 <?php
 	namespace ClipStack\Component;
-
+	
 	use InvalidArgumentException;
-
+	
 	class Redirect {
 		/**
 		 * REDIRECT TO A GIVEN URL.
@@ -19,17 +19,17 @@
 			if ($url[0] !== '/' && filter_var($url, FILTER_VALIDATE_URL) === false) {
 				throw new InvalidArgumentException('Invalid URL provided.');
 			}
-
+	
 			if (headers_sent()) {
 				// IF HEADERS ARE SENT, USE JavaScript AS A FALLBACK (LESS PREFERRED).
-				echo "<script>window.location.href='{$url}';</script>";
+				echo "<script>window.location.href='$url';</script>";
 				exit;
 			}
-
+	
 			header('Location: ' . $url, true, $permanent ? 301 : 302);
 			exit;
 		}
-
+	
 		/**
 		 * REDIRECT BACK TO THE PREVIOUS URL OR A DEFAULT ONE.
 		 *
@@ -40,7 +40,7 @@
 			$url = $_SERVER['HTTP_REFERER'] ?? $default;
 			self::to($url);
 		}
-
+	
 		/**
 		 * REFRESH THE CURRENT PAGE.
 		 *
