@@ -1,7 +1,7 @@
 <?php
 	namespace ClipStack\Component;
 
-	use ClipStack\Component\backbone\Singleton;
+	use ClipStack\Component\Backbone\Singleton;
 
 	/**
 	 * @template-uses Singleton<Request>
