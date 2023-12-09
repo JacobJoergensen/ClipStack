@@ -26,7 +26,10 @@
 			'timezone' => 'UTC',
 
 			// DEFAULT DATE AND TIME FORMAT USED ACROSS THE APP
-			'date_format' => 'Y-m-d H:i:s'
+			'date_format' => 'Y-m-d H:i:s',
+
+			// DEFAULT HOUR FORMAT USED ACROSS THE APP
+			'hour_format' => 'H:i:s'
 		],
 
 		'database' => [
