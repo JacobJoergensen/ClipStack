@@ -11,6 +11,7 @@
 		private ?\DateTimeZone $timezone = null;
 
 		private string $date_format;
+		private string $hour_format;
 
 		/**
 		 * @throws Exception
