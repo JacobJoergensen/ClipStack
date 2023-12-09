@@ -3,14 +3,14 @@
 
 	class StylesheetFile {
 		/**
-		 * STYLESHEETFILE CONSTRUCTOR.
+		 * STYLESHEET CONSTRUCTOR.
 		 *
 		 * @param string $path - PATH TO THE STYLESHEET FILE.
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE STYLESHEET.
 		 */
 		public function __construct(
-			private string $path,
-			private ?string $integrity = null
+			private readonly string $path,
+			private readonly ?string $integrity = null
 		) {}
 
 		/**
@@ -34,7 +34,7 @@
 
 	class ScriptFile {
 		/**
-		 * SCRIPTFILE CONSTRUCTOR.
+		 * SCRIPTABLE CONSTRUCTOR.
 		 *
 		 * @param string $path - PATH TO THE SCRIPT FILE.
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE SCRIPT.
@@ -42,10 +42,10 @@
 		 * @param bool $defer - INDICATES IF SCRIPT EXECUTION SHOULD BE DEFERRED.
 		 */
 		public function __construct(
-			private string $path,
-			private ?string $integrity = null,
-			private bool $async = false,
-			private bool $defer = false
+			private readonly string $path,
+			private readonly ?string $integrity = null,
+			private readonly bool $async = false,
+			private readonly bool $defer = false
 		) {}
 
 		/**
