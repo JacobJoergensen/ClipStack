@@ -4,11 +4,14 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use AllowDynamicProperties;
+	use DateTime;
+	use DateTimeZone;
 	use Exception;
+	use RuntimeException;
 
 	#[AllowDynamicProperties] class DateTimeUtility {
 		private Config $config;
-		private ?\DateTimeZone $timezone = null;
+		private ?DateTimeZone $timezone = null;
 
 		private string $date_format;
 		private string $hour_format;
@@ -22,16 +25,16 @@
 			$configurations = $this -> config -> get('dateTime');
 
 			if (!is_array($configurations)) {
-				throw new \RuntimeException('DateTime configuration is not valid.');
+				throw new RuntimeException('DateTime configuration is not valid.');
 			}
 
 			$timeDate_timezone = $configurations['timezone'] ?? '';
-			
+
 			$this -> date_format = $configurations['date_format'] ?? 'Y-m-d H:i:s';
 			$this -> hour_format = $configurations['hour_format'] ?? 'H:i:s';
 
 			if (empty($timeDate_timezone)) {
-				throw new \RuntimeException('Invalid dateTime configuration.');
+				throw new RuntimeException('Invalid dateTime configuration.');
 			}
 
 			if ($timezone === null) {
@@ -40,10 +43,10 @@
 
 			if ($timezone !== null) {
 				// CHECK IF THE TIMEZONE IS VALID BEFORE SETTING.
-				if (in_array($timezone, \DateTimeZone::listIdentifiers(), true)) {
-					$this -> timezone = new \DateTimeZone($timezone);
+				if (in_array($timezone, DateTimeZone::listIdentifiers(), true)) {
+					$this -> timezone = new DateTimeZone($timezone);
 				} else {
-					throw new \RuntimeException('Invalid timezone provided.');
+					throw new RuntimeException('Invalid timezone provided.');
 				}
 			}
 		}
@@ -58,7 +61,7 @@
 		 * @throws Exception
 		 */
 		public function setTimezone(string $timezone): void {
-			$this -> timezone = new \DateTimeZone($timezone);
+			$this -> timezone = new DateTimeZone($timezone);
 		}
 
 		/**
@@ -81,7 +84,7 @@
 		 */
 		public function getCurrentDateTime(string $format = ''): string {
 			$format = $format ?: $this -> date_format;
-			return (new \DateTime('now', $this -> timezone)) -> format($format);
+			return (new DateTime('now', $this -> timezone)) -> format($format);
 		}
 
 		/**
@@ -95,7 +98,7 @@
 		 */
 		public function getCurrentTime(string $format = ''): string {
 			$format = $format ?: $this -> hour_format;
-			return (new \DateTime('now', $this -> timezone)) -> format($format);
+			return (new DateTime('now', $this -> timezone)) -> format($format);
 		}
 
 		/**
@@ -109,7 +112,7 @@
 		 */
 		public function getCurrentDate(string $format = ''): string {
 			$format = $format ?: $this -> date_format;
-			return (new \DateTime('now', $this -> timezone)) -> format($format);
+			return (new DateTime('now', $this -> timezone)) -> format($format);
 		}
 
 		/**
@@ -124,7 +127,7 @@
 		 */
 		public function formatDateTime(string $date_time, string $format = ''): string {
 			$format = $format ?: $this -> date_format;
-			return (new \DateTime($date_time, $this -> timezone)) -> format($format);
+			return (new DateTime($date_time, $this -> timezone)) -> format($format);
 		}
 
 		/**
@@ -138,7 +141,7 @@
 		 * @throws Exception
 		 */
 		public function formatDate(string $format, ?int $timestamp = null): string {
-			$date_time = $timestamp ? (new \DateTime()) -> setTimestamp($timestamp) : new \DateTime('now', $this -> timezone);
+			$date_time = $timestamp ? (new DateTime()) -> setTimestamp($timestamp) : new DateTime('now', $this -> timezone);
 
 			return $date_time -> format($format);
 		}
@@ -154,7 +157,7 @@
 		 * @throws Exception
 		 */
 		public function toTimestamp(string $time, ?int $now = null): ?int {
-			$date_time = new \DateTime($time, $this -> timezone);
+			$date_time = new DateTime($time, $this -> timezone);
 
 			if ($now) {
 				$date_time -> setTimestamp($now);
@@ -173,7 +176,7 @@
 		 * @throws Exception
 		 */
 		public function isWeekend(string $date): bool {
-			$date_time = new \DateTime($date, $this -> timezone);
+			$date_time = new DateTime($date, $this -> timezone);
 
 			return in_array((int)$date_time -> format('N'), [6, 7], true);
 		}
@@ -190,8 +193,8 @@
 		 * @throws Exception
 		 */
 		public function diffBetweenDates(string $date_from, string $date_to, string $unit = 'days'): ?int {
-			$from = new \DateTime($date_from, $this -> timezone);
-			$to = new \DateTime($date_to, $this -> timezone);
+			$from = new DateTime($date_from, $this -> timezone);
+			$to = new DateTime($date_to, $this -> timezone);
 			$diff = $from -> diff($to);
 
 			$result = null;
@@ -217,3 +220,4 @@
 			return is_int($result) ? $result : null;
 		}
 	}
+
