@@ -42,7 +42,7 @@
 				$this -> prefix = '';
 			}
 
-			self::c();
+			$this -> connect();
 		}
 
 		/**
