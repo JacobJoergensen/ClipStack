@@ -65,9 +65,21 @@
 		 * @return bool
 		 */
 		public function hasExpired(): bool {
+			$configurations = $this -> config -> get('session');
+
+			if (!is_array($configurations)) {
+				throw new \RuntimeException('Session configuration is not valid.');
+			}
+
+			$session_lifetime = $configurations['session_lifetime'] ?? '';
+
+			if (empty($session_lifetime)) {
+				throw new \RuntimeException('Invalid session configuration.');
+			}
+			
 			$last_activity = $this -> get('_last_activity', time());
 
-			if ((time() - $last_activity) > self::SESSION_LIFETIME) {
+			if ((time() - $last_activity) > $session_lifetime) {
 				return true;
 			}
 
@@ -85,7 +97,7 @@
 		 * @example
 		 * $session -> set('user', ['id' => 1, 'name' => 'John Doe']);
 		 */
-		public function set(string $key, $value): void {
+		public function set(string $key, mixed $value): void {
 			$_SESSION[$this -> prefixKey($key)] = $value;
 		}
 
