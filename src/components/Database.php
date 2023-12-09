@@ -89,6 +89,7 @@
 		 * GET THE PREFIXED TABLE NAME.
 		 *
 		 * @param string $table_name
+   		 *
 		 * @return string
 		 */
 		private function prefixedTableName(string $table_name): string {
@@ -162,6 +163,7 @@
 		 * @param string $query
 		 * @param array<string, mixed> $params - Associative array of query parameters.
 		 * @param array<string, int> $types - Associative array of parameter types.
+   		 *
 		 * @return bool
 		 */
 		public function query(string $query, array $params = [], array $types = []): bool {
@@ -181,6 +183,7 @@
 		 *
 		 * @param string $table_name
 		 * @param string $fields
+   		 *
 		 * @return bool
 		 */
 		public function createTable(string $table_name, string $fields): bool {
@@ -204,6 +207,7 @@
 		 *
 		 * @param string $table_name
 		 * @param string $alterations
+   		 *
 		 * @return bool
 		 */
 		public function alterTable(string $table_name, string $alterations): bool {
@@ -226,6 +230,7 @@
 		 *
 		 * @param string $query
 		 * @param array<string, mixed> $params
+   		 *
 		 * @return bool
 		 */
 		public function exists(string $query, array $params = []): bool {
@@ -238,6 +243,7 @@
 		 *
 		 * @param string $table
 		 * @param array<string, mixed> $data
+   		 *
 		 * @return bool
 		 */
 		public function insert(string $table, array $data): bool {
@@ -257,6 +263,7 @@
 		 * @param string $table
 		 * @param array<string, mixed> $data
 		 * @param array<string, mixed> $where
+   		 *
 		 * @return bool
 		 */
 		public function update(string $table, array $data, array $where): bool {
@@ -296,6 +303,7 @@
 		 * FETCH ALL ROWS.
 		 *
 		 * @param string[] $columns - OPTIONAL: AN ARRAY OF COLUMN NAMES TO FETCH. DEFAULT IS ['*'].
+   		 *
 		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS.
 		 */
 		public function results(array $columns = ['*']): array {
