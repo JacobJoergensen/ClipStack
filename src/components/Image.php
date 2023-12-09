@@ -12,6 +12,7 @@
 		 * @param int $height - THE DESIRED HEIGHT.
 		 * @param string $strategy - THE RESIZING STRATEGY.
 		 * @param int $quality - THE DESIRED QUALITY FOR JPEG IMAGES.
+		 *
 		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function resize(string $file_path, int $width, int $height, string $strategy = 'aspectRatio', int $quality = 75): bool {
@@ -32,7 +33,7 @@
 				return false;
 			}
 
-			list($original_width, $original_height) = $image_size;
+			[$original_width, $original_height] = $image_size;
 
 			switch ($strategy) {
 				case 'width':
@@ -85,25 +86,12 @@
 
 			imagecopyresampled($new_image, $source, 0, 0, 0, 0, (int)$width, (int)$height, $original_width, $original_height);
 
-			switch ($extension) {
-				case 'jpeg':
-
-				case 'jpg':
-					$success = imagejpeg($new_image, $file_path, $quality);
-					break;
-
-				case 'png':
-					$success = imagepng($new_image, $file_path);
-					break;
-
-				case 'gif':
-					$success = imagegif($new_image, $file_path);
-					break;
-
-				default:
-					$success = false;
-					break;
-			}
+			$success = match ($extension) {
+				'jpeg', 'jpg' => imagejpeg($new_image, $file_path, $quality),
+				'png' => imagepng($new_image, $file_path),
+				'gif' => imagegif($new_image, $file_path),
+				default => false,
+			};
 
 			imagedestroy($new_image);
 			imagedestroy($source);
@@ -126,6 +114,7 @@
 		 * DELETE AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
+		 *
 		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function deleteImage(string $file_path): bool {
@@ -140,6 +129,7 @@
 		 * FETCH METADATA OF AN IMAGE.
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
+		 *
 		 * @return array<string, mixed>|null - METADATA AS AN ASSOCIATIVE ARRAY OR NULL ON FAILURE.
 		 */
 		public function getMetadata(string $file_path): ?array {
@@ -157,6 +147,7 @@
 		 *
 		 * @param string $file_path - THE PATH TO THE IMAGE.
 		 * @param string $watermark_path - THE PATH TO THE WATERMARK IMAGE.
+		 *
 		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE.
 		 */
 		public function addWatermark(string $file_path, string $watermark_path, int $opacity = 100): bool {
@@ -235,9 +226,9 @@
 			$dest_y = imagesy($image) - $watermark_height - 5;
 
 			// IF THE WATERMARK IS A PNG, ADJUST THE OPACITY.
-			if ($watermark_extension == 'png' && $opacity < 100) {
+			if ($watermark_extension === 'png' && $opacity < 100) {
 				// CONVERT THE PERCENTAGE TO 0-127.
-				$opacity = $opacity * 1.27;
+				$opacity *= 1.27;
 
 				imagealphablending($watermark, false);
 				imagesavealpha($watermark, true);
@@ -246,25 +237,12 @@
 
 			imagecopy($image, $watermark, $dest_x, $dest_y, 0, 0, $watermark_width, $watermark_height);
 
-			switch ($extension) {
-				case 'jpeg':
-
-				case 'jpg':
-					$success = imagejpeg($image, $file_path);
-					break;
-
-				case 'png':
-					$success = imagepng($image, $file_path);
-					break;
-
-				case 'gif':
-					$success = imagegif($image, $file_path);
-					break;
-
-				default:
-					$success = false;
-					break;
-			}
+			$success = match ($extension) {
+				'jpeg', 'jpg' => imagejpeg($image, $file_path),
+				'png' => imagepng($image, $file_path),
+				'gif' => imagegif($image, $file_path),
+				default => false,
+			};
 
 			imagedestroy($image);
 			imagedestroy($watermark);
