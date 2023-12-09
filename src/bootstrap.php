@@ -1,11 +1,11 @@
 <?php
 	namespace ClipStack\Bootstrap;
 
-	use ClipStack\Backbone\Version;
-	use ClipStack\Backbone\Config;
+	use ClipStack\Component\Version;
+	use ClipStack\Component\Config;
 
-	require 'backbone/config.php';
-	require 'backbone/version.php';
+	require 'components/backbone/config.php';
+	require 'components/backbone/version.php';
 
 	/**
 	 * LOAD AND VALIDATE THE CONFIGURATION FILE FOR ClipStack.
