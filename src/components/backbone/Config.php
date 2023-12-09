@@ -12,7 +12,7 @@
 		/**
 		 * @var array<string, mixed> - HOLDS THE LOADED CONFIGURATIONS.
 		 */
-		private $configurations;
+		private array $configurations;
 
 		/**
 		 * CONFIG CONSTRUCTOR. PRIVATE TO PREVENT MULTIPLE INSTANCES.
