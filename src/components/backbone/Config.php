@@ -7,7 +7,7 @@
 		/**
 		 * @var Config|null - HOLDS THE SINGLETON INSTANCE OF THE CONFIG CLASS.
 		 */
-		private static $instance = null;
+		private static ?Config $instance = null;
 
 		/**
 		 * @var array<string, mixed> - HOLDS THE LOADED CONFIGURATIONS.
@@ -58,13 +58,15 @@
 		 * // AS A SETTER:
 		 * $config_instance -> config('app.name', 'NewAppName');
 		 */
-		public function config(string $key, $value = null) {
+		public function config(string $key, mixed $value = null): mixed {
 			// IF $value IS NULL, WE ASSUME IT'S A GETTER.
 			if ($value === null) {
 				return $this -> get($key);
-			} else {
-				$this -> set($key, $value);
 			}
+
+			$this -> set($key, $value);
+
+			return $value;
 		}
 
 		/**
