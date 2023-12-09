@@ -53,10 +53,10 @@
 	/**
 	 * VALIDATE THE MAINTENANCE MODE.
 	 */
-	if ($config_instance -> get('maintenance_mode') === true) {
+	if ($config_instance -> get('app.maintenance_mode') === true) {
 		$secret_token = filter_input(INPUT_GET, 'secret_token');
 
-		if ($secret_token !== $config_instance -> get('maintenance_token')) {
+		if ($secret_token !== $config_instance -> get('app.maintenance_token')) {
 			header('HTTP/1.1 503 Service Unavailable');
 			echo file_get_contents('pages/maintenance.html');
 			exit;
