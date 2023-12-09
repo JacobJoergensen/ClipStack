@@ -88,7 +88,7 @@
 
 		'session' => [
 			// NAME FOR THE SESSION COOKIE
-			'session_name' => 'clipstack_sess',
+			'session_name' => 'clipstack_',
 			
 			// SESSION LIFETIME IN MINUTES
 			'lifetime' => '120',
