@@ -1,16 +1,21 @@
 <?php
 	namespace ClipStack\Component;
 
+	use ClipStack\Component\Backbone\Config;
+
 	class Session {
+		private Config $config;
+
 		private Request $request;
 
-		private const SESSION_PREFIX = 'clipstack_';
-		private const SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
+		private const string SESSION_PREFIX = 'clipstack_';
+		private const int SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
 
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
 		 */
-		public function __construct(Request $request) {
+		public function __construct(Config $config, Request $request) {
+			$this -> config = $config;
 			$this -> request = $request;
 			$this -> initSessionConfigurations();
 			$this -> ensureSessionStarted();
@@ -20,15 +25,30 @@
 		 * SET SESSION CONFIGURATIONS FOR BETTER SECURITY.
 		 */
 		private function initSessionConfigurations(): void {
-			session_name('clipstack_sess');
+			$configurations = $this -> config -> get('session');
+
+			if (!is_array($configurations)) {
+				throw new \RuntimeException('Session configuration is not valid.');
+			}
+
+			$session_name = $configurations['session_name'] ?? '';
+			$session_lifetime = $configurations['lifetime'] ?? '';
+			$cookie_secure = $configurations['cookie_secure'] ?? '';
+			$cookie_http_only = $configurations['cookie_http_only'] ?? '';
+
+			if (empty($session_name) || empty($session_lifetime) || empty($cookie_secure) || empty($cookie_http_only)) {
+				throw new \RuntimeException('Invalid session configuration.');
+			}
+
+			session_name($session_name);
 
 			ini_set('session.use_cookies', '1');
 			ini_set('session.use_only_cookies', '1');
-			ini_set('session.cookie_httponly', '1');
-			ini_set('session.gc_maxlifetime', self::SESSION_LIFETIME);
+			ini_set('session.cookie_httponly', $cookie_http_only);
+			ini_set('session.gc_maxlifetime', $session_lifetime);
 
 			if ($this -> request -> isHttps()) {
-				ini_set('session.cookie_secure', '1');
+				ini_set('session.cookie_secure', $cookie_secure);
 			}
 		}
 
@@ -64,6 +84,7 @@
 		 *
 		 * @param string $key
 		 * @param mixed $value
+		 *
 		 * @example
 		 * $session -> set('user', ['id' => 1, 'name' => 'John Doe']);
 		 */
@@ -75,12 +96,14 @@
 		 * GET A SESSION VARIABLE. IF NOT FOUND, RETURN THE DEFAULT VALUE.
 		 *
 		 * @param string $key
-		 * @param mixed $default
+		 * @param mixed|null $default
+		 *
 		 * @return mixed
+		 *
 		 * @example
 		 * $user = $session -> get('user');
 		 */
-		public function get(string $key, $default = null) {
+		public function get(string $key, mixed $default = null): mixed {
 			return $_SESSION[$this -> prefixKey($key)] ?? $default;
 		}
 
@@ -88,7 +111,9 @@
 		 * CHECK IF A SESSION VARIABLE EXISTS.
 		 *
 		 * @param string $key
+		 *
 		 * @return bool
+		 *
 		 * @example
 		 * if($session -> has('user')) {
 		 *     // do something
@@ -102,6 +127,7 @@
 		 * REMOVE A SESSION VARIABLE.
 		 *
 		 * @param string $key
+		 *
 		 * @example
 		 * $session -> remove('user');
 		 */
@@ -134,6 +160,7 @@
 		 * REGENERATE THE SESSION ID TO PREVENT SESSION FIXATION ATTACKS.
 		 *
 		 * @param bool $delete_old_session
+		 *
 		 * @example
 		 * $session -> regenerate();
 		 */
@@ -144,7 +171,9 @@
 		/**
 		 * FLASH A MESSAGE FOR ONE-TIME DISPLAY (E.G., FOR FORM SUBMISSIONS).
 		 *
+		 * @param string $key
 		 * @param string $message
+		 *
 		 * @example
 		 * $session -> flash('success', 'Data saved successfully.');
 		 */
@@ -156,7 +185,9 @@
 		 * RETRIEVE A FLASHED MESSAGE. THIS ALSO CLEARS THE MESSAGE.
 		 *
 		 * @param string $key
+		 *
 		 * @return string|null
+		 *
 		 * @example
 		 * $message = $session -> getFlash('success');
 		 */
