@@ -1,8 +1,8 @@
 <?php
 	namespace ClipStack\Bootstrap;
 
-	use ClipStack\Component\Version;
-	use ClipStack\Component\Config;
+	use ClipStack\Component\Backbone\Version;
+	use ClipStack\Component\Backbone\Config;
 
 	require 'components/backbone/config.php';
 	require 'components/backbone/version.php';
