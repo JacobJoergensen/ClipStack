@@ -87,7 +87,7 @@
 		/**
 		 * VERIFY IF THE REQUIRED PHP EXTENSIONS FOR ClipStack ARE LOADED.
 		 */
-		$required_extensions = ['pdo', 'mbstring', 'json', 'curl'];
+		$required_extensions = ['pdo', 'mbstring', 'json', 'curl', 'ctype', 'gd'];
 
 		foreach ($required_extensions as $extension) {
 			if (!extension_loaded($extension)) {
