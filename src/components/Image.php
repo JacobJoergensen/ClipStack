@@ -89,8 +89,7 @@
 			$success = match ((string) strtolower($extension)) {
 				'jpeg', 'jpg' => imagejpeg($new_image, $file_path, $quality),
 				'png' => imagepng($new_image, $file_path),
-				'gif' => imagegif($new_image, $file_path),
-				default => false,
+				'gif' => imagegif($new_image, $file_path)
 			};
 
 			imagedestroy($new_image);
@@ -240,8 +239,7 @@
 			$success = match ($extension) {
 				'jpeg', 'jpg' => imagejpeg($image, $file_path),
 				'png' => imagepng($image, $file_path),
-				'gif' => imagegif($image, $file_path),
-				default => false,
+				'gif' => imagegif($image, $file_path)
 			};
 
 			imagedestroy($image);
