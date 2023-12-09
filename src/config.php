@@ -87,11 +87,11 @@
 		],
 
 		'session' => [
+			// NAME FOR THE SESSION COOKIE
+			'session_name' => 'myapp_session',
+			
 			// SESSION LIFETIME IN MINUTES
 			'lifetime' => '120',
-
-			// NAME FOR THE SESSION COOKIE
-			'cookie_name' => 'myapp_session',
 
 			// WHETHER THE COOKIE SHOULD BE SET ONLY OVER A SECURE HTTPS CONNECTION
 			'cookie_secure' => false,
