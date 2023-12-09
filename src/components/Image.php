@@ -86,7 +86,7 @@
 
 			imagecopyresampled($new_image, $source, 0, 0, 0, 0, (int)$width, (int)$height, $original_width, $original_height);
 
-			$success = match ($extension) {
+			$success = match (strtolower($extension)) {
 				'jpeg', 'jpg' => imagejpeg($new_image, $file_path, $quality),
 				'png' => imagepng($new_image, $file_path),
 				'gif' => imagegif($new_image, $file_path),
