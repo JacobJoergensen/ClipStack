@@ -1,8 +1,9 @@
 <?php
 	namespace ClipStack\Component;
 
-	use AllowDynamicProperties;
 	use ClipStack\Component\Backbone\Config;
+
+	use AllowDynamicProperties;
 	use Exception;
 
 	#[AllowDynamicProperties] class DateTimeUtility {
