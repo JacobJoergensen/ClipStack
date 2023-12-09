@@ -8,9 +8,6 @@
 
 		private Request $request;
 
-		private const string SESSION_PREFIX = 'clipstack_';
-		private const int SESSION_LIFETIME = 3600; // 1 HOUR - TODO ADD THIS TO CONFIG AS A OPTION
-
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
 		 */
@@ -202,6 +199,18 @@
 		 * PREFIXING SESSION KEYS WITH THE FRAMEWORK'S PREFIX.
 		 */
 		private function prefixKey(string $key): string {
-			return self::SESSION_PREFIX . $key;
+			$configurations = $this -> config -> get('session');
+
+			if (!is_array($configurations)) {
+				throw new \RuntimeException('Session configuration is not valid.');
+			}
+
+			$session_prefix = $configurations['session_prefix'] ?? '';
+
+			if (empty($session_prefix)) {
+				throw new \RuntimeException('Invalid session configuration.');
+			}
+
+			return $session_prefix . $key;
 		}
 	}
