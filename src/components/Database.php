@@ -5,8 +5,8 @@
 	use PDOException;
 	use PDOStatement;
 
-	use ClipStack\Component\backbone\Singleton;
-	use ClipStack\Component\backbone\Config;
+	use ClipStack\Component\Backbone\Singleton;
+	use ClipStack\Component\Backbone\Config;
 
 	class Database {
 		use Singleton;
