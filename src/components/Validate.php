@@ -1,15 +1,17 @@
 <?php
 	namespace ClipStack\Component;
+	
+	use Exception;
 
 	class Validate {
 		private DateTimeUtility $date_time_utility;
 		private ErrorHandler $error_handler;
-
+	
 		public function __construct(DateTimeUtility $date_time_utility, ErrorHandler $error_handler) {
 			$this -> date_time_utility = $date_time_utility;
 			$this -> error_handler = $error_handler;
 		}
-
+	
 		/**
 		 * SANITIZE A STRING TO PREVENT XSS ATTACKS.
 		 *
@@ -24,7 +26,7 @@
 		public function sanitizeString(string $data): string {
 			return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
 		}
-
+	
 		/**
 		 * RECURSIVELY SANITIZE AN ARRAY.
 		 *
@@ -43,10 +45,10 @@
 					$data[$key] = $this -> sanitizeString($value);
 				}
 			}
-
+	
 			return $data;
 		}
-
+	
 		/**
 		 * CHECK IF A STRING IS EMPTY OR CONTAINS ONLY WHITESPACE.
 		 *
@@ -61,14 +63,14 @@
 		 */
 		public function isEmpty(string $string): bool {
 			$is_empty = trim($string) === '';
-
+	
 			if ($is_empty) {
 				$this -> error_handler -> setError('string', 'The string is empty or contains only whitespace.');
 			}
-
+	
 			return $is_empty;
 		}
-
+	
 		/**
 		 * CHECK IF THE GIVEN INPUT IS A NUMBER.
 		 *
@@ -84,14 +86,14 @@
 		 */
 		public function isNumeric(mixed $data): bool {
 			$is_numeric = is_numeric($data);
-
+	
 			if (!$is_numeric) {
 				$this -> error_handler -> setError('data', 'The input is not numeric.');
 			}
-
+	
 			return $is_numeric;
 		}
-
+	
 		/**
 		 * CHECK IF THE GIVEN INPUT STRING CONSISTS OF ONLY ALPHABETIC CHARACTERS.
 		 *
@@ -107,13 +109,13 @@
 		public function isAlpha(string $data): bool {
 			if (!ctype_alpha($data)) {
 				$this -> error_handler -> setError('alpha', 'Input contains non-alphabetic characters.');
-
+	
 				return false;
 			}
-
+	
 			return true;
 		}
-
+	
 		/**
 		 * CHECK IF THE GIVEN INPUT STRING CONSISTS OF ONLY ALPHABETIC CHARACTERS AND/OR NUMBERS.
 		 *
@@ -129,13 +131,13 @@
 		public function isAlphaNumeric(string $data): bool {
 			if (!ctype_alnum($data)) {
 				$this -> error_handler -> setError('alphaNumeric', 'Input contains characters other than alphabets and numbers.');
-
+	
 				return false;
 			}
-
+	
 			return true;
 		}
-
+	
 		/**
 		 * VALIDATES IF THE INPUT STRING IS A VALID DATE.
 		 *
@@ -153,21 +155,21 @@
 		public function isDate(string $date, string $format = 'Y-m-d'): bool {
 			try {
 				$date_time = $this -> date_time_utility -> formatDateTime($date, $format);
-
+	
 				if ($date_time !== $date) {
 					$this -> error_handler -> setError('date', "Date format mismatch. Expected format: $format");
-
+	
 					return false;
 				}
-
+	
 				return true;
-			} catch (\Exception $e) {
+			} catch (Exception) {
 				$this -> error_handler -> setError('date', 'Invalid date provided.');
-
+	
 				return false;
 			}
 		}
-
+	
 		/**
 		 * CONSOLIDATED EMAIL VALIDATION.
 		 *
@@ -178,7 +180,7 @@
 		private function performEmailValidation(string $email): string|false {
 			return filter_var($email, FILTER_VALIDATE_EMAIL);
 		}
-
+	
 		/**
 		 * VALIDATE AN EMAIL ADDRESS.
 		 *
@@ -193,14 +195,14 @@
 		 */
 		public function isEmail(string $email): bool {
 			$is_valid = $this -> performEmailValidation($email) !== false;
-
+	
 			if (!$is_valid) {
 				$this -> error_handler -> setError('email', 'Invalid email address provided.');
 			}
-
+	
 			return $is_valid;
 		}
-
+	
 		/**
 		 * VALIDATE AND FILTER AN EMAIL ADDRESS.
 		 *
@@ -215,16 +217,16 @@
 		 */
 		public function filterEmail(string $email): ?string {
 			$validated_email = $this -> performEmailValidation($email);
-
+	
 			if ($validated_email === false) {
 				$this -> error_handler -> setError('email', 'Invalid email address provided.');
-
+	
 				return null;
 			}
-
+	
 			return $validated_email;
 		}
-
+	
 		/**
 		 * VALIDATE A PHONE NUMBER.
 		 *
@@ -239,14 +241,14 @@
 		public function isPhoneNumber(string $phone): bool {
 			$pattern = "/^(\+?\d{1,4})?\s?-?\d{10,11}$/";
 			$is_valid = preg_match($pattern, $phone) === 1;
-
+	
 			if (!$is_valid) {
 				$this -> error_handler -> setError('phone', 'Invalid phone number format.');
 			}
-
+	
 			return $is_valid;
 		}
-
+	
 		/**
 		 * CONSOLIDATED URL VALIDATION.
 		 *
@@ -257,7 +259,7 @@
 		private function performURLValidation(string $url): string|false {
 			return filter_var($url, FILTER_VALIDATE_URL);
 		}
-
+	
 		/**
 		 * VALIDATE A URL.
 		 *
@@ -270,14 +272,14 @@
 		 */
 		public function isURL(string $url): bool {
 			$is_valid = $this -> performURLValidation($url) !== false;
-
+	
 			if (!$is_valid) {
 				$this -> error_handler -> setError('url', 'Invalid URL format.');
 			}
-
+	
 			return $is_valid;
 		}
-
+	
 		/**
 		 * VALIDATE AND FILTER A URL.
 		 *
@@ -292,16 +294,16 @@
 		 */
 		public function filterURL(string $url): ?string {
 			$validated_url = $this -> performURLValidation($url);
-
+	
 			if ($validated_url === false) {
 				$this -> error_handler -> setError('url', 'Invalid URL format.');
-
+	
 				return null;
 			}
-
+	
 			return $validated_url;
 		}
-
+	
 		/**
 		 * CHECK IF THE STRING'S LENGTH IS WITHIN A SPECIFIED RANGE.
 		 *
@@ -318,14 +320,14 @@
 		public function stringLength(string $data, int $min = 0, int $max = PHP_INT_MAX): bool {
 			$length = mb_strlen($data);
 			$is_valid = $length >= $min && $length <= $max;
-
+	
 			if (!$is_valid) {
 				$this -> error_handler -> setError('data', "The string's length is out of the specified range.");
 			}
-
+	
 			return $is_valid;
 		}
-
+	
 		/**
 		 * VALIDATES A SQL TABLE OR FIELD NAME.
 		 * ASSUMES VALID NAMES ARE ALPHANUMERIC WITH UNDERSCORES.
@@ -337,13 +339,13 @@
 		public function isValidSqlName(string $name): bool {
 			if (!preg_match('/^[a-zA-Z0-9_]+$/', $name)) {
 				$this -> error_handler -> setError('sqlName', 'Invalid SQL name provided.');
-
+	
 				return false;
 			}
-
+	
 			return true;
 		}
-
+	
 		/**
 		 * VALIDATES A LIST OF SQL FIELD DEFINITIONS OR ALTERATIONS.
 		 * THIS IS A BASIC VALIDATION ASSUMING FIELDS ARE SEPARATED BY COMMAS.
@@ -354,20 +356,20 @@
 		 */
 		public function isValidSqlFieldDefinitions(string $definitions): bool {
 			$field_array = explode(',', $definitions);
-
+	
 			foreach ($field_array as $field) {
 				$field = trim($field);
-
+	
 				// SPLIT FIELD DEFINITION INTO NAME AND TYPE/CONSTRAINT.
 				$field_parts = explode(' ', $field, 2);
-
+	
 				if (!$this -> isValidSqlName($field_parts[0])) {
 					return false;
 				}
-
+	
 				// TODO: Further validations for type/constraints can be added here.
 			}
-
+	
 			return true;
 		}
 	}
