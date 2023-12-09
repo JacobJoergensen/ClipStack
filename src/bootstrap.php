@@ -43,7 +43,7 @@
 		$_SESSION['previous_env'] = $environment;
 
 		// SET ERROR DISPLAY BASED ON THE NEW ENVIRONMENT.
-		if ($environment == 'production') {
+		if ($environment === 'production') {
 			ini_set('display_errors', '0');
 		} else {
 			ini_set('display_errors', '1');
@@ -67,13 +67,13 @@
 		/**
 		 * VALIDATE THAT THE SERVER'S PHP VERSION MEETS ClipStack'S REQUIREMENTS.
 		 */
-		$php_version = phpversion();
+		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '8.2.0', '<')) {
+		if (version_compare($php_version, '8.3.0', '<')) {
 			throw new \RuntimeException("Your PHP version ($php_version) is below the supported version. Please upgrade to at least 8.2.0!");
 		}
 
-		if (version_compare($php_version, '8.3.0', '>=')) {
+		if (version_compare($php_version, '8.4.0', '>=')) {
 			throw new \RuntimeException("Your PHP version ($php_version) exceeds the maximum supported version. The system supports up to PHP 8.2.X!");
 		}
 
@@ -113,13 +113,13 @@
 	/**
 	 * NOTIFY THE USER IF THERE IS A NEWER VERSION OF ClipStack AVAILABLE.
 	 */
-	if ($environment == 'production') {
+	//if ($environment === 'production') {
 		//$new_version = Version::isNewVersionAvailable();
 
 		//if ($new_version !== false) {
 			//echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
 		//}
-	}
+	//}
 
 	// REGISTER THE AUTOLOADER.
 	spl_autoload_register(function ($class) {
