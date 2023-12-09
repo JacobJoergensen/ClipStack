@@ -2,6 +2,7 @@
 	namespace ClipStack\Component;
 
 	use ClipStack\Component\Backbone\Config;
+	use RuntimeException;
 
 	class Session {
 		private Config $config;
@@ -25,7 +26,7 @@
 			$configurations = $this -> config -> get('session');
 
 			if (!is_array($configurations)) {
-				throw new \RuntimeException('Session configuration is not valid.');
+				throw new RuntimeException('Session configuration is not valid.');
 			}
 
 			$session_name = $configurations['session_name'] ?? '';
@@ -34,7 +35,7 @@
 			$cookie_http_only = $configurations['cookie_http_only'] ?? '';
 
 			if (empty($session_name) || empty($session_lifetime) || empty($cookie_secure) || empty($cookie_http_only)) {
-				throw new \RuntimeException('Invalid session configuration.');
+				throw new RuntimeException('Invalid session configuration.');
 			}
 
 			session_name($session_name);
@@ -68,15 +69,15 @@
 			$configurations = $this -> config -> get('session');
 
 			if (!is_array($configurations)) {
-				throw new \RuntimeException('Session configuration is not valid.');
+				throw new RuntimeException('Session configuration is not valid.');
 			}
 
 			$session_lifetime = $configurations['session_lifetime'] ?? '';
 
 			if (empty($session_lifetime)) {
-				throw new \RuntimeException('Invalid session configuration.');
+				throw new RuntimeException('Invalid session configuration.');
 			}
-			
+
 			$last_activity = $this -> get('_last_activity', time());
 
 			if ((time() - $last_activity) > $session_lifetime) {
@@ -214,13 +215,13 @@
 			$configurations = $this -> config -> get('session');
 
 			if (!is_array($configurations)) {
-				throw new \RuntimeException('Session configuration is not valid.');
+				throw new RuntimeException('Session configuration is not valid.');
 			}
 
 			$session_prefix = $configurations['session_prefix'] ?? '';
 
 			if (empty($session_prefix)) {
-				throw new \RuntimeException('Invalid session configuration.');
+				throw new RuntimeException('Invalid session configuration.');
 			}
 
 			return $session_prefix . $key;
