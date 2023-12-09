@@ -7,8 +7,9 @@
 			// CURRENT ENVIRONMENT OF THE APP (E.G., 'LOCAL', 'STAGING', 'PRODUCTION')
 			'env' => 'production',
 
-			// DETERMINES IF DEBUG MODE IS ON; USEFUL FOR ERROR REPORTING
-			'debug' => false,
+			// DETERMINES IF MAINTENANCE MODE IS ON
+			'maintenance_mode' => false,
+			'maintenance_token' => 'your_secret_token',
 
 			// THE DEFAULT CHARACTER SET FOR YOUR APPLICATION
 			'charset' => 'UTF-8',
