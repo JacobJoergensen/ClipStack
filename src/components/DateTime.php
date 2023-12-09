@@ -2,7 +2,7 @@
 	namespace ClipStack\Component;
 
 	use AllowDynamicProperties;
-	use ClipStack\Component\backbone\Config;
+	use ClipStack\Component\Backbone\Config;
 	use Exception;
 
 	#[AllowDynamicProperties] class DateTimeUtility {
