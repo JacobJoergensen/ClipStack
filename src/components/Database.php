@@ -5,8 +5,8 @@
 	use PDOException;
 	use PDOStatement;
 
-	use ClipStack\Backbone\Singleton;
-	use ClipStack\Backbone\Config;
+	use ClipStack\Component\backbone\Singleton;
+	use ClipStack\Component\backbone\Config;
 
 	class Database {
 		use Singleton;
@@ -42,7 +42,7 @@
 				$this -> prefix = '';
 			}
 
-			$this -> connect();
+			self::c();
 		}
 
 		/**
@@ -71,6 +71,89 @@
 			}
 
 			return self::$instance;
+		}
+
+		/**
+		 * ENSURE DATABASE CONNECTION IS ESTABLISHED.
+		 *
+		 * @return void
+		 */
+		private function ensureConnected(): void {
+			if (!$this -> is_connected) {
+				$this -> connect();
+				$this -> is_connected = true;
+			}
+		}
+
+		/**
+		 * GET THE PREFIXED TABLE NAME.
+		 *
+		 * @param string $table_name
+		 * @return string
+		 */
+		private function prefixedTableName(string $table_name): string {
+			return $this -> prefix . $table_name;
+		}
+
+		/**
+		 * ESTABLISH A DATABASE CONNECTION.
+		 *
+		 * @return void
+		 */
+		private function connect(): void {
+			$configurations = $this -> config -> get('database');
+
+			if (!is_array($configurations)) {
+				throw new \RuntimeException('Database configuration is not valid.');
+			}
+
+			$driver = $configurations['driver'] ?? '';
+			$host = $configurations['host'] ?? '';
+			$port = $configurations['port'] ?? '';
+			$db = $configurations['name'] ?? '';
+			$user = $configurations['username'] ?? '';
+			$pass = $configurations['password'] ?? '';
+			$charset = $configurations['charset'] ?? 'utf8mb4';
+			$collation = $configurations['collation'] ?? 'utf8mb4_unicode_ci';
+
+			if (empty($driver) || empty($host) || empty($port) || empty($db) || empty($user) || empty($pass)) {
+				throw new \RuntimeException('Invalid database configuration.');
+			}
+
+			$dsn = "{$driver}:host={$host};port={$port};dbname={$db};charset={$charset}";
+
+			$options = [
+				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+				PDO::ATTR_EMULATE_PREPARES   => false,
+				PDO::ATTR_PERSISTENT         => true
+			];
+
+			$attempt = 0;
+			$max_attempts = 3;
+
+			while ($attempt < $max_attempts) {
+				try {
+					$this -> pdo = new PDO($dsn, $user, $pass, $options);
+					$this -> pdo -> exec("SET NAMES '{$charset}' COLLATE '{$collation}'");
+					break;
+				} catch (PDOException $exception) {
+					if ($attempt === $max_attempts - 1) {
+						throw new PDOException($exception -> getMessage(), (int)$exception -> getCode());
+					}
+
+					$attempt++;
+				}
+			}
+		}
+
+		/**
+		 * CLOSE THE DATABASE CONNECTION.
+		 *
+		 * @return void
+		 */
+		public function closeConnection(): void {
+			$this -> pdo = new PDO('sqlite::memory:');
 		}
 
 		/**
@@ -242,7 +325,7 @@
 		 *
 		 * @return bool
 		 */
-		public function beginTransaction() {
+		public function beginTransaction(): bool {
 			return $this -> pdo -> beginTransaction();
 		}
 
@@ -251,7 +334,7 @@
 		 *
 		 * @return bool
 		 */
-		public function commitTransaction() {
+		public function commitTransaction(): bool {
 			return $this -> pdo -> commit();
 		}
 
@@ -260,7 +343,7 @@
 		 *
 		 * @return bool
 		 */
-		public function rollBackTransaction() {
+		public function rollBackTransaction(): bool {
 			return $this -> pdo -> rollBack();
 		}
 
@@ -270,89 +353,6 @@
 		 * @return bool
 		 */
 		public function inTransaction(): bool {
-			return $this -> pdo -> inTransaction();
-		}
-
-		/**
-		 * ENSURE DATABASE CONNECTION IS ESTABLISHED.
-		 *
-		 * @return void
-		 */
-		private function ensureConnected(): void {
-			if (!$this -> is_connected) {
-				$this -> connect();
-				$this -> is_connected = true;
-			}
-		}
-
-		/**
-		 * ESTABLISH A DATABASE CONNECTION.
-		 *
-		 * @return void
-		 */
-		private function connect(): void {
-			$configurations = $this -> config -> get('database');
-
-			if (!is_array($configurations)) {
-				throw new \RuntimeException('Database configuration is not valid.');
-			}
-
-			$driver = $configurations['driver'] ?? '';
-			$host = $configurations['host'] ?? '';
-			$port = $configurations['port'] ?? '';
-			$db = $configurations['name'] ?? '';
-			$user = $configurations['username'] ?? '';
-			$pass = $configurations['password'] ?? '';
-			$charset = $configurations['charset'] ?? 'utf8mb4';
-			$collation = $configurations['collation'] ?? 'utf8mb4_unicode_ci';
-
-			if (empty($driver) || empty($host) || empty($port) || empty($db) || empty($user) || empty($pass)) {
-				throw new \RuntimeException('Invalid database configuration.');
-			}
-
-			$dsn = "{$driver}:host={$host};port={$port};dbname={$db};charset={$charset}";
-
-			$options = [
-				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-				PDO::ATTR_EMULATE_PREPARES   => false,
-				PDO::ATTR_PERSISTENT         => true
-			];
-
-			$attempt = 0;
-			$max_attempts = 3;
-
-			while ($attempt < $max_attempts) {
-				try {
-					$this -> pdo = new PDO($dsn, $user, $pass, $options);
-					$this -> pdo -> exec("SET NAMES '{$charset}' COLLATE '{$collation}'");
-					break;
-				} catch (PDOException $exception) {
-					if ($attempt === $max_attempts - 1) {
-						throw new PDOException($exception -> getMessage(), (int)$exception -> getCode());
-					}
-
-					$attempt++;
-				}
-			}
-		}
-
-		/**
-		 * CLOSE THE DATABASE CONNECTION.
-		 *
-		 * @return void
-		 */
-		public function closeConnection(): void {
-			$this -> pdo = new PDO('sqlite::memory:');
-		}
-
-		/**
-		 * GET THE PREFIXED TABLE NAME.
-		 *
-		 * @param string $table_name
-		 * @return string
-		 */
-		private function prefixedTableName(string $table_name): string {
-			return $this -> prefix . $table_name;
+			return $this->pdo->inTransaction();
 		}
 	}
