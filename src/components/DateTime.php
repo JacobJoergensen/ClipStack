@@ -174,7 +174,7 @@
 		public function isWeekend(string $date): bool {
 			$date_time = new \DateTime($date, $this -> timezone);
 
-			return in_array($date_time -> format('N'), [6, 7], true);
+			return in_array((int)$date_time -> format('N'), [6, 7], true);
 		}
 
 		/**
