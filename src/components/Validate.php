@@ -14,6 +14,7 @@
 		 * SANITIZE A STRING TO PREVENT XSS ATTACKS.
 		 *
 		 * @param string $data
+		 *
 		 * @return string
 		 *
 		 * @example
@@ -50,6 +51,7 @@
 		 * CHECK IF A STRING IS EMPTY OR CONTAINS ONLY WHITESPACE.
 		 *
 		 * @param string $string
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -71,6 +73,7 @@
 		 * CHECK IF THE GIVEN INPUT IS A NUMBER.
 		 *
 		 * @param mixed $data
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -93,6 +96,7 @@
 		 * CHECK IF THE GIVEN INPUT STRING CONSISTS OF ONLY ALPHABETIC CHARACTERS.
 		 *
 		 * @param string $data
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -114,6 +118,7 @@
 		 * CHECK IF THE GIVEN INPUT STRING CONSISTS OF ONLY ALPHABETIC CHARACTERS AND/OR NUMBERS.
 		 *
 		 * @param string $data
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -136,6 +141,7 @@
 		 *
 		 * @param string $date
 		 * @param string $format - DEFAULT FORMAT IS 'Y-m-d' (e.g., "2023-10-15"). FOR OTHER FORMATS, SUPPLY AS THE SECOND ARGUMENT.
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -166,6 +172,7 @@
 		 * CONSOLIDATED EMAIL VALIDATION.
 		 *
 		 * @param string $email - THE EMAIL TO BE VALIDATED.
+		 *
 		 * @return string|false - THE VALIDATED EMAIL OR FALSE IF IT'S INVALID.
 		 */
 		private function performEmailValidation(string $email): string|false {
@@ -176,6 +183,7 @@
 		 * VALIDATE AN EMAIL ADDRESS.
 		 *
 		 * @param string $email
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -197,6 +205,7 @@
 		 * VALIDATE AND FILTER AN EMAIL ADDRESS.
 		 *
 		 * @param string $email
+		 *
 		 * @return string|null
 		 *
 		 * @example
@@ -220,6 +229,7 @@
 		 * VALIDATE A PHONE NUMBER.
 		 *
 		 * @param string $phone
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -241,6 +251,7 @@
 		 * CONSOLIDATED URL VALIDATION.
 		 *
 		 * @param string $url - THE URL TO BE VALIDATED.
+		 *
 		 * @return string|false - THE VALIDATED URL OR FALSE IF IT'S INVALID.
 		 */
 		private function performURLValidation(string $url): string|false {
@@ -271,12 +282,13 @@
 		 * VALIDATE AND FILTER A URL.
 		 *
 		 * @param string $url
+		 *
 		 * @return string|null
 		 *
 		 * @example
 		 * $validate = new Validate(new DateTimeUtility(new Config()), new ErrorHandler());
 		 * $filtered_url = $validate -> filterURL('https://www.example.com');  // 'https://www.example.com'
-		 * $result = $validate -> filterURL('not a url');  // false
+		 * $result = $validate -> filterURL('not an url');  // false
 		 */
 		public function filterURL(string $url): ?string {
 			$validated_url = $this -> performURLValidation($url);
@@ -296,6 +308,7 @@
 		 * @param string $data
 		 * @param int $min
 		 * @param int $max
+		 *
 		 * @return bool
 		 *
 		 * @example
@@ -318,6 +331,7 @@
 		 * ASSUMES VALID NAMES ARE ALPHANUMERIC WITH UNDERSCORES.
 		 *
 		 * @param string $name
+		 *
 		 * @return bool
 		 */
 		public function isValidSqlName(string $name): bool {
@@ -335,6 +349,7 @@
 		 * THIS IS A BASIC VALIDATION ASSUMING FIELDS ARE SEPARATED BY COMMAS.
 		 *
 		 * @param string $definitions
+		 *
 		 * @return bool
 		 */
 		public function isValidSqlFieldDefinitions(string $definitions): bool {
