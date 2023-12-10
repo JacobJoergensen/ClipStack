@@ -1,7 +1,7 @@
 <?php
 	namespace ClipStack\Component;
 
-	use ClipStack\Backbone\Singleton;
+	use ClipStack\Component\Backbone\Singleton;
 
 	/**
 	 * @template-uses Singleton<Request>
@@ -17,7 +17,7 @@
 		/**
 		 * @var array<string, mixed>
 		 */
-		private array $server;
+		public array $server;
 
 		/**
 		 * @var array<string, mixed>
@@ -90,12 +90,12 @@
 		 */
 		public function getUri(): string {
 			return is_scalar($this -> server['REQUEST_URI'] ?? null)
-				? strval($this -> server['REQUEST_URI'])
+				? (string)$this -> server['REQUEST_URI']
 				: '';
 		}
 
 		/**
-		 * GET THE HTTP HOST FROM THE SERVER SUPERGLOBAL.
+		 * GET THE HTTP HOST FROM THE SERVER SUPER GLOBAL.
 		 *
 		 * @return string - THE HTTP HOST AS A STRING.
 		 */
@@ -111,7 +111,7 @@
 		 * @return bool - TRUE IF THE REQUEST IS USING HTTPS, FALSE OTHERWISE.
 		 */
 		public function isHttps(): bool {
-			return isset($this -> server['HTTPS']) && ($this -> server['HTTPS'] === 'on' || $this -> server['HTTPS'] == 1);
+			return isset($this -> server['HTTPS']) && ($this -> server['HTTPS'] === 'on' || $this -> server['HTTPS'] === 1);
 		}
 
 		/**
@@ -143,18 +143,18 @@
 		public function getAllHeaders(): array {
 			if (function_exists('getallheaders')) {
 				return getallheaders();
-			} else {
-				$headers = [];
-
-				foreach ($this -> server as $key => $value) {
-					if (substr($key, 0, 5) === 'HTTP_') {
-						$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-						$headers[$header_key] = is_string($value) ? $value : '';
-					}
-				}
-
-				return $headers;
 			}
+
+			$headers = [];
+
+			foreach ($this -> server as $key => $value) {
+				if (str_starts_with($key, 'HTTP_')) {
+					$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+					$headers[$header_key] = is_string($value) ? $value : '';
+				}
+			}
+
+			return $headers;
 		}
 
 		/**
@@ -229,13 +229,13 @@
 		 */
 		public function getQueryParameters(): array {
 			$query_string = is_scalar($this -> server['QUERY_STRING'] ?? null)
-				? strval($this -> server['QUERY_STRING'])
+				? (string)$this -> server['QUERY_STRING']
 				: '';
 
 			parse_str($query_string, $params);
 
 			// FILTER THE ARRAY TO ENSURE THAT BOTH KEYS AND VALUES ARE STRINGS.
-			return array_filter($params, function ($key, $value) {
+			return array_filter($params, static function ($key, $value) {
 				return is_string($key) && is_string($value);
 			}, ARRAY_FILTER_USE_BOTH);
 		}

@@ -5,7 +5,7 @@
 		/**
 		 * @var Request
 		 */
-		private $request;
+		private Request $request;
 
 		public function __construct(Request $request) {
 			$this -> request = $request;
@@ -30,7 +30,7 @@
 		 */
 		public function isSecure(): bool {
 			return $this -> request -> isHttps() ||
-				($this -> request -> getServerValue('HTTP_X_FORWARDED_PROTO') == 'https');
+				($this -> request -> getServerValue('HTTP_X_FORWARDED_PROTO') === 'https');
 		}
 
 		/**

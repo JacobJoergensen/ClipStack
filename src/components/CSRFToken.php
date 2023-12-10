@@ -1,11 +1,13 @@
 <?php
 	namespace ClipStack\Component;
 
+	use Random\RandomException;
+
 	class CSRFToken {
 		private Session $session;
 
-		private const CSRF_TOKEN_KEY = '_csrf_token';
-		private const CSRF_TOKEN_LIFETIME = 900; // 15 MINUTES IN SECONDS.
+		private const string CSRF_TOKEN_KEY = '_csrf_token';
+		private const int CSRF_TOKEN_LIFETIME = 900; // 15 MINUTES IN SECONDS.
 
 		public function __construct(Session $session) {
 			$this -> session = $session;
@@ -15,6 +17,8 @@
 		 * GENERATE A NEW CSRF TOKEN AND STORE IT IN THE SESSION.
 		 *
 		 * @return string
+		 *
+		 * @throws RandomException
 		 *
 		 * @example
 		 * $csrf = new CSRFToken();
@@ -41,6 +45,7 @@
 		 * VALIDATE A GIVEN CSRF TOKEN AGAINST THE ONE IN THE SESSION.
 		 *
 		 * @param string $token
+		 *
 		 * @return bool
 		 *
 		 * @example

@@ -1,8 +1,8 @@
 <?php
-	namespace ClipStack\Backbone;
+	namespace ClipStack\Component\Backbone;
 
 	class Version {
-		public const CURRENT_VERSION = '0.1.0';
+		public const string CURRENT_VERSION = '0.1.0';
 
 		/**
 		 * CHECK IF THERE'S A NEW VERSION AVAILABLE.

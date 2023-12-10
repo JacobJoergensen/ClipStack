@@ -7,8 +7,9 @@
 			// CURRENT ENVIRONMENT OF THE APP (E.G., 'LOCAL', 'STAGING', 'PRODUCTION')
 			'env' => 'production',
 
-			// DETERMINES IF DEBUG MODE IS ON; USEFUL FOR ERROR REPORTING
-			'debug' => false,
+			// DETERMINES IF MAINTENANCE MODE IS ON
+			'maintenance_mode' => false,
+			'maintenance_token' => 'your_secret_token',
 
 			// THE DEFAULT CHARACTER SET FOR YOUR APPLICATION
 			'charset' => 'UTF-8',
@@ -25,7 +26,10 @@
 			'timezone' => 'UTC',
 
 			// DEFAULT DATE AND TIME FORMAT USED ACROSS THE APP
-			'date_format' => 'Y-m-d H:i:s'
+			'date_format' => 'Y-m-d H:i:s',
+
+			// DEFAULT HOUR FORMAT USED ACROSS THE APP
+			'hour_format' => 'H:i:s'
 		],
 
 		'database' => [
@@ -57,6 +61,23 @@
 			'collation' => 'utf8mb4_unicode_ci'
 		],
 
+		'encryption' => [
+			// Encryption key for securing data. Must be a 32-byte string
+			'key' => 'your_32_byte_key_here',
+
+			// Cipher algorithm to use for encryption. Default is aes-256-cbc
+			'cipher' => 'aes-256-cbc',
+
+			'key_rotation' => [
+				// SET TO TRUE TO ENABLE KEY ROTATION
+				'enabled' => false,
+				'keys' => [
+					'primary' => 'your_primary_key_here',
+					'secondary' => 'your_secondary_key_here'
+				]
+			]
+		],
+
 		'mail' => [
 			// MAIL SENDING MECHANISM OR DRIVER (E.G., 'SMTP', 'SENDMAIL', 'MAILGUN')
 			'driver' => 'smtp',
@@ -86,11 +107,17 @@
 		],
 
 		'session' => [
+			// NAME FOR THE SESSION COOKIE
+			'session_name' => 'clipstack_sess',
+
+			// SESSION COOKIE PREFIX
+			'session_prefix' => 'clipstack_',
+
 			// SESSION LIFETIME IN MINUTES
 			'lifetime' => '120',
 
-			// NAME FOR THE SESSION COOKIE
-			'cookie_name' => 'myapp_session',
+			// PREFIX FOR THE COOKIE
+			'cookie_prefix' => 'clipstack_',
 
 			// WHETHER THE COOKIE SHOULD BE SET ONLY OVER A SECURE HTTPS CONNECTION
 			'cookie_secure' => false,

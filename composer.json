@@ -18,7 +18,11 @@
 		"source": "https://github.com/MineHubs-Studios/ClipStack"
 	},
 	"require": {
-		"php": ">=8.2"
+		"php": ">=8.3",
+		"ext-pdo": "*",
+		"ext-ctype": "*",
+		"ext-mbstring": "*",
+		"ext-openssl": "*"
 	},
 	"keywords": [
 		"framework",
@@ -31,7 +35,8 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"App\\": "src/"
+			"ClipStack\\Component\\": "src/components/",
+			"ClipStack\\Component\\Backbone\\": "src/components/backbone/"
 		}
 	},
 	"autoload-dev": {

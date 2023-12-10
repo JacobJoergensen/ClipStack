@@ -1,14 +1,16 @@
 <?php
-	namespace ClipStack\Backbone;
+	namespace ClipStack\Component\Backbone;
+	
+	use RuntimeException;
 
 	/**
 	 * @template T of object
 	 */
 	trait Singleton {
 		/**
-		 * @var T|null
+		 * @var object|null
 		 */
-		private static $instance = null;
+		private static ?object $instance = null;
 
 		/**
 		 * SAFETY FOR SINGLETON PATTERN: PREVENT CLONING.
@@ -16,12 +18,12 @@
 		private function __clone() {}
 
 		/**
-		 * SAFETY FOR SINGLETON PATTERN: PREVENT UNSERIALIZATION.
+		 * SAFETY FOR SINGLETON PATTERN: PREVENT UN-SERIALIZATION.
 		 *
-		 * @throws \Exception
+		 * @throws RuntimeException
 		 */
-		private function __wakeup() {
-			throw new \Exception('Cannot unserialize a singleton.');
+		public function __wakeup() {
+			throw new RuntimeException('Cannot un-serialize a singleton.');
 		}
 
 		public static function getInstance(...$args) {

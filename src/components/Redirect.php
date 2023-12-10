@@ -22,7 +22,7 @@
 
 			if (headers_sent()) {
 				// IF HEADERS ARE SENT, USE JavaScript AS A FALLBACK (LESS PREFERRED).
-				echo "<script>window.location.href='{$url}';</script>";
+				echo "<script>window.location.href='$url';</script>";
 				exit;
 			}
 
@@ -34,6 +34,7 @@
 		 * REDIRECT BACK TO THE PREVIOUS URL OR A DEFAULT ONE.
 		 *
 		 * @param string $default - DEFAULT URL IF THERE ISN'T A PREVIOUS URL.
+		 *
 		 * @return void
 		 */
 		public static function back(string $default = '/'): void {
