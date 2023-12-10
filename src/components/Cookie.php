@@ -23,7 +23,7 @@
 		 * @param DateTime|int $expires
 		 * @param string $path
 		 * @param string $domain
-		 * @param array $additional_attributes
+		 * @param array<string, mixed> $additional_attributes
 		 */
 		public function set(
 			string $name,
