@@ -14,7 +14,7 @@
 
 		private bool $key_rotation_enabled;
 		/** @var array<string> */
-		private array $key_rotation_keys = [];
+		private array $key_rotation_keys;
 		private string $current_key;
 
 		public function __construct(Config $config) {
