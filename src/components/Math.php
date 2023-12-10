@@ -51,7 +51,6 @@
 			return ($a + $b) / 2;
 		}
 
-
 		/**
 		 * GET THE AVERAGE NUMBER OF A ROW OF NUMBERS.
 		 *
