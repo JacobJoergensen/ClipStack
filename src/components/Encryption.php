@@ -85,7 +85,7 @@
 				throw new RuntimeException('IV generation failed.');
 			}
 
-			if ($init_vector === false) {
+			if ($init_vector == false) {
 				throw new RuntimeException('IV generation failed.');
 			}
 
