@@ -13,7 +13,7 @@
 		private string $cipher;
 
 		private bool $key_rotation_enabled;
-		private array $key_rotation_keys;
+		private array $key_rotation_keys = [];
 		private string $current_key;
 
 		public function __construct(Config $config) {
@@ -33,9 +33,10 @@
 			$cipher = $configurations['cipher'] ?? 'aes-256-cbc';
 
 			$key_rotation_config = $config -> get('encryption.key_rotation', []);
-			$this -> key_rotation_enabled = $key_rotation_config['enabled'] ?? false;
-			$this -> key_rotation_keys = $key_rotation_config['keys'] ?? [];
-			$this -> current_key = 'primary';
+
+			$key_rotation_enabled = $key_rotation_config['enabled'] ?? false;
+			$key_rotation_keys = $key_rotation_config['keys'] ?? [];
+			$current_key = 'primary';
 
 			if (!in_array($cipher, openssl_get_cipher_methods(), true)) {
 				throw new InvalidArgumentException('Invalid cipher specified.');
@@ -47,6 +48,10 @@
 
 			$this -> key = $key;
 			$this -> cipher = $cipher;
+
+			$this -> key_rotation_enabled = $key_rotation_enabled;
+			$this -> key_rotation_keys = $key_rotation_keys;
+			$this -> current_key = $current_key;
 		}
 
 		/**
