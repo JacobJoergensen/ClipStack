@@ -7,6 +7,7 @@
 
 	use ClipStack\Component\Backbone\Singleton;
 	use ClipStack\Component\Backbone\Config;
+	use RuntimeException;
 
 	class Database {
 		use Singleton;
@@ -89,7 +90,7 @@
 		 * GET THE PREFIXED TABLE NAME.
 		 *
 		 * @param string $table_name
-   		 *
+		 *
 		 * @return string
 		 */
 		private function prefixedTableName(string $table_name): string {
@@ -105,7 +106,7 @@
 			$configurations = $this -> config -> get('database');
 
 			if (!is_array($configurations)) {
-				throw new \RuntimeException('Database configuration is not valid.');
+				throw new RuntimeException('Database configuration is not valid.');
 			}
 
 			$driver = $configurations['driver'] ?? '';
@@ -118,7 +119,7 @@
 			$collation = $configurations['collation'] ?? 'utf8mb4_unicode_ci';
 
 			if (empty($driver) || empty($host) || empty($port) || empty($db) || empty($user) || empty($pass)) {
-				throw new \RuntimeException('Invalid database configuration.');
+				throw new RuntimeException('Invalid database configuration.');
 			}
 
 			$dsn = "{$driver}:host={$host};port={$port};dbname={$db};charset={$charset}";
@@ -163,7 +164,7 @@
 		 * @param string $query
 		 * @param array<string, mixed> $params - Associative array of query parameters.
 		 * @param array<string, int> $types - Associative array of parameter types.
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function query(string $query, array $params = [], array $types = []): bool {
@@ -183,7 +184,7 @@
 		 *
 		 * @param string $table_name
 		 * @param string $fields
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function createTable(string $table_name, string $fields): bool {
@@ -207,7 +208,7 @@
 		 *
 		 * @param string $table_name
 		 * @param string $alterations
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function alterTable(string $table_name, string $alterations): bool {
@@ -230,7 +231,7 @@
 		 *
 		 * @param string $query
 		 * @param array<string, mixed> $params
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function exists(string $query, array $params = []): bool {
@@ -243,7 +244,7 @@
 		 *
 		 * @param string $table
 		 * @param array<string, mixed> $data
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function insert(string $table, array $data): bool {
@@ -263,19 +264,19 @@
 		 * @param string $table
 		 * @param array<string, mixed> $data
 		 * @param array<string, mixed> $where
-   		 *
+		 *
 		 * @return bool
 		 */
 		public function update(string $table, array $data, array $where): bool {
 			$table = $this -> prefixedTableName($table);
 
-			$data_placeholders = array_map(fn($key) => "{$key} = :data_{$key}", array_keys($data));
-			$where_placeholders = array_map(fn($key) => "{$key} = :where_{$key}", array_keys($where));
+			$data_placeholders = array_map(static fn($key) => "{$key} = :data_{$key}", array_keys($data));
+			$where_placeholders = array_map(static fn($key) => "{$key} = :where_{$key}", array_keys($where));
 
 			$sql = "UPDATE {$table} SET " . implode(', ', $data_placeholders) . " WHERE " . implode(' AND ', $where_placeholders);
 
-			$data_params = array_combine(array_map(fn($k) => "data_{$k}", array_keys($data)), $data);
-			$where_params = array_combine(array_map(fn($k) => "where_{$k}", array_keys($where)), $where);
+			$data_params = array_combine(array_map(static fn($k) => "data_{$k}", array_keys($data)), $data);
+			$where_params = array_combine(array_map(static fn($k) => "where_{$k}", array_keys($where)), $where);
 
 			$params = array_merge($data_params, $where_params);
 
@@ -303,7 +304,7 @@
 		 * FETCH ALL ROWS.
 		 *
 		 * @param string[] $columns - OPTIONAL: AN ARRAY OF COLUMN NAMES TO FETCH. DEFAULT IS ['*'].
-   		 *
+		 *
 		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS.
 		 */
 		public function results(array $columns = ['*']): array {
