@@ -85,7 +85,7 @@
 				throw new RuntimeException('IV generation failed.');
 			}
 
-			if (!$init_vector) {
+			if ($init_vector === false) {
 				throw new RuntimeException('IV generation failed.');
 			}
 
@@ -130,7 +130,7 @@
 			}
 
 			$decrypted_data = openssl_decrypt(
-				substr($data, openssl_cipher_iv_length($this -> cipher)),
+				substr($data, $cipher_iv_length),
 				$this -> cipher,
 				$this -> key,
 				OPENSSL_RAW_DATA,
@@ -141,7 +141,7 @@
 				// IF DECRYPTION FAILS, TRY WITH THE SECONDARY KEY IF KET ROTATION IS ENABLED.
 				if ($this -> key_rotation_enabled && $this -> rotateKey()) {
 					$decrypted_data = openssl_decrypt(
-						substr($data, openssl_cipher_iv_length($this->cipher)),
+						substr($data, $cipher_iv_length),
 						$this->cipher,
 						$this->key,
 						OPENSSL_RAW_DATA,
