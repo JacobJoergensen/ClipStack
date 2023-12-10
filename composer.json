@@ -17,6 +17,11 @@
 		"issues": "https://github.com/MineHubs-Studios/ClipStack/issues",
 		"source": "https://github.com/MineHubs-Studios/ClipStack"
 	},
+	"keywords": [
+		"framework",
+		"php",
+		"website"
+	],
 	"require": {
 		"php": ">=8.3",
 		"ext-pdo": "*",
@@ -24,11 +29,6 @@
 		"ext-mbstring": "*",
 		"ext-openssl": "*"
 	},
-	"keywords": [
-		"framework",
-		"php",
-		"website"
-	],
 	"require-dev": {
 		"phpstan/phpstan": "^1.10.47",
 		"phpunit/phpunit": "^10.5"
