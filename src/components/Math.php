@@ -54,8 +54,9 @@
 		/**
 		 * GET THE AVERAGE NUMBER OF A ROW OF NUMBERS.
 		 *
-		 * @param array $numbers
+		 * @param float[] $numbers
 		 * @param int $precision
+		 *
 		 * @return float
 		 *
 		 * @example
