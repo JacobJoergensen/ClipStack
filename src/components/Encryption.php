@@ -12,8 +12,8 @@
 		private string $key;
 		private string $cipher;
 
-		private bool $key_rotation_enabled = false;
-		private array $key_rotation_keys = [];
+		private bool $key_rotation_enabled;
+		private array $key_rotation_keys;
 		private string $current_key;
 
 		public function __construct(Config $config) {
@@ -47,6 +47,15 @@
 
 			$this -> key = $key;
 			$this -> cipher = $cipher;
+		}
+
+		/**
+		 * GETS THE CURRENT ENCRYPTION KEY.
+		 *
+		 * @return string - THE CURRENT ENCRYPTION KEY.
+		 */
+		public function getCurrentKey(): string {
+			return $this -> current_key;
 		}
 
 		/**
