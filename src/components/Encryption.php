@@ -13,7 +13,7 @@
 		private string $cipher;
 
 		private bool $key_rotation_enabled;
-		private array $key_rotation_keys = [];
+		private array $key_rotation_keys = ['primary' => '', 'secondary' => ''];
 		private string $current_key;
 
 		public function __construct(Config $config) {
@@ -24,15 +24,14 @@
 			$this -> config = $config;
 
 			$configurations = $this -> config -> get('encryption');
+			$key_rotation_config = $this -> config -> get('encryption.key_rotation', []);
 
-			if (!is_array($configurations)) {
+			if (!is_array($configurations) || !is_array($key_rotation_config)) {
 				throw new RuntimeException('Encryption configuration is not valid.');
 			}
 
 			$key = $configurations['key'] ?? '';
 			$cipher = $configurations['cipher'] ?? 'aes-256-cbc';
-
-			$key_rotation_config = $config -> get('encryption.key_rotation', []);
 
 			$key_rotation_enabled = $key_rotation_config['enabled'] ?? false;
 			$key_rotation_keys = $key_rotation_config['keys'] ?? [];
