@@ -21,7 +21,8 @@
 		"php": ">=8.3",
 		"ext-pdo": "*",
 		"ext-ctype": "*",
-		"ext-mbstring": "*"
+		"ext-mbstring": "*",
+		"ext-openssl": "*"
 	},
 	"keywords": [
 		"framework",
