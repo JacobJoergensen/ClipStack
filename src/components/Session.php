@@ -31,10 +31,10 @@
 
 			$session_name = $configurations['session_name'] ?? '';
 			$session_lifetime = $configurations['lifetime'] ?? '';
-			$cookie_secure = $configurations['cookie_secure'] ?? '';
-			$cookie_http_only = $configurations['cookie_http_only'] ?? '';
+			$cookie_secure = $configurations['cookie_secure'] ?? false;
+			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
 
-			if (empty($session_name) || empty($session_lifetime) || empty($cookie_secure) || empty($cookie_http_only)) {
+			if (empty($session_name) || empty($session_lifetime) || !is_bool($cookie_secure) || !is_bool($cookie_http_only)) {
 				throw new RuntimeException('Invalid session configuration.');
 			}
 
