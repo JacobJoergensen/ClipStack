@@ -56,7 +56,7 @@
 			}
 
 			$cookie_attributes = array_merge([
-				'expires' => $expires,
+				'expires' => (int)$expires,
 				'path' => $path,
 				'domain' => $domain,
 				'secure' => $cookie_secure,
