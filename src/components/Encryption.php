@@ -13,7 +13,8 @@
 		private string $cipher;
 
 		private bool $key_rotation_enabled;
-		private array $key_rotation_keys = ['primary' => '', 'secondary' => ''];
+		/** @var array<string> */
+		private array $key_rotation_keys = [];
 		private string $current_key;
 
 		public function __construct(Config $config) {
