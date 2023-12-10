@@ -19,7 +19,7 @@
 		 * SET A COOKIE.
 		 *
 		 * @param string $name
-		 * @param string|array $value
+		 * @param mixed $value
 		 * @param DateTime|int $expires
 		 * @param string $path
 		 * @param string $domain
@@ -27,7 +27,7 @@
 		 */
 		public function set(
 			string $name,
-			string|array $value,
+			mixed $value,
 			DateTime|int $expires = 0,
 			string $path = '/',
 			string $domain = '',
