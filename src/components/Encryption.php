@@ -73,7 +73,17 @@
 		 * @throws RuntimeException - IF init_vector GENERATION OR ENCRYPTION FAILS.
 		 */
 		public function encrypt(string $data): string {
-			$init_vector = openssl_random_pseudo_bytes(openssl_cipher_iv_length($this -> cipher));
+			$cipher_iv_length = openssl_cipher_iv_length($this -> cipher);
+
+			if ($cipher_iv_length === false) {
+				throw new RuntimeException('Failed to get IV length for the cipher.');
+			}
+
+			$init_vector = openssl_random_pseudo_bytes($cipher_iv_length);
+
+			if (!$init_vector) {
+				throw new RuntimeException('IV generation failed.');
+			}
 
 			if (!$init_vector) {
 				throw new RuntimeException('IV generation failed.');
@@ -103,11 +113,17 @@
 		public function decrypt(string $encrypted_data): ?string {
 			$data = base64_decode($encrypted_data);
 
-			if ($data === false) {
+			if ($data == false) {
 				throw new RuntimeException('Failed to base64 decode encrypted data.');
 			}
 
-			$init_vector = substr($data, 0, openssl_cipher_iv_length($this -> cipher));
+			$cipher_iv_length = openssl_cipher_iv_length($this -> cipher);
+
+			if ($cipher_iv_length === false) {
+				throw new RuntimeException('Failed to get IV length for the cipher.');
+			}
+
+			$init_vector = substr($data, 0, $cipher_iv_length);
 
 			if (!$init_vector) {
 				throw new RuntimeException('Failed to extract initialization vector.');
