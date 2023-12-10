@@ -95,9 +95,12 @@
 
 			// SESSION COOKIE PREFIX
 			'session_prefix' => 'clipstack_',
-			
+
 			// SESSION LIFETIME IN MINUTES
 			'lifetime' => '120',
+
+			// PREFIX FOR THE COOKIE
+			'cookie_prefix' => 'clipstack_',
 
 			// WHETHER THE COOKIE SHOULD BE SET ONLY OVER A SECURE HTTPS CONNECTION
 			'cookie_secure' => false,
