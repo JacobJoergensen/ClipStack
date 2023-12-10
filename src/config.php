@@ -61,6 +61,23 @@
 			'collation' => 'utf8mb4_unicode_ci'
 		],
 
+		'encryption' => [
+			// Encryption key for securing data. Must be a 32-byte string
+			'key' => 'your_32_byte_key_here',
+
+			// Cipher algorithm to use for encryption. Default is aes-256-cbc
+			'cipher' => 'aes-256-cbc',
+
+			'key_rotation' => [
+				// SET TO TRUE TO ENABLE KEY ROTATION
+				'enabled' => false,
+				'keys' => [
+					'primary' => 'your_primary_key_here',
+					'secondary' => 'your_secondary_key_here'
+				]
+			]
+		],
+
 		'mail' => [
 			// MAIL SENDING MECHANISM OR DRIVER (E.G., 'SMTP', 'SENDMAIL', 'MAILGUN')
 			'driver' => 'smtp',
