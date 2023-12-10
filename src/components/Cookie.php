@@ -163,7 +163,9 @@
 		/**
 		 * GET ALL COOKIES.
 		 *
-		 * @return array
+		 * @return array<string, string>
+		 *
+		 * @throws RuntimeException
 		 */
 		public function getAll(): array {
 			$configurations = $this -> config -> get('session');
@@ -193,7 +195,10 @@
 		 * FILTER COOKIES BASED ON CRITERIA.
 		 *
 		 * @param callable $filter
-		 * @return array
+		 *
+		 * @return array<string, string>
+		 *
+		 * @throws RuntimeException
 		 */
 		public function filter(callable $filter): array {
 			$configurations = $this -> config -> get('session');
