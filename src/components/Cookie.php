@@ -66,6 +66,10 @@
 
 			try {
 				$encoded_value = is_array($value) ? json_encode($value, JSON_THROW_ON_ERROR) : $value;
+
+				if (!is_string($encoded_value)) {
+					throw new InvalidArgumentException('Invalid value type. Expected a string.');
+				}
 			} catch (JsonException $exception) {
 				// Handle the JSON encoding error, e.g., log it or throw a more specific exception.
 				throw new RuntimeException('Error encoding value to JSON: ' . $exception -> getMessage(), $exception -> getCode(), $exception);
