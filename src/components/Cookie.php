@@ -24,6 +24,9 @@
 		 * @param string $path
 		 * @param string $domain
 		 * @param array<string, mixed> $additional_attributes
+		 *
+		 * @throws RuntimeException
+		 * @throws InvalidArgumentException
 		 */
 		public function set(
 			string $name,
@@ -55,6 +58,7 @@
 				throw new InvalidArgumentException('Invalid expiration time format.');
 			}
 
+			/** @var array{expires?: int, path?: string, domain?: string, secure?: bool, httponly?: bool, samesite?: 'Lax'|'lax'|'None'|'none'|'Strict'|'strict'} */
 			$cookie_attributes = array_merge([
 				'expires' => (int)$expires,
 				'path' => $path,
