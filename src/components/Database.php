@@ -1,12 +1,13 @@
 <?php
 	namespace ClipStack\Component;
 
+	use ClipStack\Component\Backbone\Singleton;
+	use ClipStack\Component\Backbone\Config;
+
 	use PDO;
 	use PDOException;
 	use PDOStatement;
 
-	use ClipStack\Component\Backbone\Singleton;
-	use ClipStack\Component\Backbone\Config;
 	use RuntimeException;
 
 	class Database {
