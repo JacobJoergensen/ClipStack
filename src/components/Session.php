@@ -132,6 +132,22 @@
 		public function has(string $key): bool {
 			return isset($_SESSION[$this -> prefixKey($key)]);
 		}
+	
+		/**
+		 * CHECK IF A SESSION VARIABLE EXISTS.
+		 *
+		 * @param string $key
+		 *
+		 * @return bool
+		 *
+		 * @example
+		 * if($session -> exists('user')) {
+		 *     // do something
+		 * }
+		 */
+		public function exists(string $key): bool {
+			return $this -> has($key);
+		}
 
 		/**
 		 * REMOVE A SESSION VARIABLE.
