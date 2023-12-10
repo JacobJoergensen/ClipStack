@@ -116,11 +116,11 @@
 	 * NOTIFY THE USER IF THERE IS A NEWER VERSION OF ClipStack AVAILABLE.
 	 */
 	//if ($environment === 'production') {
-	//$new_version = Version::isNewVersionAvailable();
+		//$new_version = Version::isNewVersionAvailable();
 	
-	//if ($new_version !== false) {
-	//echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
-	//}
+		//if ($new_version !== false) {
+		//echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
+		//}
 	//}
 	
 	// REGISTER THE AUTOLOADER.
