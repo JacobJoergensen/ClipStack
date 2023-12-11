@@ -6,7 +6,7 @@
 	class CSRFToken {
 		private Session $session;
 
-		private const string CSRF_TOKEN_KEY = '_csrf_token';
+		public const string CSRF_TOKEN_KEY = '_csrf_token';
 		private const int CSRF_TOKEN_LIFETIME = 900; // 15 MINUTES IN SECONDS.
 
 		public function __construct(Session $session) {
