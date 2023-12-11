@@ -5,7 +5,6 @@
 	use ClipStack\Component\DateTimeUtility;
 	use ClipStack\Component\Backbone\Config;
 	use Exception;
-	use RuntimeException;
 
 	class DateTimeTest extends TestCase {
 		private DateTimeUtility $dateTimeUtility;
