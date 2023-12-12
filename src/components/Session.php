@@ -1,10 +1,11 @@
 <?php
 	namespace ClipStack\Component;
 
+	use AllowDynamicProperties;
 	use ClipStack\Component\Backbone\Config;
 	use RuntimeException;
 
-	class Session {
+	#[AllowDynamicProperties] class Session {
 		private Config $config;
 
 		private Request $request;
@@ -17,12 +18,7 @@
 			$this -> request = $request;
 			$this -> initSessionConfigurations();
 			$this -> ensureSessionStarted();
-		}
 
-		/**
-		 * SET SESSION CONFIGURATIONS FOR BETTER SECURITY.
-		 */
-		private function initSessionConfigurations(): void {
 			$configurations = $this -> config -> get('session');
 
 			if (!is_array($configurations)) {
@@ -30,7 +26,8 @@
 			}
 
 			$session_name = $configurations['session_name'] ?? '';
-			$session_lifetime = $configurations['lifetime'] ?? '';
+			$session_prefix = $configurations['session_prefix'] ?? '';
+			$session_lifetime = $configurations['session_lifetime'] ?? '';
 			$cookie_secure = $configurations['cookie_secure'] ?? false;
 			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
 
@@ -38,15 +35,26 @@
 				throw new RuntimeException('Invalid session configuration.');
 			}
 
-			session_name($session_name);
+			$this -> name = $session_name;
+			$this -> prefix = $session_prefix;
+			$this -> lifetime = $session_lifetime;
+			$this -> secure = $cookie_secure;
+			$this -> http_only = $cookie_http_only;
+		}
+
+		/**
+		 * SET SESSION CONFIGURATIONS FOR BETTER SECURITY.
+		 */
+		private function initSessionConfigurations(): void {
+			session_name($this -> name);
 
 			ini_set('session.use_cookies', '1');
 			ini_set('session.use_only_cookies', '1');
-			ini_set('session.cookie_httponly', $cookie_http_only);
-			ini_set('session.gc_maxlifetime', $session_lifetime);
+			ini_set('session.cookie_httponly', $this -> http_only);
+			ini_set('session.gc_maxlifetime', $this -> lifetime);
 
 			if ($this -> request -> isHttps()) {
-				ini_set('session.cookie_secure', $cookie_secure);
+				ini_set('session.cookie_secure', $this -> secure);
 			}
 		}
 
@@ -66,21 +74,9 @@
 		 * @return bool
 		 */
 		public function hasExpired(): bool {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$session_lifetime = $configurations['session_lifetime'] ?? '';
-
-			if (empty($session_lifetime)) {
-				throw new RuntimeException('Invalid session configuration.');
-			}
-
 			$last_activity = $this -> get('_last_activity', time());
 
-			if ((time() - $last_activity) > $session_lifetime) {
+			if ((time() - $last_activity) > $this -> lifetime) {
 				return true;
 			}
 
@@ -132,7 +128,7 @@
 		public function has(string $key): bool {
 			return isset($_SESSION[$this -> prefixKey($key)]);
 		}
-	
+
 		/**
 		 * CHECK IF A SESSION VARIABLE EXISTS.
 		 *
@@ -228,18 +224,6 @@
 		 * PREFIXING SESSION KEYS WITH THE FRAMEWORK'S PREFIX.
 		 */
 		private function prefixKey(string $key): string {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$session_prefix = $configurations['session_prefix'] ?? '';
-
-			if (empty($session_prefix)) {
-				throw new RuntimeException('Invalid session configuration.');
-			}
-
-			return $session_prefix . $key;
+			return $this -> prefix . $key;
 		}
 	}
