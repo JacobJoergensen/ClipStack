@@ -3,16 +3,43 @@
 
 	use ClipStack\Component\Backbone\Config;
 
+	use AllowDynamicProperties;
 	use DateTime;
 	use InvalidArgumentException;
 	use JsonException;
 	use RuntimeException;
 
-	class Cookie {
+	#[AllowDynamicProperties] class Cookie {
 		private Config $config;
+		
+		private string $prefix;
+		private string $same_site;
+		private bool $secure;
+		private bool $http_only;
+		
 
 		public function __construct(Config $config) {
 			$this -> config = $config;
+
+			$configurations = $this -> config -> get('session');
+
+			if (!is_array($configurations)) {
+				throw new RuntimeException('Session configuration is not valid.');
+			}
+
+			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
+			$same_site = $configurations['same_site'] ?? '';
+			$cookie_secure = $configurations['cookie_secure'] ?? false;
+			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
+
+			if (empty($cookie_prefix) || empty($same_site) || !is_bool($cookie_secure) || !is_bool($cookie_http_only)) {
+				throw new RuntimeException('Invalid cookie configuration.');
+			}
+
+			$this -> prefix = $cookie_prefix;
+			$this -> same_site = $same_site;
+			$this -> secure = $cookie_secure;
+			$this -> http_only = $cookie_http_only;
 		}
 
 		/**
@@ -36,21 +63,7 @@
 			string $domain = '',
 			array $additional_attributes = []
 		): void {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-			$cookie_secure = $configurations['cookie_secure'] ?? false;
-			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
-
-			if (empty($cookie_prefix) || !is_bool($cookie_secure) || !is_bool($cookie_http_only)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			if ($expires instanceof DateTime) {
 				$expires = $expires -> getTimestamp();
@@ -63,9 +76,9 @@
 				'expires' => (int)$expires,
 				'path' => $path,
 				'domain' => $domain,
-				'secure' => $cookie_secure,
-				'httponly' => $cookie_http_only,
-				'samesite' => 'Lax'
+				'secure' => $this -> secure,
+				'httponly' => $this -> http_only,
+				'samesite' => $this -> same_site
 			], $additional_attributes);
 
 			try {
@@ -91,19 +104,7 @@
 		 * @return string
 		 */
 		public function get(string $name, string $default = ''): string {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			return $_COOKIE[$name] ?? $default;
 		}
@@ -116,19 +117,7 @@
 		 * @param string $domain
 		 */
 		public function delete(string $name, string $path = '/', string $domain = ''): void {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			setcookie($name, '', time() - 3600, $path, $domain);
 
@@ -143,19 +132,7 @@
 		 * @return bool
 		 */
 		public function exists(string $name): bool {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			return isset($_COOKIE[$name]);
 		}
@@ -168,23 +145,11 @@
 		 * @throws RuntimeException
 		 */
 		public function getAll(): array {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
 			$cookies = [];
 
 			foreach ($_COOKIE as $name => $value) {
-				if (str_starts_with($name, $cookie_prefix)) {
-					$cookies[substr($name, strlen($cookie_prefix))] = $value;
+				if (str_starts_with($name, $this -> prefix)) {
+					$cookies[substr($name, strlen($this -> prefix))] = $value;
 				}
 			}
 
@@ -201,23 +166,11 @@
 		 * @throws RuntimeException
 		 */
 		public function filter(callable $filter): array {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
 			$filtered_cookies = [];
 
 			foreach ($_COOKIE as $name => $value) {
-				if (str_starts_with($name, $cookie_prefix) && $filter($name, $value)) {
-					$filtered_cookies[substr($name, strlen($cookie_prefix))] = $value;
+				if (str_starts_with($name, $this -> prefix) && $filter($name, $value)) {
+					$filtered_cookies[substr($name, strlen($this -> prefix))] = $value;
 				}
 			}
 
