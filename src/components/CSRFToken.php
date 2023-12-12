@@ -32,6 +32,10 @@
 				throw new RuntimeException('Invalid dateTime configuration.');
 			}
 
+			if ($csrf_lifetime <= 0) {
+				throw new RuntimeException('CSRF token lifetime must be a positive integer.');
+			}
+
 			$this -> key = $csrf_key;
 			$this -> lifetime = $csrf_lifetime;
 
@@ -72,6 +76,8 @@
 		 *
 		 * @return bool
 		 *
+		 * @throws RandomException
+		 *
 		 * @example
 		 * $csrf = new CSRFToken();
 		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
@@ -92,6 +98,8 @@
 				&& time() <= $token_data['expires']
 			) {
 				$this -> session -> remove($this -> key);
+
+				$this -> generateCSRFToken();
 
 				return true;
 			}
