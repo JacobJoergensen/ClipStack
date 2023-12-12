@@ -22,7 +22,7 @@
 		 *
 		 * @param array<string, mixed> $config - THE LOADED CONFIGURATION ARRAY.
 		 */
-		private function __construct(array $config) {
+		public function __construct(array $config) {
 			$this -> configurations = $config;
 		}
 	
