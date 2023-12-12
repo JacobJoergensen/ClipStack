@@ -12,6 +12,9 @@
 
 		private Session $session;
 
+		private string $key;
+		private string $lifetime;
+
 		public function __construct(Config $config, Session $session) {
 			$this -> config = $config;
 			$this -> session = $session;
