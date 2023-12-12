@@ -57,7 +57,7 @@
 
 			$token_data = [
 				'token' => $token,
-				'expires' => time() + $this -> lifetime
+				'expires' => time() + (int)$this -> lifetime
 			];
 
 			$this -> session -> set($this -> key, $token_data);
