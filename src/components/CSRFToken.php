@@ -1,16 +1,37 @@
 <?php
 	namespace ClipStack\Component;
 
-	use Random\RandomException;
+	use ClipStack\Component\Backbone\Config;
 
-	class CSRFToken {
+	use AllowDynamicProperties;
+	use Random\RandomException;
+	use RuntimeException;
+
+	#[AllowDynamicProperties] class CSRFToken {
+		private Config $config;
+
 		private Session $session;
 
-		private const string CSRF_TOKEN_KEY = '_csrf_token';
-		private const int CSRF_TOKEN_LIFETIME = 900; // 15 MINUTES IN SECONDS.
-
-		public function __construct(Session $session) {
+		public function __construct(Config $config, Session $session) {
+			$this -> config = $config;
 			$this -> session = $session;
+
+			$configurations = $this -> config -> get('csrf');
+
+			if (!is_array($configurations)) {
+				throw new RuntimeException('Encryption configuration is not valid.');
+			}
+
+			$csrf_key = $configurations['key'] ?? '';
+			$csrf_lifetime = $configurations['lifetime'] ?? '';
+
+			if (empty($csrf_key) || empty($csrf_lifetime)) {
+				throw new RuntimeException('Invalid dateTime configuration.');
+			}
+
+			$this -> key = $csrf_key;
+			$this -> lifetime = $csrf_lifetime;
+
 		}
 
 		/**
@@ -33,10 +54,10 @@
 
 			$token_data = [
 				'token' => $token,
-				'expires' => time() + self::CSRF_TOKEN_LIFETIME
+				'expires' => time() + $this -> lifetime
 			];
 
-			$this -> session -> set(self::CSRF_TOKEN_KEY, $token_data);
+			$this -> session -> set($this -> key, $token_data);
 
 			return $token;
 		}
@@ -58,16 +79,16 @@
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
-			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);
+			$token_data = $this -> session -> get($this -> key);
 
 			// CHECK IF $token_data IS AN ARRAY AND HAS THE NECESSARY KEYS.
-			if (is_array($token_data) 
+			if (is_array($token_data)
 				&& isset($token_data['token'], $token_data['expires'])
 				&& is_string($token_data['token'])
-				&& hash_equals($token_data['token'], $token) 
+				&& hash_equals($token_data['token'], $token)
 				&& time() <= $token_data['expires']
 			) {
-				$this -> session -> remove(self::CSRF_TOKEN_KEY);
+				$this -> session -> remove($this -> key);
 
 				return true;
 			}
@@ -77,22 +98,22 @@
 
 		/**
 		 * CLEAR THE CSRF TOKEN FROM SESSION IF IT HAS EXPIRED.
-		 * 
+		 *
 		 * THIS METHOD CAN BE PERIODICALLY INVOKED TO ENSURE THE SESSION DOESN'T ACCUMULATE EXPIRED TOKENS.
 		 * IT CLEANS UP THE SESSION BY REMOVING THE CSRF TOKEN IF ITS EXPIRATION TIME HAS PASSED.
 		 *
 		 * @return void
-		 * 
+		 *
 		 * @example
 		 * $csrf = new CSRFToken();
 		 * $csrf -> clearExpiredTokens();  // THIS WILL CLEAR THE CSRF TOKEN IF IT'S EXPIRED.
 		 */
 		public function clearExpiredTokens(): void {
-			$token_data = $this -> session -> get(self::CSRF_TOKEN_KEY);
+			$token_data = $this -> session -> get($this -> key);
 
 			// CHECK IF $token_data IS AN ARRAY AND HAS THE 'expires' KEY.
 			if (is_array($token_data) && isset($token_data['expires']) && time() > $token_data['expires']) {
-				$this -> session -> remove(self::CSRF_TOKEN_KEY);
+				$this -> session -> remove($this -> key);
 			}
 		}
 	}
