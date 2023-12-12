@@ -14,8 +14,8 @@
 		private string $name;
 		private string $prefix;
 		private string $lifetime;
-		private string $secure;
-		private string $http_only;
+		private bool $secure;
+		private bool $http_only;
 
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
