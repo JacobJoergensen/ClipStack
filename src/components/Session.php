@@ -1,8 +1,9 @@
 <?php
 	namespace ClipStack\Component;
 
-	use AllowDynamicProperties;
 	use ClipStack\Component\Backbone\Config;
+
+	use AllowDynamicProperties;
 	use RuntimeException;
 
 	#[AllowDynamicProperties] class Session {
