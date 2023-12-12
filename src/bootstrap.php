@@ -82,14 +82,14 @@
 		/**
 		 * ENSURE THAT THE WEB SERVER CONFIGURATIONS ARE AS EXPECTED.
 		 */
-		if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get_modules())) {
+		if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get_modules(), true)) {
 			throw new RuntimeException('mod_rewrite module is not enabled in Apache. Please enable mod_rewrite to continue.');
 		}
 	
 		/**
 		 * VERIFY IF THE REQUIRED PHP EXTENSIONS FOR ClipStack ARE LOADED.
 		 */
-		$required_extensions = ['pdo', 'mbstring', 'json', 'curl', 'ctype', 'gd'];
+		$required_extensions = ['pdo', 'mbstring', 'json', 'curl', 'ctype', 'gd', 'openssl'];
 	
 		foreach ($required_extensions as $extension) {
 			if (!extension_loaded($extension)) {
