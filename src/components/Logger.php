@@ -12,10 +12,13 @@
 	 *
 	 */
 	#[AllowDynamicProperties] class Logger {
+		/**
+		 * @var Config
+		 */
 		private Config $config;
 
 		/**
-		 * @var array - ARRAY LOG DESTINATIONS.
+		 * @var string[] - ARRAY LOG DESTINATIONS.
 		 */
 		private array $log_destinations = [];
 
@@ -29,6 +32,9 @@
 		 */
 		private string $format;
 
+		/**
+		 * @param Config $config
+		 */
 		public function __construct(Config $config) {
 			$this -> config = $config;
 
@@ -73,7 +79,7 @@
 		/**
 		 * GET THE LOG LEVELS CONFIGURED FOR THE LOGGER.
 		 *
-		 * @return array - AN ARRAY OF LOG LEVELS.
+		 * @return string[] - AN ARRAY OF LOG LEVELS.
 		 */
 		public function getLogLevels(): array {
 			return $this -> levels;
@@ -82,7 +88,7 @@
 		/**
 		 * GET THE LOG DESTINATIONS CONFIGURED FOR THE LOGGER.
 		 *
-		 * @return array - AN ARRAY OF LOG DESTINATIONS.
+		 * @return string[] - AN ARRAY OF LOG DESTINATIONS.
 		 */
 		public function getLogDestinations(): array {
 			return $this -> log_destinations;
@@ -101,7 +107,7 @@
 		 * LOG AN INFO MESSAGE.
 		 *
 		 * @param string $message - THE LOG MESSAGE.
-		 * @param array $context - ADDITIONAL CONTEXT DATA.
+		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
 		 * @return void
 		 *
@@ -115,7 +121,7 @@
 		 * LOG A WARNING MESSAGE.
 		 *
 		 * @param string $message - THE LOG MESSAGE.
-		 * @param array $context - ADDITIONAL CONTEXT DATA.
+		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
 		 * @return void
 		 *
@@ -129,7 +135,7 @@
 		 * LOG AN ERROR MESSAGE.
 		 *
 		 * @param string $message - THE LOG MESSAGE.
-		 * @param array $context - ADDITIONAL CONTEXT DATA.
+		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
 		 * @return void
 		 *
