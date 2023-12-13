@@ -8,9 +8,8 @@
 	use JsonException;
 
 	class LoggerTest extends TestCase {
-		public function testSetLogLevels() {
-			$config_instance = Config::getInstance();
-			$config = $config_instance -> get('logger.levels');
+		public function testSetLogLevels(): void {
+			$config = Config::getInstance();
 			$logger = new Logger($config);
 
 			$this -> assertEquals(['DEBUG', 'INFO'], $logger -> getLogLevels());
@@ -20,8 +19,7 @@
 		}
 
 		public function testAddLogDestination(): void {
-			$config_instance = Config::getInstance();
-			$config = $config_instance -> get('logger.levels');
+			$config = Config::getInstance();
 			$logger = new Logger($config);
 
 			$logger -> addLogDestination('/path/to/log.txt');
@@ -32,8 +30,7 @@
 		}
 
 		public function testSetLogFormat(): void {
-			$config_instance = Config::getInstance();
-			$config = $config_instance -> get('logger.levels');
+			$config = Config::getInstance();
 			$logger = new Logger($config);
 
 			$this -> assertEquals("[%s] %s: %s\n", $logger -> getLogFormat());
@@ -43,8 +40,7 @@
 		 * @throws JsonException
 		 */
 		public function testLogMessages(): void {
-			$config_instance = Config::getInstance();
-			$config = $config_instance -> get('logger.levels');
+			$config = Config::getInstance();
 			$logger = new Logger($config);
 
 			$log_path = '/path/to/log.txt';
