@@ -150,7 +150,7 @@
 		 *
 		 * @param string $level - THE LOG LEVEL.
 		 * @param string $message - THE LOG MESSAGE.
-		 * @param array $context - ADDITIONAL CONTEXT DATA.
+		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
 		 * @return void
 		 *
