@@ -83,6 +83,11 @@
 			]
 		],
 
+		'logger' => [
+			'levels' => ['INFO', 'WARNING', 'ERROR'],
+			'format' => '[%s] [%s] %s: %s\n'
+		],
+
 		'mail' => [
 			// MAIL SENDING MECHANISM OR DRIVER (E.G., 'SMTP', 'SENDMAIL', 'MAILGUN')
 			'driver' => 'smtp',
