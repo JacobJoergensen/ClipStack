@@ -4,7 +4,7 @@
 		bootstrap="vendor/autoload.php"
 		convertDeprecationsToExceptions="true"
 		colors="true"
-		verbose="true" 
+		verbose="true"
 		stopOnFailure="false">
 	<testsuites>
 		<testsuite name="ClipStackTests">
