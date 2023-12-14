@@ -8,37 +8,80 @@
 	use RuntimeException;
 
 	#[AllowDynamicProperties] class CSRFToken {
+		/**
+		 * @var Config
+		 */
 		private Config $config;
 
+		/**
+		 * @var Request
+		 */
+		private Request $request;
+
+		/**
+		 * @var Session
+		 */
 		private Session $session;
 
+		/**
+		 * @var string|mixed
+		 */
 		private string $key;
+
+		/**
+		 * @var string|mixed
+		 */
 		private string $lifetime;
 
-		public function __construct(Config $config, Session $session) {
+		/**
+		 * @param Config $config
+		 * @param Request $request
+		 * @param Session $session
+		 */
+		public function __construct(Config $config, Request $request, Session $session) {
 			$this -> config = $config;
+			$this -> request = $request;
 			$this -> session = $session;
 
 			$configurations = $this -> config -> get('csrf');
 
 			if (!is_array($configurations)) {
-				throw new RuntimeException('Encryption configuration is not valid.');
+				throw new RuntimeException('CSRF configuration is not valid.');
 			}
 
-			$csrf_key = $configurations['key'] ?? '';
-			$csrf_lifetime = $configurations['lifetime'] ?? '';
+			$key = $configurations['key'] ?? '';
+			$lifetime = $configurations['lifetime'] ?? '';
 
-			if (empty($csrf_key) || empty($csrf_lifetime)) {
-				throw new RuntimeException('Invalid dateTime configuration.');
+
+			if (empty($key) || empty($lifetime)) {
+				throw new RuntimeException('Invalid CSRF configuration.');
 			}
 
-			if ($csrf_lifetime <= 0) {
+			if ($lifetime <= 0) {
 				throw new RuntimeException('CSRF token lifetime must be a positive integer.');
 			}
 
-			$this -> key = $csrf_key;
-			$this -> lifetime = $csrf_lifetime;
+			$this -> key = $key;
+			$this -> lifetime = $lifetime;
+		}
 
+		/**
+		 * CALCULATE THE ENTROPY OF A STRING.
+		 *
+		 * @param string $input
+		 *
+		 * @return float
+		 */
+		private function calculateEntropy(string $input): float {
+			$len = strlen($input);
+			$entropy = 0;
+
+			foreach (count_chars($input, 1) as $frequency) {
+				$probability = $frequency / $len;
+				$entropy -= $probability * log($probability, 2);
+			}
+
+			return $entropy;
 		}
 
 		/**
@@ -49,7 +92,7 @@
 		 * @throws RandomException
 		 *
 		 * @example
-		 * $csrf = new CSRFToken();
+		 * $csrf = new CSRFToken($config, $request, $session);
 		 * $token = $csrf -> generateCSRFToken();
 		 * echo '<input type="hidden" name="_csrf_token" value="' . $token . '">';
 		 */
@@ -57,11 +100,14 @@
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
-			$token = bin2hex(random_bytes(32));
+			do {
+				$token = bin2hex(random_bytes(32));
+			} while ($this -> calculateEntropy($token) < 4);
 
 			$token_data = [
 				'token' => $token,
-				'expires' => time() + (int)$this -> lifetime
+				'expires' => time() + (int)$this -> lifetime,
+				'usage_count' => 0
 			];
 
 			$this -> session -> set($this -> key, $token_data);
@@ -70,21 +116,59 @@
 		}
 
 		/**
+		 * BIND CSRF TOKEN TO USER'S IP ADDRESS OR USER AGENT.
+		 *
+		 * @param bool $bind_to_iP
+		 * @param bool $bind_to_user_agent
+		 *
+		 * @return void
+		 *
+		 * @example
+		 * $csrf = new CSRFToken($config, $session, $request);
+		 * $token = $csrf -> generateCSRFToken();
+		 * $csrf -> bindTokenToClient();
+		 */
+		public function bindTokenToClient(bool $bind_to_iP = true, bool $bind_to_user_agent = true): void {
+			$token_data = $this -> session -> get($this -> key);
+
+			if (is_array($token_data) && isset($token_data['token'], $token_data['expires'])) {
+				if ($bind_to_iP) {
+					$token_data['clientIP'] = $this -> request -> getClientIp();
+				}
+
+				if ($bind_to_user_agent) {
+					$token_data['userAgent'] = $this -> request -> getUserAgent();
+				}
+
+				$this -> session -> set($this -> key, $token_data);
+			}
+		}
+
+		/**
 		 * VALIDATE A GIVEN CSRF TOKEN AGAINST THE ONE IN THE SESSION.
 		 *
 		 * @param string $token
+		 * @param int|null $max_usage
+		 * @param bool $regenerate_on_validation
 		 *
 		 * @return bool
 		 *
 		 * @throws RandomException
-		 *
 		 * @example
-		 * $csrf = new CSRFToken();
+		 * $csrf = new CSRFToken($config, $request, $session);
 		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
 		 *     die('CSRF token validation failed.');
 		 * }
 		 */
-		public function validateCSRFToken(string $token): bool {
+		public function validateCSRFToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
+			if (!is_int($max_usage) || $max_usage <= 0) {
+				throw new RuntimeException('Invalid max usage of CSRF.');
+			}
+
+			if (is_bool($regenerate_on_validation)) {
+				throw new RuntimeException('Regenerate_on_validation need to be a boolean.');
+			}
+
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
@@ -96,10 +180,13 @@
 				&& is_string($token_data['token'])
 				&& hash_equals($token_data['token'], $token)
 				&& time() <= $token_data['expires']
+				&& $token_data['usage_count'] < $max_usage
 			) {
 				$this -> session -> remove($this -> key);
 
-				$this -> generateCSRFToken();
+				if ($regenerate_on_validation) {
+					$this -> generateCSRFToken();
+				}
 
 				return true;
 			}
@@ -116,7 +203,7 @@
 		 * @return void
 		 *
 		 * @example
-		 * $csrf = new CSRFToken();
+		 * $csrf = new CSRFToken($config, $request, $session);
 		 * $csrf -> clearExpiredTokens();  // THIS WILL CLEAR THE CSRF TOKEN IF IT'S EXPIRED.
 		 */
 		public function clearExpiredTokens(): void {
