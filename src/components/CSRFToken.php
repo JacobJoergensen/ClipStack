@@ -171,7 +171,7 @@
 				throw new RuntimeException('Invalid max usage of CSRF.');
 			}
 
-			if (is_bool($regenerate_on_validation)) {
+			if (!is_bool($regenerate_on_validation)) {
 				throw new RuntimeException('Regenerate_on_validation need to be a boolean.');
 			}
 
