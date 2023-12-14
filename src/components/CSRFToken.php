@@ -77,9 +77,11 @@
 			$len = strlen($input);
 			$entropy = 0;
 
-			foreach ((array) count_chars($input, 1) as $frequency) {
-				$probability = $frequency / $len;
-				$entropy -= $probability * log($probability, 2);
+			if ($len > 0) {
+				foreach ((array)count_chars($input, 1) as $frequency) {
+					$probability = $frequency / $len;
+					$entropy -= $probability * log($probability, 2);
+				}
 			}
 
 			return $entropy;
@@ -162,6 +164,9 @@
 		 * }
 		 */
 		public function validateCSRFToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
+			// CLEAR ANY EXPIRED TOKENS FIRST.
+			$this -> clearExpiredTokens();
+
 			if (!is_int($max_usage) || $max_usage <= 0) {
 				throw new RuntimeException('Invalid max usage of CSRF.');
 			}
@@ -169,9 +174,6 @@
 			if (is_bool($regenerate_on_validation)) {
 				throw new RuntimeException('Regenerate_on_validation need to be a boolean.');
 			}
-
-			// CLEAR ANY EXPIRED TOKENS FIRST.
-			$this -> clearExpiredTokens();
 
 			$token_data = $this -> session -> get($this -> key);
 
