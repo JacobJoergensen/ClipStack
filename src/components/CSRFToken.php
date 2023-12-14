@@ -4,6 +4,7 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use AllowDynamicProperties;
+	use InvalidArgumentException;
 	use Random\RandomException;
 	use RuntimeException;
 
@@ -24,12 +25,12 @@
 		private Session $session;
 
 		/**
-		 * @var string|mixed
+		 * @var string
 		 */
 		private string $key;
 
 		/**
-		 * @var string|mixed
+		 * @var string
 		 */
 		private string $lifetime;
 
@@ -76,7 +77,7 @@
 			$len = strlen($input);
 			$entropy = 0;
 
-			foreach (count_chars($input, 1) as $frequency) {
+			foreach ((array) count_chars($input, 1) as $frequency) {
 				$probability = $frequency / $len;
 				$entropy -= $probability * log($probability, 2);
 			}
@@ -157,7 +158,7 @@
 		 * @example
 		 * $csrf = new CSRFToken($config, $request, $session);
 		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
-		 *     die('CSRF token validation failed.');
+		 *     throw new RuntimeException('CSRF token validation failed.');
 		 * }
 		 */
 		public function validateCSRFToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
