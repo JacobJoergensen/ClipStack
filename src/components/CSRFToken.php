@@ -130,15 +130,15 @@
 		 * $token = $csrf -> generateCSRFToken();
 		 * $csrf -> bindTokenToClient();
 		 */
-		public function bindTokenToClient(bool $bind_to_iP = true, bool $bind_to_user_agent = true): void {
+		public function bindTokenToClient(bool $bind_to_ip = true, bool $bind_to_user_agent = true): void {
 			$token_data = $this -> session -> get($this -> key);
 
 			if (is_array($token_data) && isset($token_data['token'], $token_data['expires'])) {
-				if ($bind_to_iP) {
+				if ($bind_to_ip && $this -> request) {
 					$token_data['clientIP'] = $this -> request -> getClientIp();
 				}
 
-				if ($bind_to_user_agent) {
+				if ($bind_to_user_agent && $this -> request) {
 					$token_data['userAgent'] = $this -> request -> getUserAgent();
 				}
 
