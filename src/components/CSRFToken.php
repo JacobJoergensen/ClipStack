@@ -120,7 +120,7 @@
 		/**
 		 * BIND CSRF TOKEN TO USER'S IP ADDRESS OR USER AGENT.
 		 *
-		 * @param bool $bind_to_iP
+		 * @param bool $bind_to_ip
 		 * @param bool $bind_to_user_agent
 		 *
 		 * @return void
