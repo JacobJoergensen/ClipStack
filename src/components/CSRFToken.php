@@ -4,7 +4,6 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use AllowDynamicProperties;
-	use InvalidArgumentException;
 	use Random\RandomException;
 	use RuntimeException;
 
