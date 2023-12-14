@@ -79,7 +79,7 @@
 
 			if ($len > 0) {
 				foreach ((array)count_chars($input, 1) as $frequency) {
-					$probability = $frequency / $len;
+					$probability = (int)$frequency / $len;
 					$entropy -= $probability * log($probability, 2);
 				}
 			}
