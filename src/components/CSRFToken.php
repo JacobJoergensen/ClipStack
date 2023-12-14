@@ -14,9 +14,9 @@
 		private Config $config;
 
 		/**
-		 * @var Request
+		 * @var Request|null
 		 */
-		private Request $request;
+		private ?Request $request;
 
 		/**
 		 * @var Session
@@ -35,13 +35,13 @@
 
 		/**
 		 * @param Config $config
-		 * @param Request $request
 		 * @param Session $session
+		 * @param Request|null $request
 		 */
-		public function __construct(Config $config, Request $request, Session $session) {
+		public function __construct(Config $config, Session $session, ?Request $request = null) {
 			$this -> config = $config;
-			$this -> request = $request;
 			$this -> session = $session;
+			$this -> request = $request;
 
 			$configurations = $this -> config -> get('csrf');
 
@@ -94,7 +94,7 @@
 		 * @throws RandomException
 		 *
 		 * @example
-		 * $csrf = new CSRFToken($config, $request, $session);
+		 * $csrf = new CSRFToken($config, $session);
 		 * $token = $csrf -> generateCSRFToken();
 		 * echo '<input type="hidden" name="_csrf_token" value="' . $token . '">';
 		 */
@@ -157,7 +157,7 @@
 		 *
 		 * @throws RandomException
 		 * @example
-		 * $csrf = new CSRFToken($config, $request, $session);
+		 * $csrf = new CSRFToken($config, $session);
 		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
 		 *     throw new RuntimeException('CSRF token validation failed.');
 		 * }
@@ -205,7 +205,7 @@
 		 * @return void
 		 *
 		 * @example
-		 * $csrf = new CSRFToken($config, $request, $session);
+		 * $csrf = new CSRFToken($config, $session);
 		 * $csrf -> clearExpiredTokens();  // THIS WILL CLEAR THE CSRF TOKEN IF IT'S EXPIRED.
 		 */
 		public function clearExpiredTokens(): void {
