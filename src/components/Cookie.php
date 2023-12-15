@@ -15,12 +15,12 @@
 		private Config $config;
 
 		/**
-		 * @var string|mixed
+		 * @var string
 		 */
 		private string $prefix;
 
 		/**
-		 * @var array
+		 * @var array<string, mixed>
 		 */
 		private array $default_attributes = [
 			'expires' => 0,
@@ -32,7 +32,7 @@
 		];
 
 		/**
-		 * @var array
+		 * @var array<string, mixed>
 		 */
 		private array $cookie_attributes = [];
 
@@ -69,7 +69,7 @@
 		/**
 		 * SET DEFAULT ATTRIBUTES FOR ALL COOKIES SET BY AN INSTANCE OF COOKIE CLASS.
 		 *
-		 * @param array $attributes - DEFAULT COOKIE ATTRIBUTES.
+		 * @param array<string, mixed> $attributes - DEFAULT COOKIE ATTRIBUTES.
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
@@ -82,7 +82,7 @@
 		 *
 		 * @param string $name - THE NAME OF THE COOKIE.
 		 *
-		 * @return array|null - RETURNS ARRAY OF COOKIE ATTRIBUTES OR NULL IF COOKIE NAME ISN'T REGISTERED.
+		 * @return array<string, mixed>|null - RETURNS ARRAY OF COOKIE ATTRIBUTES OR NULL IF COOKIE NAME ISN'T REGISTERED.
 		 */
 		public function getAttributes(string $name): ?array {
 			$name_with_prefix = $this -> prefix . $name;
