@@ -2,8 +2,8 @@
 	namespace Tests\Component;
 
 	use PHPUnit\Framework\TestCase;
-	use ClipStack\Component\Cookie;
 	use ClipStack\Component\Backbone\Config;
+	use ClipStack\Component\Cookie;
 
 	use JsonException;
 
