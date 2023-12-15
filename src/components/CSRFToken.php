@@ -34,9 +34,15 @@
 		private string $lifetime;
 
 		/**
-		 * @param Config $config
-		 * @param Session $session
-		 * @param Request|null $request
+		 * CSRFToken constructor.
+		 *
+		 * WHEN PROVIDED, THE REQUEST IS USED FOR IP AND USER AGENT BINDING IN bindTokenToClient METHOD.
+		 *
+		 * @param Config $config - THE CONFIGURATION FOR CSRF PROTECTION.
+		 * @param Session $session - THE SESSION FOR STORING CSRF TOKENS.
+		 * @param Request|null $request - THE REQUEST TO DERIVE CLIENT IPS AND USER AGENTS (OPTIONAL).
+		 *
+		 * @throws RuntimeException - WHEN CSRF CONFIGURATIONS ARE INVALID.
 		 */
 		public function __construct(Config $config, Session $session, ?Request $request = null) {
 			$this -> config = $config;
@@ -66,11 +72,11 @@
 		}
 
 		/**
-		 * CALCULATE THE ENTROPY OF A STRING.
+		 * CALCULATE THE ENTROPY OF A PROVIDED STRING.
 		 *
-		 * @param string $input
+		 * @param string $input - THE STRING TO CALCULATE THE ENTROPY OF.
 		 *
-		 * @return float
+		 * @return float - THE ENTROPY OF THE INPUT STRING.
 		 */
 		private function calculateEntropy(string $input): float {
 			$len = strlen($input);
@@ -87,11 +93,14 @@
 		}
 
 		/**
-		 * GENERATE A NEW CSRF TOKEN AND STORE IT IN THE SESSION.
+		 * GENERATE A NEW CSRF TOKEN, STORE IT IN THE SESSION, AND RETURN IT.
 		 *
-		 * @return string
+		 * IT ENSURES THE GENERATED TOKEN HAS A MINIMUM ENTROPY OF 4.
+		 * IT ALSO CLEARS ANY EXPIRED TOKENS FROM THE SESSION BEFORE GENERATING A NEW ONE.
 		 *
-		 * @throws RandomException
+		 * @return string - THE NEW CSRF TOKEN.
+		 *
+		 * @throws RandomException - EXCEPTION THROWN IF AN ERROR OCCURS WHILE GENERATING THE TOKEN.
 		 *
 		 * @example
 		 * $csrf = new CSRFToken($config, $session);
@@ -118,12 +127,15 @@
 		}
 
 		/**
-		 * BIND CSRF TOKEN TO USER'S IP ADDRESS OR USER AGENT.
+		 * BIND THE GENERATED CSRF TOKEN TO CLIENT'S IP ADDRESS AND/OR USER AGENT, IF REQUESTED.
 		 *
-		 * @param bool $bind_to_ip
-		 * @param bool $bind_to_user_agent
+		 * THESE VALUES NEED TO BE SUPPLIED BY THE OPTIONAL REQUEST PARAMETER IN THE CONSTRUCTOR.
+		 * IF THESE CONDITIONS ARE NOT MET, THE METHOD PERFORMS NO ACTION.
 		 *
-		 * @return void
+		 * @param bool $bind_to_ip - BIND THE CSRF TOKEN TO CLIENT'S IP ADDRESS IF TRUE.
+		 * @param bool $bind_to_user_agent - BIND THE CSRF TOKEN TO CLIENT'S USER AGENT IF TRUE.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $csrf = new CSRFToken($config, $session, $request);
@@ -149,15 +161,21 @@
 		/**
 		 * VALIDATE A GIVEN CSRF TOKEN AGAINST THE ONE IN THE SESSION.
 		 *
-		 * @param string $token
-		 * @param int|null $max_usage
-		 * @param bool $regenerate_on_validation
+		 * THE METHOD ENSURES USAGE COUNT DOES NOT EXCEED THE MAXIMUM VALUE.
+		 * IT ALSO CHECKS IF THE TOKEN IS NOT EXPIRED AND MATCHES THE ONE IN THE SESSION.
+		 * AFTER SUCCESSFUL TOKEN VALIDATION, IT OPTIONALLY REGENERATES A NEW TOKEN.
 		 *
-		 * @return bool
+		 * @param string $token - THE CSRF TOKEN TO BE VALIDATED.
+		 * @param int|null $max_usage - THE MAXIMUM TIMES A CSRF TOKEN CAN BE USED.
+		 * @param bool $regenerate_on_validation - REGENERATE A NEW CSRF TOKEN AFTER SUCCESSFUL VALIDATION.
 		 *
-		 * @throws RandomException
+		 * @return bool - TRUE IF THE CSRF TOKEN IS VALID, FALSE OTHERWISE.
+		 *
+		 * @throws RandomException - EXCEPTION THROWN IF AN ERROR OCCUR.
+		 *
 		 * @example
 		 * $csrf = new CSRFToken($config, $session);
+		 *
 		 * if (!$csrf -> validateCSRFToken($_POST['_csrf_token'])) {
 		 *     throw new RuntimeException('CSRF token validation failed.');
 		 * }
@@ -199,10 +217,10 @@
 		/**
 		 * CLEAR THE CSRF TOKEN FROM SESSION IF IT HAS EXPIRED.
 		 *
-		 * THIS METHOD CAN BE PERIODICALLY INVOKED TO ENSURE THE SESSION DOESN'T ACCUMULATE EXPIRED TOKENS.
+		 * THIS METHOD ENSURES THE SESSION DOESN'T ACCUMULATE EXPIRED TOKENS.
 		 * IT CLEANS UP THE SESSION BY REMOVING THE CSRF TOKEN IF ITS EXPIRATION TIME HAS PASSED.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $csrf = new CSRFToken($config, $session);
