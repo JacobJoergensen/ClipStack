@@ -8,76 +8,74 @@
 	use JsonException;
 
 	class CookieTest extends TestCase {
-		public function testSetCookie(): void {
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
+		private Cookie $cookie;
+		private string $prefix = 'test_';
 
-			$cookie -> set('user', ['id' => 1, 'name' => 'John Doe'], time() + 3600, '/path', 'example.com', ['samesite' => 'None']);
+		public static function setUpBeforeClass(): void {
+			ini_set('session.use_cookies', '0');
+		}
 
-			$this -> assertArrayHasKey('test_user', $_COOKIE);
-			$this -> assertNotEmpty($_COOKIE['test_user']);
+		protected function setUp(): void {
+			$config = $this -> createMock(Config::class);
+			$config -> method('get') -> willReturn(['cookie_prefix' => $this -> prefix, 'cookie_secure' => true, 'cookie_http_only' => true]);
+			$this -> cookie = new Cookie($config);
 		}
 
 		/**
 		 * @throws JsonException
 		 */
-		public function testGetCookie(): void {
-			$_COOKIE['test_user'] = json_encode(['id' => 1, 'name' => 'John Doe'], JSON_THROW_ON_ERROR);
-
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
-
-			$user_data = $cookie -> get('user');
-
-			$this -> assertEquals(['id' => 1, 'name' => 'John Doe'], $user_data);
+		public function testSetAndGet(): void {
+			$this -> cookie -> set('example', 'value');
+			$this -> assertSame('value', $this -> cookie -> get('example'));
 		}
 
-		public function testDeleteCookie(): void {
-			$_COOKIE['test_user'] = 'some_value';
-
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
-
-			$cookie -> delete('user');
-
-			$this -> assertArrayNotHasKey('test_user', $_COOKIE);
+		/**
+		 * @throws JsonException
+		 */
+		public function testSetArrayAndGetArray(): void {
+			$this -> cookie -> set('example', ['value']);
+			$this -> assertSame(['value'], $this -> cookie -> get('example'));
 		}
 
-		public function testCookieExists(): void {
-			$_COOKIE['test_user'] = 'some_value';
-
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
-
-			$exists = $cookie -> exists('user');
-
-			$this -> assertTrue($exists);
+		/**
+		 * @throws JsonException
+		 */
+		public function testExists(): void {
+			$this -> cookie -> set('example', 'value');
+			$this -> assertTrue($this -> cookie -> exists('example'));
 		}
 
-		public function testGetAllCookies(): void {
-			$_COOKIE['test_user'] = 'value1';
-			$_COOKIE['test_token'] = 'value2';
+		/**
+		 * @throws JsonException
+		 */
+		public function testDelete(): void {
+			$this -> cookie -> set('example', 'value');
+			$this -> cookie -> delete('example');
 
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
-
-			$cookies = $cookie -> getAll();
-
-			$this -> assertEquals(['user' => 'value1', 'token' => 'value2'], $cookies);
+			$this -> assertFalse($this -> cookie -> exists('example'));
 		}
 
-		public function testFilterCookies(): void {
-			$_COOKIE['test_user'] = 'value1';
-			$_COOKIE['test_token'] = 'value2';
-			$_COOKIE['test_other'] = 'value3';
+		/**
+		 * @throws JsonException
+		 */
+		public function testGetAll(): void {
+			$this -> cookie -> set('example1', 'value1');
+			$this -> cookie -> set('example2', 'value2');
 
-			$config = Config::getInstance();
-			$cookie = new Cookie($config);
+			$this -> assertSame(['example1' => 'value1', 'example2' => 'value2'], $this -> cookie -> getAll());
+		}
 
-			$filtered_cookies = $cookie -> filter(function ($name, $value) {
-				return $name === 'test_user' || $value === 'value3';
+		/**
+		 * @throws JsonException
+		 */
+		public function testFilter(): void {
+			$this -> cookie -> set('example1', 'value1');
+			$this -> cookie -> set('example2', 'value2');
+
+			$filtered = $this -> cookie -> filter(function ($name, $value) {
+				return $name === 'example1' && $value === 'value1';
 			});
 
-			$this -> assertEquals(['user' => 'value1', 'other' => 'value3'], $filtered_cookies);
+			$this -> assertSame(['example1' => 'value1'], $filtered);
 		}
 	}
