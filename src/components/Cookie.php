@@ -87,11 +87,11 @@
 		public function getAttributes(string $name): ?array {
 			$name_with_prefix = $this -> prefix . $name;
 
-			if (!isset($_COOKIE[$name_with_prefix])) {
-				return null;
+			if (isset($_COOKIE[$name_with_prefix], $this -> cookie_attributes[$name]) && is_array($this -> cookie_attributes[$name])) {
+				return $this -> cookie_attributes[$name];
 			}
 
-			return $this -> cookie_attributes[$name] ?? null;
+			return null;
 		}
 
 		/**
