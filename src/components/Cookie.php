@@ -99,7 +99,16 @@
 		 *
 		 * @param string $name - THE NAME OF THE COOKIE.
 		 * @param mixed $value - THE VALUE OF THE COOKIE.
-		 * @param array<string, mixed> $attributes - THE ATTRIBUTES FOR THE COOKIE.
+		 * @param array{
+		 *      expires?: int,
+		 *      path?: string,
+		 *      domain?: string,
+		 *      secure?: bool,
+		 *      httponly?: bool,
+		 *      samesite?: 'Lax'|'lax'|'Strict'|'strict'|'None'|'none'
+		 *  } $attributes
+		 * 
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @throws RuntimeException - IF THE COOKIE CONFIGURATION IS NOT VALID.
 		 * @throws InvalidArgumentException - IF THE NAME OF THE COOKIE IS EMPTY OR INVALID, OR IF THE COOKIE VALUE IS TOO LONG.
@@ -137,7 +146,7 @@
 				throw new InvalidArgumentException('Cookie value cannot exceed 4096 characters.');
 			}
 
-			$final_attributes = array_merge($this -> default_attributes, $this -> cookie_attributes[$name]??[], $attributes);
+			$final_attributes = array_merge( $this -> default_attributes, is_array($this -> cookie_attributes[$name]) ? $this -> cookie_attributes[$name] : [], $attributes );
 
 			$this -> cookie_attributes[$name] = $final_attributes;
 			$name = $this -> prefix . $name;
@@ -247,3 +256,4 @@
 			return $filtered_cookies;
 		}
 	}
+
