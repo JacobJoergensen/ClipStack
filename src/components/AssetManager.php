@@ -9,7 +9,7 @@
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE STYLESHEET.
 		 */
 		public function __construct(
-			private string  $path,
+			private string $path,
 			private ?string $integrity = null
 		) {}
 
@@ -42,10 +42,10 @@
 		 * @param bool $defer - INDICATES IF SCRIPT EXECUTION SHOULD BE DEFERRED.
 		 */
 		public function __construct(
-			private string  $path,
+			private string $path,
 			private ?string $integrity = null,
-			private bool    $async = false,
-			private bool    $defer = false
+			private bool $async = false,
+			private bool $defer = false
 		) {}
 
 		/**
