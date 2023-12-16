@@ -4,42 +4,61 @@
 	use ClipStack\Component\Backbone\Singleton;
 	use ClipStack\Component\Backbone\Config;
 
+	use Closure;
+	use Exception;
+	use InvalidArgumentException;
 	use PDO;
 	use PDOException;
 	use PDOStatement;
-
 	use RuntimeException;
 
 	class Database {
 		use Singleton;
 
 		/**
-		 * @var Database|null
+		 * @var PDO
 		 */
-		private static ?Database $instance = null;
-
 		private PDO $pdo;
+
+		/**
+		 * @var PDOStatement|null
+		 */
 		private ?PDOStatement $statement = null;
 
+		/**
+		 * @var bool
+		 */
 		private bool $is_connected = false;
-		private string $prefix = '';
 
+		/**
+		 * @var string|mixed
+		 */
+		private string $prefix;
+
+		/**
+		 * @var Config
+		 */
 		private Config $config;
+
+		/**
+		 * @var Validate
+		 */
 		private Validate $validate;
 
 		/**
 		 * DATABASE CONSTRUCTOR.
 		 *
 		 * @param Config $config - THE CONFIGURATION INSTANCE.
+		 * @param Validate $validate - THE VALIDATION INSTANCE.
 		 */
 		public function __construct(Config $config, Validate $validate) {
 			$this -> config = $config;
 			$this -> validate = $validate;
 
-			$database_config = $this -> config -> get('database');
+			$configurations = $this -> config -> get('database');
 
-			if (is_array($database_config) && isset($database_config['prefix'])) {
-				$this -> prefix = $database_config['prefix'];
+			if (is_array($configurations) && isset($configurations['prefix'])) {
+				$this -> prefix = $configurations['prefix'];
 			} else {
 				$this -> prefix = '';
 			}
@@ -55,30 +74,9 @@
 		}
 
 		/**
-		 * RETRIEVE THE SINGLETON INSTANCE OF THE DATABASE CLASS.
-		 *
-		 * @param Config $config - THE CONFIGURATION INSTANCE.
-		 * @param Validate $validate - THE VALIDATION INSTANCE.
-		 *
-		 * @return Database - THE SINGLETON INSTANCE OF THE DATABASE CLASS.
-		 *
-		 * @example
-		 * $config = new Config();
-		 * $validate = new Validate();
-		 * $db = Database::getInstance($config, $validate);
-		 */
-		public static function getInstance(Config $config, Validate $validate): Database {
-			if (self::$instance === null) {
-				self::$instance = new self($config, $validate);
-			}
-
-			return self::$instance;
-		}
-
-		/**
 		 * ENSURE DATABASE CONNECTION IS ESTABLISHED.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		private function ensureConnected(): void {
 			if (!$this -> is_connected) {
@@ -90,18 +88,21 @@
 		/**
 		 * GET THE PREFIXED TABLE NAME.
 		 *
-		 * @param string $table_name
+		 * @param string $table_name - THE ORIGINAL TABLE NAME.
 		 *
-		 * @return string
+		 * @return string - THE TABLE NAME PREFIXED WITH THE PREDEFINED PREFIX.
 		 */
-		private function prefixedTableName(string $table_name): string {
+		private function  getPrefixedTableName(string $table_name): string {
 			return $this -> prefix . $table_name;
 		}
 
 		/**
 		 * ESTABLISH A DATABASE CONNECTION.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 *
+		 * @throws PDOException - IF THE CONNECTION TO THE DATABASE SERVER CANNOT BE ESTABLISHED.
+		 * @throws RuntimeException - IF THE DATABASE CONFIGURATION IS NOT VALID.
 		 */
 		private function connect(): void {
 			$configurations = $this -> config -> get('database');
@@ -123,7 +124,7 @@
 				throw new RuntimeException('Invalid database configuration.');
 			}
 
-			$dsn = "{$driver}:host={$host};port={$port};dbname={$db};charset={$charset}";
+			$dsn = "$driver:host=$host;port=$port;dbname=$db;charset=$charset";
 
 			$options = [
 				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -138,7 +139,7 @@
 			while ($attempt < $max_attempts) {
 				try {
 					$this -> pdo = new PDO($dsn, $user, $pass, $options);
-					$this -> pdo -> exec("SET NAMES '{$charset}' COLLATE '{$collation}'");
+					$this -> pdo -> exec("SET NAMES '$charset' COLLATE '$collation'");
 					break;
 				} catch (PDOException $exception) {
 					if ($attempt === $max_attempts - 1) {
@@ -153,141 +154,172 @@
 		/**
 		 * CLOSE THE DATABASE CONNECTION.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public function closeConnection(): void {
 			$this -> pdo = new PDO('sqlite::memory:');
 		}
 
 		/**
-		 * RUN A QUERY.
+		 * RUN A SQL QUERY AGAINST THE DATABASE.
 		 *
-		 * @param string $query
-		 * @param array<string, mixed> $params - Associative array of query parameters.
-		 * @param array<string, int> $types - Associative array of parameter types.
+		 * @param string $query - SQL QUERY TO BE EXECUTED.
+		 * @param array<string, mixed> $params - PARAMETERS FOR PREPARED STATEMENT.
+		 * @param array<string, int> $types - TYPES FOR THE PARAMETERS.
 		 *
-		 * @return bool
+		 * @return PDOStatement|null - RETURNS THE RESULTING PDOStatement OBJECT ON SUCCESS, NULL ON FAILURE.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function query(string $query, array $params = [], array $types = []): bool {
+		public function query(string $query, array $params = [], array $types = []): ?PDOStatement {
 			$this -> ensureConnected();
+
 			$this -> statement = $this -> pdo -> prepare($query);
 
-			foreach ($types as $param => $type) {
-				$this -> statement -> bindParam($param, $params[$param], $type);
+			if (!empty($types)) {
+				foreach ($types as $param => $type) {
+					$this -> statement -> bindParam($param, $params[$param], $type);
+				}
+
+				$execute_status = $this -> statement -> execute();
+			} else{
+				$execute_status = $this -> statement -> execute($params);
 			}
 
-			return $this -> statement -> execute($params);
+			if ($execute_status) {
+				return $this -> statement;
+			}
+
+			return null;
 		}
 
-
 		/**
-		 * CREATE A NEW TABLE.
+		 * PERFORM A SQL SELECT OPERATION ON A SPECIFIED TABLE.
 		 *
-		 * @param string $table_name
-		 * @param string $fields
+		 * @param $table - THE NAME OF THE TABLE TO SELECT FROM.
+		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return bool
+		 * @return false|array - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
 		 */
-		public function createTable(string $table_name, string $fields): bool {
-			$this -> ensureConnected();
+		public function select($table, array $conditions = []): false|array {
+			$where = implode(' AND ', array_map(static function ($k) {
+				return "`$k` = :$k";
+			}, array_keys($conditions)));
 
-			if (!$this -> validate -> isValidSqlName($this -> prefixedTableName($table_name))) {
-				return false;
-			}
+			$stmt = $this -> pdo -> prepare("SELECT * FROM $table WHERE $where");
 
-			if (!$this -> validate -> isValidSqlFieldDefinitions($fields)) {
-				return false;
-			}
+			$stmt -> execute($conditions);
 
-			$query = "CREATE TABLE IF NOT EXISTS {$this -> prefixedTableName($table_name)} ({$fields})";
-			return (bool) $this -> pdo -> exec($query);
+			return $stmt -> fetchAll(PDO::FETCH_ASSOC);
 		}
 
-
 		/**
-		 * ALTER AN EXISTING TABLE.
+		 * PERFORM A SQL DELETE OPERATION ON A SPECIFIED TABLE.
 		 *
-		 * @param string $table_name
-		 * @param string $alterations
+		 * @param $table - THE NAME OF THE TABLE TO DELETE FROM.
+		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return bool
+		 * @return PDOStatement - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function alterTable(string $table_name, string $alterations): bool {
-			$this -> ensureConnected();
+		public function delete($table, array $conditions = []): PDOStatement {
+			$where = $this -> buildWhereClause($conditions);
 
-			if (!$this -> validate -> isValidSqlName($this -> prefixedTableName($table_name))) {
-				return false;
-			}
-
-			if (!$this -> validate -> isValidSqlFieldDefinitions($alterations)) {
-				return false;
-			}
-
-			$query = "ALTER TABLE {$this -> prefixedTableName($table_name)} {$alterations}";
-			return (bool) $this -> pdo -> exec($query);
+			return $this -> query("DELETE FROM $table WHERE $where");
 		}
 
 		/**
-		 * CHECK IF A ROW EXISTS BASED ON A QUERY.
+		 * INSERT NEW ROW INTO A SPECIFIED TABLE.
 		 *
-		 * @param string $query
-		 * @param array<string, mixed> $params
+		 * @param string $table - THE NAME OF THE TABLE TO INSERT INTO.
+		 * @param array<string, mixed> $data - AN ASSOCIATIVE ARRAY WHERE THE KEY IS THE COLUMN NAME AND THE VALUE IS THE DATA TO BE INSERTED.
 		 *
-		 * @return bool
-		 */
-		public function exists(string $query, array $params = []): bool {
-			$this -> query($query, $params);
-			return $this -> rowCount() > 0;
-		}
-
-		/**
-		 * INSERT A NEW ROW INTO A TABLE.
+		 * @return bool - TRUE IF THE INSERT QUERY WAS SUCCESSFUL, FALSE OTHERWISE.
 		 *
-		 * @param string $table
-		 * @param array<string, mixed> $data
-		 *
-		 * @return bool
+		 * @throws InvalidArgumentException - IF THE DATA ARRAY IS EMPTY.
+		 * @throws PDOException - IF THE SQL QUERY EXECUTION FAILS.
 		 */
 		public function insert(string $table, array $data): bool {
-			$table = $this -> prefixedTableName($table);
+			if (empty($data)) {
+				throw new InvalidArgumentException('Cannot insert an empty row into the table.');
+			}
+
+			$table = $this -> getPrefixedTableName($table);
 
 			$fields = implode(', ', array_keys($data));
 			$placeholders = ':' . implode(', :', array_keys($data));
 
-			$sql = "INSERT INTO {$table} ({$fields}) VALUES ({$placeholders})";
+			$sql = "INSERT INTO $table ($fields) VALUES ($placeholders)";
 
 			return $this -> query($sql, $data) !== null;
 		}
 
 		/**
-		 * UPDATE A ROW IN A TABLE.
+		 * UPDATE SPECIFIC ROWS IN A SPECIFIED TABLE.
 		 *
-		 * @param string $table
-		 * @param array<string, mixed> $data
-		 * @param array<string, mixed> $where
+		 * @param string $table - THE NAME OF THE TABLE TO UPDATE.
+		 * @param array $data - AN ASSOCIATIVE ARRAY WHERE THE KEY IS THE COLUMN NAME AND THE VALUE IS THE NEW DATA FOR THAT COLUMN.
+		 * @param array $where - AN ASSOCIATIVE ARRAY DEFINING THE CONDITIONS FOR THE ROWS TO BE UPDATED.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THE UPDATE QUERY WAS SUCCESSFUL, FALSE OTHERWISE.
+		 *
+		 * @throws PDOException - IF THE SQL QUERY EXECUTION FAILS.
 		 */
 		public function update(string $table, array $data, array $where): bool {
-			$table = $this -> prefixedTableName($table);
+			$table = $this -> getPrefixedTableName($table);
 
-			$data_placeholders = array_map(static fn($key) => "{$key} = :data_{$key}", array_keys($data));
-			$where_placeholders = array_map(static fn($key) => "{$key} = :where_{$key}", array_keys($where));
+			$set_placeholders = array_map(static fn($key) => "$key = :set_$key", array_keys($data));
+			$where_placeholders = array_map(static fn($key) => "$key = :where_$key", array_keys($where));
 
-			$sql = "UPDATE {$table} SET " . implode(', ', $data_placeholders) . " WHERE " . implode(' AND ', $where_placeholders);
+			$sql = "UPDATE $table SET " . implode(', ', $set_placeholders) . " WHERE " . implode(' AND ', $where_placeholders);
 
-			$data_params = array_combine(array_map(static fn($k) => "data_{$k}", array_keys($data)), $data);
-			$where_params = array_combine(array_map(static fn($k) => "where_{$k}", array_keys($where)), $where);
+			$set_data = array_combine(array_map(static fn($key) => "set_$key", array_keys($data)), array_values($data));
+			$where_data = array_combine(array_map(static fn($key) => "where_$key", array_keys($where)), array_values($where));
 
-			$params = array_merge($data_params, $where_params);
+			$params = array_merge($set_data, $where_data);
 
 			return $this -> query($sql, $params) !== null;
 		}
 
 		/**
-		 * FETCH A SINGLE ROW.
+		 * COUNTS THE NUMBER OF ROWS IN A SPECIFIED TABLE.
 		 *
-		 * @return array<string, mixed>|null - ASSOCIATIVE ARRAY REPRESENTING THE FETCHED ROW.
+		 * @param $table - THE NAME OF THE TABLE TO COUNT ROWS IN.
+		 *
+		 * @return int - NUMBER OF ROWS IN THE SPECIFIED TABLE.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION
+		 */
+		public function count($table): int {
+			$statement = $this -> query('SELECT COUNT(*) as count FROM ' . $table);
+
+			if ($statement === null) {
+				throw new PDOException('Query failed: cannot count the rows.');
+			}
+
+			$result = $statement -> fetch(PDO::FETCH_ASSOC);
+
+			return $result['count'] ?? 0;
+		}
+
+		/**
+		 * GET THE NUMBER OF ROWS AFFECTED BY THE LAST DELETE, INSERT, OR UPDATE STATEMENT.
+		 *
+		 * @return int - THE NUMBER OF ROWS AFFECTED BY THE LAST DELETE, INSERT, OR UPDATE STATEMENT.
+		 */
+		public function rowCount(): int {
+			if ($this -> statement) {
+				return $this -> statement -> rowCount();
+			}
+
+			return 0;
+		}
+
+		/**
+		 * FETCH A SINGLE ROW FROM THE RESULT SET OF THE LAST EXECUTED STATEMENT.
+		 *
+		 * @return array<string, mixed>|null - ASSOCIATIVE ARRAY REPRESENTING THE FETCHED ROW OR NULL IF THERE ARE NO MORE ROWS.
 		 */
 		public function result(): ?array {
 			if ($this -> statement) {
@@ -302,56 +334,159 @@
 		}
 
 		/**
-		 * FETCH ALL ROWS.
+		 * FETCH ALL ROWS FROM THE RESULT SET OF THE LAST EXECUTED STATEMENT.
 		 *
-		 * @param string[] $columns - OPTIONAL: AN ARRAY OF COLUMN NAMES TO FETCH. DEFAULT IS ['*'].
-		 *
-		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS.
+		 * @return array<array<string, mixed>> - ARRAY OF ASSOCIATIVE ARRAYS REPRESENTING THE FETCHED ROWS, OR AN EMPTY ARRAY IF THERE ARE NO MORE ROWS.
 		 */
-		public function results(array $columns = ['*']): array {
-			if ($this -> statement) {
-				return $this -> statement -> fetchAll(PDO::FETCH_ASSOC);
-			}
-
-			return [];
+		public function results(): array {
+			return $this -> statement ? $this -> statement -> fetchAll(PDO::FETCH_ASSOC) : [];
 		}
 
 		/**
-		 * GET ROW COUNT.
+		 * CHECK IF A ROW EXISTS BASED ON A SPECIFIED SQL QUERY.
 		 *
-		 * @return int
+		 * @param string $query - THE SQL QUERY TO CHECK FOR EXISTENCE.
+		 * @param array<string, mixed> $params - OPTIONAL PARAMETERS FOR THE SQL QUERY.
+		 *
+		 * @return bool - TRUE IF AT LEAST ONE ROW EXISTS THAT MATCHES THE CONDITIONS OF THE QUERY, FALSE OTHERWISE.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION.
 		 */
-		public function rowCount(): int {
-			if ($this -> statement) {
-				return $this -> statement -> rowCount();
-			}
+		public function exists(string $query, array $params = []): bool {
+			$this -> query($query, $params);
 
-			return 0;
+			return $this -> rowCount() > 0;
 		}
 
+		/**
+		 * CREATE A SQL WHERE CLAUSE.
+		 *
+		 * @param $conditions - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE CONDITIONS.
+		 *
+		 * @return string - A SQL WHERE CLAUSE.
+		 */
+		private function buildWhereClause($conditions): string {
+			return implode(' AND ', array_map(static function ($field, $value) {
+				return "`$field` = $value";
+			}, array_keys($conditions), $conditions));
+		}
+
+		/**
+		 * CREATE A SQL SET CLAUSE FROM THE PROVIDED DATA.
+		 *
+		 * @param $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
+		 *
+		 * @return string - A SQL SET CLAUSE.
+		 */
+		private function buildSetClause($data): string {
+			return implode(', ', array_map(static function ($field, $value) {
+				return "`$field` = $value";
+			}, array_keys($data), array_values($data)));
+		}
+
+		/**
+		 * CREATE A NEW TABLE IN THE DATABASE.
+		 *
+		 * @param string $table_name - THE NAME OF THE NEW TABLE.
+		 * @param string $fields - THE SQL STRING DEFINED FOR THE COLUMNS OF THIS TABLE.
+		 *
+		 * @return bool - TRUE IF THE TABLE WAS SUCCESSFULLY CREATED, FALSE OTHERWISE.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION.
+		 */
+		public function createTable(string $table_name, string $fields): bool {
+			$this -> ensureConnected();
+
+			if (!$this -> validate -> isValidSqlName($this -> getPrefixedTableName($table_name))) {
+				return false;
+			}
+
+			if (!$this -> validate -> isValidSqlFieldDefinitions($fields)) {
+				return false;
+			}
+
+			$query = "CREATE TABLE IF NOT EXISTS {$this -> getPrefixedTableName($table_name)} ($fields)";
+
+			return (bool) $this -> pdo -> exec($query);
+		}
+
+
+		/**
+		 * MODIFY THE STRUCTURE OF AN EXISTING TABLE IN THE DATABASE.
+		 *
+		 * @param string $table_name - THE NAME OF THE TABLE TO ALTER.
+		 * @param string $alterations - THE SQL ALTER TABLE STATEMENT STRING.
+		 *
+		 * @return bool - TRUE IF THE TABLE WAS SUCCESSFULLY ALTERED, FALSE OTHERWISE.
+		 *
+		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION.
+		 */
+		public function alterTable(string $table_name, string $alterations): bool {
+			$this -> ensureConnected();
+
+			if (!$this -> validate -> isValidSqlName($this -> getPrefixedTableName($table_name))) {
+				return false;
+			}
+
+			if (!$this -> validate -> isValidSqlFieldDefinitions($alterations)) {
+				return false;
+			}
+
+			$query = "ALTER TABLE {$this -> getPrefixedTableName($table_name)} $alterations";
+
+			return (bool) $this -> pdo -> exec($query);
+		}
+
+		/**
+		 * EXECUTE A DATABASE TRANSACTION.
+		 *
+		 * @param Closure $callback - THE CALLBACK FUNCTION TO PERFORM DATABASE OPERATIONS.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 *
+		 * @throws Exception - IF ANY EXCEPTION IS THROWN INSIDE THE TRANSACTION.
+		 */
+		public function transaction(Closure $callback): void {
+			try {
+				$this -> pdo -> beginTransaction();
+
+				$callback($this);
+
+				$this -> pdo -> commit();
+			} catch (Exception $e) {
+				$this -> pdo -> rollBack();
+				throw $e;
+			}
+		}
 
 		/**
 		 * BEGIN A DATABASE TRANSACTION.
 		 *
-		 * @return bool
+		 * @return bool - TRUE ON SUCCESS, FALSE OTHERWISE. ALSO RETURNS FALSE IF THE DRIVER DOES NOT SUPPORT TRANSACTIONS.
+		 *
+		 * @throws PDOException - IF THERE IS ALREADY AN ACTIVE TRANSACTION, OR THE DRIVER ENCOUNTERS AN ERROR.
 		 */
 		public function beginTransaction(): bool {
 			return $this -> pdo -> beginTransaction();
 		}
 
 		/**
-		 * COMMIT A DATABASE TRANSACTION.
+		 * COMMIT THE CURRENT DATABASE TRANSACTION.
 		 *
-		 * @return bool
+		 * @return bool - TRUE ON SUCCESS, FALSE ON FAILURE. ALSO RETURNS FALSE IF THE DRIVER DOES NOT SUPPORT TRANSACTIONS OR THERE IS NO ACTIVE TRANSACTION.
+		 *
+		 * @throws PDOException - IF THERE IS NO ACTIVE TRANSACTION, OR THE DRIVER ENCOUNTERS AN ERROR.
 		 */
 		public function commitTransaction(): bool {
 			return $this -> pdo -> commit();
 		}
 
 		/**
-		 * ROLLBACK A DATABASE TRANSACTION.
+		 * ROLLBACK THE CURRENT DATABASE TRANSACTION.
 		 *
-		 * @return bool
+		 * @return bool - TRUE ON SUCCESS, FALSE ON FAILURE. ALSO RETURNS FALSE IF THE DRIVER DOES NOT SUPPORT TRANSACTIONS OR THERE IS NO ACTIVE TRANSACTION.
+		 *
+		 * @throws PDOException - IF THERE IS NO ACTIVE TRANSACTION, OR THE DRIVER ENCOUNTERS AN ERROR.
 		 */
 		public function rollBackTransaction(): bool {
 			return $this -> pdo -> rollBack();
@@ -360,7 +495,7 @@
 		/**
 		 * CHECK IF CURRENTLY INSIDE A TRANSACTION.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF A TRANSACTION IS CURRENTLY ACTIVE, FALSE OTHERWISE.
 		 */
 		public function inTransaction(): bool {
 			return $this -> pdo -> inTransaction();
