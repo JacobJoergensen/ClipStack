@@ -17,6 +17,11 @@
 		use Singleton;
 
 		/**
+		 * @var Database|null
+		 */
+		private static ?Database $instance = null;
+
+		/**
 		 * @var PDO
 		 */
 		private PDO $pdo;
@@ -72,6 +77,22 @@
 		 */
 		public function __destruct() {
 			$this -> closeConnection();
+		}
+
+		/**
+		 * DATABASE SPECIFIC getInstance METHOD.
+		 *
+		 * @param Config $config - THE CONFIGURATION INSTANCE.
+		 * @param Validate $validate - THE VALIDATION INSTANCE.
+		 *
+		 * @return Database - THE INSTANCE OF THE DATABASE CLASS.
+		 */
+		public static function getInstance(Config $config, Validate $validate): Database {
+			if (self::$instance === null) {
+				self::$instance = new self($config, $validate);
+			}
+
+			return self::$instance;
 		}
 
 		/**
