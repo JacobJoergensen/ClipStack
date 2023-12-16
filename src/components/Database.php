@@ -197,11 +197,11 @@
 		 * PERFORM A SQL SELECT OPERATION ON A SPECIFIED TABLE.
 		 *
 		 * @param string $table - THE NAME OF THE TABLE TO SELECT FROM.
-		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
+		 * @param array<string, mixed> $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return array<array<string, mixed>> - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
+		 * @return false|array<array<string, mixed>> - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
 		 */
-		public function select(string $table, array $conditions = []): array {
+		public function select(string $table, array $conditions = []): false|array {
 			$where = implode(' AND ', array_map(static function ($k) {
 				return "`$k` = :$k";
 			}, array_keys($conditions)));
