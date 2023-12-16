@@ -1,10 +1,7 @@
 <?php
 	namespace ClipStack\Component\Backbone;
 
-	use ClipStack\Component\Database;
-	use ClipStack\Component\Request;
 	use RuntimeException;
-	use Tests\Backbone\TestSingletonClass;
 
 	/**
 	 * @template T of object
@@ -34,10 +31,12 @@
 		 *
 		 * @param mixed ...$args - PASSED TO CONSTRUCT THE SINGLETON INSTANCE.
 		 *
-		 * @return TestSingletonClass|Singleton|Database|Request|null - THE INSTANCE OF THE SINGLETON CLASS.
+		 * @return static - THE INSTANCE OF THE SINGLETON CLASS.
+		 *
+		 * @psalm-return T
 		 *
 		 */
-		final public static function getInstance(...$args): ?self {
+		final public static function getInstance(...$args): static {
 			$cls = static::class;
 
 			if (!isset(self::$instances[$cls])) {
