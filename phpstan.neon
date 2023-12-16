@@ -3,5 +3,7 @@ parameters:
 		- src/
 	level: 9
 	checkGenericClassInNonGenericObjectType: false
+	ignoreErrors:
+		- '#Unsafe usage of new static\(\)#'
 	bootstrapFiles:
 		- vendor/autoload.php
