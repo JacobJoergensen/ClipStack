@@ -152,7 +152,7 @@
 		 * @param string $date - THE DATE TO CALCULATE PERIODS FOR.
 		 * @param string $type - THE TYPE OF PERIOD TO CALCULATE (day, week OR month).
 		 *
-		 * @return array - THE START AND END OF THE PERIOD.
+		 * @return array<string, mixed> - THE START AND END OF THE PERIOD.
 		 *
 		 * @throws InvalidArgumentException - IF THE PROVIDED DATE IS NOT IN THE RIGHT FORMAT OR THE TYPE IS NOT A VALID OPTION.
 		 * @throws Exception - IF PERIOD CALCULATION OPERATION FAILS OR PARAMETERS ARE INVALID.
