@@ -219,11 +219,12 @@
 		 * @param string $table - THE NAME OF THE TABLE TO DELETE FROM.
 		 * @param array<string, mixed> $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return int - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
+		 * @return PDOStatement - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
 		 *
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function delete(string $table, array $conditions = []): int {
+		public function delete(string $table, array $conditions = []): PDOStatement
+		{
 			$where = $this -> buildWhereClause($conditions);
 
 			return $this -> query("DELETE FROM $table WHERE $where");
@@ -298,6 +299,7 @@
 				throw new PDOException('Query failed: cannot count the rows.');
 			}
 
+			/** @var array<string, mixed> $result */
 			$result = $statement -> fetch(PDO::FETCH_ASSOC);
 
 			return isset($result['count']) ? (int)$result['count'] : 0;
@@ -367,21 +369,12 @@
 		 */
 		private function buildWhereClause(array $conditions): string {
 			return implode(' AND ', array_map(static function ($field, $value) {
-				return "`$field` = $value";
-			}, array_keys($conditions), $conditions));
-		}
+				if (is_numeric($value) || is_string($value)) {
+					return "`$field` = '{$value}'";
+				}
 
-		/**
-		 * CREATE A SQL SET CLAUSE FROM THE PROVIDED DATA.
-		 *
-		 * @param array<string, mixed> $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
-		 *
-		 * @return string - A SQL SET CLAUSE.
-		 */
-		private function buildSetClause(array $data): string {
-			return implode(', ', array_map(static function ($field, $value) {
-				return "`$field` = $value";
-			}, array_keys($data), array_values($data)));
+				throw new InvalidArgumentException("The value for '$field' cannot be cast to string");
+			}, array_keys($conditions), $conditions));
 		}
 
 		/**
