@@ -217,7 +217,7 @@
 		 * PERFORM A SQL DELETE OPERATION ON A SPECIFIED TABLE.
 		 *
 		 * @param string $table - THE NAME OF THE TABLE TO DELETE FROM.
-		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
+		 * @param array<string, mixed> $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
 		 * @return PDOStatement - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
 		 *
@@ -259,8 +259,8 @@
 		 * UPDATE SPECIFIC ROWS IN A SPECIFIED TABLE.
 		 *
 		 * @param string $table - THE NAME OF THE TABLE TO UPDATE.
-		 * @param array $data - AN ASSOCIATIVE ARRAY WHERE THE KEY IS THE COLUMN NAME AND THE VALUE IS THE NEW DATA FOR THAT COLUMN.
-		 * @param array $where - AN ASSOCIATIVE ARRAY DEFINING THE CONDITIONS FOR THE ROWS TO BE UPDATED.
+		 * @param array<string, mixed> $data - AN ASSOCIATIVE ARRAY WHERE THE KEY IS THE COLUMN NAME AND THE VALUE IS THE NEW DATA FOR THAT COLUMN.
+		 * @param array<string, mixed> $where - AN ASSOCIATIVE ARRAY DEFINING THE CONDITIONS FOR THE ROWS TO BE UPDATED.
 		 *
 		 * @return bool - TRUE IF THE UPDATE QUERY WAS SUCCESSFUL, FALSE OTHERWISE.
 		 *
@@ -292,7 +292,7 @@
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION
 		 */
 		public function count(string $table): int {
-			$statement = $this -> query('SELECT COUNT(*) as count FROM ' . $table);
+			$statement = $this -> query('SELECT COUNT(*) as count FROM ' . $this -> prefix . $table);
 
 			if ($statement === null) {
 				throw new PDOException('Query failed: cannot count the rows.');
@@ -300,7 +300,7 @@
 
 			$result = $statement -> fetch(PDO::FETCH_ASSOC);
 
-			return $result['count'] ?? 0;
+			return isset($count['count']) ? (int)$count['count'] : 0;
 		}
 
 		/**
@@ -361,7 +361,7 @@
 		/**
 		 * CREATE A SQL WHERE CLAUSE.
 		 *
-		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE CONDITIONS.
+		 * @param array<string, mixed> $conditions - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE CONDITIONS.
 		 *
 		 * @return string - A SQL WHERE CLAUSE.
 		 */
@@ -374,7 +374,7 @@
 		/**
 		 * CREATE A SQL SET CLAUSE FROM THE PROVIDED DATA.
 		 *
-		 * @param array $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
+		 * @param array<string, mixed> $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
 		 *
 		 * @return string - A SQL SET CLAUSE.
 		 */
