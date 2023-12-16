@@ -8,7 +8,7 @@
 	 */
 	trait Singleton {
 		/**
-		 * @var array - INSTANCE HOLDER.
+		 * @var array<class-string<T>, T> - INSTANCE HOLDER.
 		 */
 		private static array $instances = [];
 
@@ -29,11 +29,11 @@
 		/**
 		 * GET INSTANCE OF CLASS.
 		 *
-		 * @param ...$args - PASSED TO CONSTRUCT THE SINGLETON INSTANCE.
+		 * @param mixed ...$args - PASSED TO CONSTRUCT THE SINGLETON INSTANCE.
 		 *
-		 * @return null|static - THE INSTANCE OF THE SINGLETON CLASS.
+		 * @return Singleton - THE INSTANCE OF THE SINGLETON CLASS.
 		 */
-		final public static function getInstance(...$args): null|static {
+		final public static function getInstance(...$args): static {
 			$cls = static::class;
 
 			if (!isset(self::$instances[$cls])) {
@@ -49,6 +49,7 @@
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		final public static function resetInstance(): void {
-			self::$instance = null;
+			$cls = static::class;
+			self::$instances[$cls] = null;
 		}
 	}
