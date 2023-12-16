@@ -11,6 +11,7 @@
 	use PDOException;
 	use PDOStatement;
 	use RuntimeException;
+	use UnexpectedValueException;
 
 	class Database {
 		use Singleton;
@@ -223,11 +224,16 @@
 		 *
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function delete(string $table, array $conditions = []): PDOStatement
-		{
+		public function delete(string $table, array $conditions = []): PDOStatement {
 			$where = $this -> buildWhereClause($conditions);
 
-			return $this -> query("DELETE FROM $table WHERE $where");
+			$result = $this -> query("DELETE FROM $table WHERE $where");
+
+			if ($result === null) {
+				throw new UnexpectedValueException("The DELETE query did not execute as expected.");
+			}
+
+			return $result;
 		}
 
 		/**
@@ -302,7 +308,13 @@
 			/** @var array<string, mixed> $result */
 			$result = $statement -> fetch(PDO::FETCH_ASSOC);
 
-			return isset($result['count']) ? (int)$result['count'] : 0;
+			$count = $result['count'] ?? 0;
+
+			if (is_numeric($count)) {
+				return (int)$count;
+			}
+
+			throw new RuntimeException('The count value could not be determined.');
 		}
 
 		/**
