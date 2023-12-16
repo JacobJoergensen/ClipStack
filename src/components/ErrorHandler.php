@@ -71,6 +71,8 @@
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @throws JsonException - THROWN IF THERE IS AN ISSUE WITH JSON ENCODING WHILE LOGGING.
+		 *
+		 * @phpstan-ignore-next-line
 		 */
 		private function logError(string $field, string $message): void {
 			$this -> logger -> error("Error in field '$field': $message", ['field' => $field]);
