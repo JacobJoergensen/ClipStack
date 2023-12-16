@@ -31,7 +31,7 @@
 		private bool $is_connected = false;
 
 		/**
-		 * @var string|mixed
+		 * @var string
 		 */
 		private string $prefix;
 
@@ -196,12 +196,12 @@
 		/**
 		 * PERFORM A SQL SELECT OPERATION ON A SPECIFIED TABLE.
 		 *
-		 * @param $table - THE NAME OF THE TABLE TO SELECT FROM.
+		 * @param string $table - THE NAME OF THE TABLE TO SELECT FROM.
 		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
 		 * @return false|array - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
 		 */
-		public function select($table, array $conditions = []): false|array {
+		public function select(string $table, array $conditions = []): false|array {
 			$where = implode(' AND ', array_map(static function ($k) {
 				return "`$k` = :$k";
 			}, array_keys($conditions)));
@@ -216,14 +216,14 @@
 		/**
 		 * PERFORM A SQL DELETE OPERATION ON A SPECIFIED TABLE.
 		 *
-		 * @param $table - THE NAME OF THE TABLE TO DELETE FROM.
+		 * @param string $table - THE NAME OF THE TABLE TO DELETE FROM.
 		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
 		 * @return PDOStatement - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
 		 *
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function delete($table, array $conditions = []): PDOStatement {
+		public function delete(string $table, array $conditions = []): PDOStatement {
 			$where = $this -> buildWhereClause($conditions);
 
 			return $this -> query("DELETE FROM $table WHERE $where");
@@ -285,13 +285,13 @@
 		/**
 		 * COUNTS THE NUMBER OF ROWS IN A SPECIFIED TABLE.
 		 *
-		 * @param $table - THE NAME OF THE TABLE TO COUNT ROWS IN.
+		 * @param string $table - THE NAME OF THE TABLE TO COUNT ROWS IN.
 		 *
 		 * @return int - NUMBER OF ROWS IN THE SPECIFIED TABLE.
 		 *
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY OR EXECUTION
 		 */
-		public function count($table): int {
+		public function count(string $table): int {
 			$statement = $this -> query('SELECT COUNT(*) as count FROM ' . $table);
 
 			if ($statement === null) {
@@ -361,11 +361,11 @@
 		/**
 		 * CREATE A SQL WHERE CLAUSE.
 		 *
-		 * @param $conditions - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE CONDITIONS.
+		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE CONDITIONS.
 		 *
 		 * @return string - A SQL WHERE CLAUSE.
 		 */
-		private function buildWhereClause($conditions): string {
+		private function buildWhereClause(array $conditions): string {
 			return implode(' AND ', array_map(static function ($field, $value) {
 				return "`$field` = $value";
 			}, array_keys($conditions), $conditions));
@@ -374,11 +374,11 @@
 		/**
 		 * CREATE A SQL SET CLAUSE FROM THE PROVIDED DATA.
 		 *
-		 * @param $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
+		 * @param array $data - AN ASSOCIATIVE ARRAY OF COLUMN => VALUE SETS.
 		 *
 		 * @return string - A SQL SET CLAUSE.
 		 */
-		private function buildSetClause($data): string {
+		private function buildSetClause(array $data): string {
 			return implode(', ', array_map(static function ($field, $value) {
 				return "`$field` = $value";
 			}, array_keys($data), array_values($data)));
