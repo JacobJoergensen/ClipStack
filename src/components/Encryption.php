@@ -4,20 +4,49 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use InvalidArgumentException;
+	use Random\RandomException;
 	use RuntimeException;
 
+	/**
+	 *
+	 */
 	class Encryption {
+		/**
+		 * @var Config
+		 */
 		private Config $config;
 
+		/**
+		 * @var string
+		 */
 		private string $key;
+
+		/**
+		 * @var string
+		 */
 		private string $cipher;
 
+		/**
+		 * @var bool
+		 */
 		private bool $key_rotation_enabled;
 
 		/** @var array<string> */
 		private array $key_rotation_keys;
+
+		/**
+		 * @var string
+		 */
 		private string $current_key;
 
+		/**
+		 * INITIALIZES THE ENCRYPTION CLASS WITH THE PROVIDED CONFIGURATION.
+		 *
+		 * @param Config $config - AN INSTANCE OF THE CONFIG CLASS.
+		 *
+		 * @throws RUNTIMEEXCEPTION - IF THE OPENSSL EXTENSION IS NOT AVAILABLE OR IF ENCRYPTION CONFIGURATION IS NOT VALID.
+		 * @throws INVALIDARGUMENTEXCEPTION - IF AN INVALID CIPHER IS SPECIFIED, OR IF THE ENCRYPTION KEY IS NOT A 32-BYTE STRING.
+		 */
 		public function __construct(Config $config) {
 			if (!extension_loaded('openssl')) {
 				throw new RuntimeException('OpenSSL extension is not available.');
@@ -29,7 +58,7 @@
 			$key_rotation_config = $this -> config -> get('encryption.key_rotation', []);
 
 			if (!is_array($configurations) || !is_array($key_rotation_config)) {
-				throw new RuntimeException('Encryption configuration is not valid.');
+				throw new RuntimeException('Encryption configuration must be an array.');
 			}
 
 			$key = $configurations['key'] ?? '';
@@ -72,6 +101,7 @@
 		 * @return string - THE ENCRYPTED DATA.
 		 *
 		 * @throws RuntimeException - IF init_vector GENERATION OR ENCRYPTION FAILS.
+		 * @throws RandomException - IF AN ERROR OCCURS DURING random_bytes GENERATION.
 		 */
 		public function encrypt(string $data): string {
 			$cipher_iv_length = openssl_cipher_iv_length($this -> cipher);
@@ -80,20 +110,16 @@
 				throw new RuntimeException('Failed to get IV length for the cipher.');
 			}
 
-			$init_vector = openssl_random_pseudo_bytes($cipher_iv_length);
+			$init_vector = random_bytes($cipher_iv_length);
 
 			if (!$init_vector) {
-				throw new RuntimeException('IV generation failed.');
-			}
-
-			if ($init_vector == false) {
 				throw new RuntimeException('IV generation failed.');
 			}
 
 			$encrypted_data = openssl_encrypt($data, $this -> cipher, $this -> key, 0, $init_vector, $tag);
 
 			if ($encrypted_data === false) {
-				throw new RuntimeException('Encryption failed.');
+				throw new RuntimeException('Encryption failed, openssl_encrypt returned false.');
 			}
 
 			// USING base64url ENCODING TO AVOID ANY URL UNSAFE CHARACTERS IN THE OUTPUT.
@@ -109,12 +135,12 @@
 		 *
 		 * @return string|null - THE DECRYPTED DATA, OR NULL IF DECRYPTION FAILS.
 		 *
-		 * @throws RuntimeException IF base64 DECODING, init_vector EXTRACTION OR DECRYPTION FAILS.
+		 * @throws RuntimeException - IF base64 DECODING, init_vector EXTRACTION OR DECRYPTION FAILS.
 		 */
 		public function decrypt(string $encrypted_data): ?string {
 			$data = base64_decode($encrypted_data);
 
-			if ($data == false) {
+			if ($data === false) {
 				throw new RuntimeException('Failed to base64 decode encrypted data.');
 			}
 
@@ -127,7 +153,7 @@
 			$init_vector = substr($data, 0, $cipher_iv_length);
 
 			if (!$init_vector) {
-				throw new RuntimeException('Failed to extract initialization vector.');
+				throw new RuntimeException('Failed to extract initialization vector for decryption.');
 			}
 
 			$decrypted_data = openssl_decrypt(
@@ -151,13 +177,18 @@
 				}
 
 				if ($decrypted_data === false) {
-					return null;
+					throw new RuntimeException('Decryption with secondary key failed.');
 				}
 			}
 
 			return $decrypted_data;
 		}
 
+		/**
+		 * SWITCHES TO THE SECONDARY KEY IF AVAILABLE.
+		 *
+		 * @return bool - TRUE IF THE KEY ROTATION IS SUCCESSFUL, FALSE OTHERWISE.
+		 */
 		private function rotateKey(): bool {
 			// SWITCH TO THE SECONDARY KEY IF AVAILABLE.
 			if (isset($this -> key_rotation_keys['secondary'])) {
