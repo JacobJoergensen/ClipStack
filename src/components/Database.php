@@ -199,9 +199,9 @@
 		 * @param string $table - THE NAME OF THE TABLE TO SELECT FROM.
 		 * @param array $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return false|array - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
+		 * @return array<array<string, mixed>> - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
 		 */
-		public function select(string $table, array $conditions = []): false|array {
+		public function select(string $table, array $conditions = []): array {
 			$where = implode(' AND ', array_map(static function ($k) {
 				return "`$k` = :$k";
 			}, array_keys($conditions)));
