@@ -4,7 +4,6 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use InvalidArgumentException;
-	use Random\RandomException;
 	use RuntimeException;
 
 	class Encryption {
@@ -98,7 +97,6 @@
 		 * @return string - THE ENCRYPTED DATA.
 		 *
 		 * @throws RuntimeException - IF init_vector GENERATION OR ENCRYPTION FAILS.
-		 * @throws RandomException - IF AN ERROR OCCURS DURING random_bytes GENERATION.
 		 */
 		public function encrypt(string $data): string {
 			$cipher_iv_length = openssl_cipher_iv_length($this -> cipher);
@@ -107,8 +105,12 @@
 				throw new RuntimeException('Failed to get IV length for the cipher.');
 			}
 
-			$cipher_iv_length = (int)$cipher_iv_length;
-			$init_vector = random_bytes($cipher_iv_length);
+			$secure = true;
+			$init_vector = openssl_random_pseudo_bytes($cipher_iv_length, $secure);
+
+			if (!$secure) {
+				throw new RuntimeException('Cryptographically strong random bytes could not be ensured.');
+			}
 
 			if (!$init_vector) {
 				throw new RuntimeException('IV generation failed.');
