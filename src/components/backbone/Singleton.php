@@ -8,7 +8,7 @@
 	 */
 	trait Singleton {
 		/**
-		 * @var array<class-string<T>, T> - INSTANCE HOLDER.
+		 * @var array<class-string<T>, T|null> - INSTANCE HOLDER.
 		 */
 		private static array $instances = [];
 
@@ -32,6 +32,8 @@
 		 * @param mixed ...$args - PASSED TO CONSTRUCT THE SINGLETON INSTANCE.
 		 *
 		 * @return static - THE INSTANCE OF THE SINGLETON CLASS.
+		 *
+		 * @psalm-return T
 		 */
 		final public static function getInstance(...$args): static {
 			$cls = static::class;
