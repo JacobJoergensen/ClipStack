@@ -7,9 +7,6 @@
 	use Random\RandomException;
 	use RuntimeException;
 
-	/**
-	 *
-	 */
 	class Encryption {
 		/**
 		 * @var Config
