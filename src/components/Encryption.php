@@ -140,10 +140,6 @@
 		public function decrypt(string $encrypted_data): ?string {
 			$data = base64_decode($encrypted_data);
 
-			/* if (!$data === null) {
-				throw new RuntimeException('Failed to base64 decode encrypted data.');
-			} */
-
 			$cipher_iv_length = openssl_cipher_iv_length($this -> cipher);
 
 			if ($cipher_iv_length === false) {
