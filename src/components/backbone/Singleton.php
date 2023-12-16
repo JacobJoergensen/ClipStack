@@ -31,7 +31,7 @@
 		 *
 		 * @param mixed ...$args - PASSED TO CONSTRUCT THE SINGLETON INSTANCE.
 		 *
-		 * @return Singleton - THE INSTANCE OF THE SINGLETON CLASS.
+		 * @return static - THE INSTANCE OF THE SINGLETON CLASS.
 		 */
 		final public static function getInstance(...$args): static {
 			$cls = static::class;
