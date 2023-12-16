@@ -8,9 +8,6 @@
 	use JsonException;
 	use RuntimeException;
 
-	/**
-	 *
-	 */
 	#[AllowDynamicProperties] class Logger {
 		/**
 		 * @var Config
@@ -33,7 +30,12 @@
 		private string $format;
 
 		/**
-		 * @param Config $config
+		 * LOGGER CONSTRUCTOR.
+		 *
+		 * @param Config $config - AN INSTANCE OF THE CONFIG CLASS.
+		 *
+		 * @throws RuntimeException - THROWN IF THE LOGGER CONFIGURATION IS NOT VALID.
+		 * @throws InvalidArgumentException - THROWN IF LOG LEVEL IS NOT A STRING.
 		 */
 		public function __construct(Config $config) {
 			$this -> config = $config;
@@ -66,11 +68,11 @@
 		 *
 		 * @param string $destination - THE PATH OR IDENTIFIER OF THE LOG DESTINATION.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public function addLogDestination(string $destination): void {
 			if (!is_writable($destination)) {
-				throw new InvalidArgumentException("Log destination '{$destination}' is not writable.");
+				throw new InvalidArgumentException("Log destination '$destination' is not writable.");
 			}
 
 			$this -> log_destinations[] = $destination;
@@ -109,9 +111,9 @@
 		 * @param string $message - THE LOG MESSAGE.
 		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
-		 * @throws JsonException
+		 * @throws JsonException - THROWN IF THERE IS AN ISSUE WITH JSON ENCODING WHILE LOGGING.
 		 */
 		public function info(string $message, array $context = []): void {
 			$this -> log('INFO', $message, $context);
@@ -123,9 +125,9 @@
 		 * @param string $message - THE LOG MESSAGE.
 		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
-		 * @throws JsonException
+		 * @throws JsonException - THROWN IF THERE IS AN ISSUE WITH JSON ENCODING WHILE LOGGING.
 		 */
 		public function warning(string $message, array $context = []): void {
 			$this -> log('WARNING', $message, $context);
@@ -137,9 +139,9 @@
 		 * @param string $message - THE LOG MESSAGE.
 		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
-		 * @throws JsonException
+		 * @throws JsonException - THROWN IF THERE IS AN ISSUE WITH JSON ENCODING WHILE LOGGING.
 		 */
 		public function error(string $message, array $context = []): void {
 			$this -> log('ERROR', $message, $context);
@@ -152,9 +154,9 @@
 		 * @param string $message - THE LOG MESSAGE.
 		 * @param array<string, mixed> $context - ADDITIONAL CONTEXT DATA.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
-		 * @throws JsonException
+		 * @throws JsonException - THROWN IF THERE IS AN ISSUE WITH JSON ENCODING WHILE LOGGING.
 		 */
 		private function log(string $level, string $message, array $context = []): void {
 			if (!in_array($level, $this -> levels, true)) {
@@ -173,7 +175,7 @@
 				if (is_writable($destination)) {
 					file_put_contents($destination, $log_entry, FILE_APPEND | LOCK_EX);
 				} else {
-					error_log("Log destination '{$destination}' is not writable.");
+					error_log("Log destination '$destination' is not writable.");
 				}
 			}
 		}
