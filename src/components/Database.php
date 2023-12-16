@@ -219,11 +219,11 @@
 		 * @param string $table - THE NAME OF THE TABLE TO DELETE FROM.
 		 * @param array<string, mixed> $conditions - AN ASSOCIATIVE ARRAY OF COLUMN-VALUE PAIRS USED IN SQL WHERE CLAUSE.
 		 *
-		 * @return PDOStatement - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
+		 * @return int - THE RESULTING PDO STATEMENT OBJECT AFTER EXECUTION.
 		 *
 		 * @throws PDOException - IF THERE IS AN ERROR WITH THE SQL QUERY.
 		 */
-		public function delete(string $table, array $conditions = []): PDOStatement {
+		public function delete(string $table, array $conditions = []): int {
 			$where = $this -> buildWhereClause($conditions);
 
 			return $this -> query("DELETE FROM $table WHERE $where");
@@ -300,7 +300,7 @@
 
 			$result = $statement -> fetch(PDO::FETCH_ASSOC);
 
-			return isset($count['count']) ? (int)$count['count'] : 0;
+			return isset($result['count']) ? (int)$result['count'] : 0;
 		}
 
 		/**
