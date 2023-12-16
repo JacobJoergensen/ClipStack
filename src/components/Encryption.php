@@ -107,6 +107,7 @@
 				throw new RuntimeException('Failed to get IV length for the cipher.');
 			}
 
+			$cipher_iv_length = (int)$cipher_iv_length;
 			$init_vector = random_bytes($cipher_iv_length);
 
 			if (!$init_vector) {
