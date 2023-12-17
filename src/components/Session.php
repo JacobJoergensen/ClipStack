@@ -7,18 +7,48 @@
 	use RuntimeException;
 
 	#[AllowDynamicProperties] class Session {
+		/**
+		 * @var Config
+		 */
 		private Config $config;
 
+		/**
+		 * @var Request
+		 */
 		private Request $request;
 
+		/**
+		 * @var string
+		 */
 		private string $name;
+
+		/**
+		 * @var string
+		 */
 		private string $prefix;
+
+		/**
+		 * @var string
+		 */
 		private string $lifetime;
+
+		/**
+		 * @var bool
+		 */
 		private bool $secure;
+
+		/**
+		 * @var bool
+		 */
 		private bool $http_only;
 
 		/**
 		 * CONSTRUCTOR TO ENSURE SESSION IS STARTED WHEN AN INSTANCE IS CREATED.
+		 *
+		 * @param Config $config - AN INSTANCE OF THE CONFIG CLASS.
+		 * @param Request $request - AN INSTANCE OF THE REQUEST CLASS.
+		 *
+		 * @throws RuntimeException - IF THERE ARE ISSUES WITH SESSION CONFIGURATION OR INITIALIZATION.
 		 */
 		public function __construct(Config $config, Request $request) {
 			$this -> config = $config;
@@ -51,6 +81,8 @@
 
 		/**
 		 * SET SESSION CONFIGURATIONS FOR BETTER SECURITY.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		private function initSessionConfigurations(): void {
 			session_name($this -> name);
@@ -67,6 +99,8 @@
 
 		/**
 		 * ENSURE THAT THE PHP SESSION HAS STARTED.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		private function ensureSessionStarted(): void {
 			if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -78,7 +112,7 @@
 		/**
 		 * VALIDATE IF THE CURRENT SESSION HAS EXPIRED.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THE SESSION HAS EXPIRED, FALSE OTHERWISE.
 		 */
 		public function hasExpired(): bool {
 			$last_activity = $this -> get('_last_activity', time());
@@ -95,8 +129,10 @@
 		/**
 		 * SET A SESSION VARIABLE.
 		 *
-		 * @param string $key
-		 * @param mixed $value
+		 * @param string $key -
+		 * @param mixed $value -
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $session -> set('user', ['id' => 1, 'name' => 'John Doe']);
@@ -108,10 +144,10 @@
 		/**
 		 * GET A SESSION VARIABLE. IF NOT FOUND, RETURN THE DEFAULT VALUE.
 		 *
-		 * @param string $key
-		 * @param mixed|null $default
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
+		 * @param mixed|null $default - THE VALUE TO SET.
 		 *
-		 * @return mixed
+		 * @return mixed - THE VALUE OF THE SESSION VARIABLE OR THE DEFAULT VALUE IF NOT FOUND.
 		 *
 		 * @example
 		 * $user = $session -> get('user');
@@ -123,9 +159,9 @@
 		/**
 		 * CHECK IF A SESSION VARIABLE EXISTS.
 		 *
-		 * @param string $key
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THE SESSION VARIABLE EXISTS, FALSE OTHERWISE.
 		 *
 		 * @example
 		 * if($session -> has('user')) {
@@ -139,9 +175,9 @@
 		/**
 		 * CHECK IF A SESSION VARIABLE EXISTS.
 		 *
-		 * @param string $key
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THE SESSION VARIABLE EXISTS, FALSE OTHERWISE.
 		 *
 		 * @example
 		 * if($session -> exists('user')) {
@@ -155,7 +191,9 @@
 		/**
 		 * REMOVE A SESSION VARIABLE.
 		 *
-		 * @param string $key
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $session -> remove('user');
@@ -166,6 +204,8 @@
 
 		/**
 		 * DESTROY THE CURRENT SESSION AND REMOVE ALL SESSION VARIABLES.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $session -> destroy();
@@ -178,6 +218,8 @@
 		/**
 		 * CLEAR ALL SESSION DATA BUT KEEP THE SESSION ALIVE.
 		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 *
 		 * @example
 		 * $session -> clearData();
 		 */
@@ -188,7 +230,9 @@
 		/**
 		 * REGENERATE THE SESSION ID TO PREVENT SESSION FIXATION ATTACKS.
 		 *
-		 * @param bool $delete_old_session
+		 * @param bool $delete_old_session - OPTIONAL: WHETHER TO DELETE THE OLD SESSION (DEFAULT IS FALSE).
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $session -> regenerate();
@@ -200,8 +244,10 @@
 		/**
 		 * FLASH A MESSAGE FOR ONE-TIME DISPLAY (E.G., FOR FORM SUBMISSIONS).
 		 *
-		 * @param string $key
-		 * @param string $message
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
+		 * @param string $message - THE MESSAGE TO BE FLASHED.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
 		 * @example
 		 * $session -> flash('success', 'Data saved successfully.');
@@ -213,9 +259,9 @@
 		/**
 		 * RETRIEVE A FLASHED MESSAGE. THIS ALSO CLEARS THE MESSAGE.
 		 *
-		 * @param string $key
+		 * @param string $key - THE KEY FOR THE SESSION VARIABLE.
 		 *
-		 * @return string|null
+		 * @return string|null - THE FLASHED MESSAGE OR NULL IF NOT FOUND.
 		 *
 		 * @example
 		 * $message = $session -> getFlash('success');
@@ -229,6 +275,10 @@
 
 		/**
 		 * PREFIXING SESSION KEYS WITH THE FRAMEWORK'S PREFIX.
+		 *
+		 * @param string $key - THE KEY TO BE PREFIXED.
+		 *
+		 * @return string - THE PREFIXED KEY.
 		 */
 		private function prefixKey(string $key): string {
 			return $this -> prefix . $key;
