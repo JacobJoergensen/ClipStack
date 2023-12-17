@@ -10,9 +10,9 @@
 		use Singleton;
 
 		/**
-		 * @var self|null
+		 * @var Request|null
 		 */
-		private static $instance = null;
+		private static ?Request $instance = null;
 
 		/**
 		 * @var array<string, mixed>
@@ -58,6 +58,7 @@
 		 * RETRIEVES A VALUE FROM THE $server ARRAY BASED ON THE PROVIDED KEY.
 		 *
 		 * @param string $key - THE KEY TO LOOK UP IN THE $server ARRAY.
+		 *
 		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
 		 */
 		public function getServerValue(string $key): mixed {
@@ -67,7 +68,7 @@
 		/**
 		 * GET THE CURRENT FULL URL OF THE WEBSITE.
 		 *
-		 * @return string
+		 * @return string - THE FULL URL OF THE WEBSITE, INCLUDING PROTOCOL, HOST, AND REQUEST URI.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -82,7 +83,7 @@
 		/**
 		 * GET THE URI OF THE WEBSITE.
 		 *
-		 * @return string
+		 * @return string - THE URI OF THE WEBSITE.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -118,7 +119,8 @@
 		 * RETRIEVE A SPECIFIC REQUEST HEADER.
 		 *
 		 * @param string $header - THE HEADER NAME.
-		 * @return string|null
+		 *
+		 * @return string|null - THE VALUE OF THE SPECIFIED REQUEST HEADER, OR NULL IF NOT FOUND.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -134,7 +136,7 @@
 		/**
 		 * RETRIEVE ALL REQUEST HEADERS.
 		 *
-		 * @return array<string, string>
+		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING ALL REQUEST HEADERS.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -161,7 +163,8 @@
 		 * CHECK IF A POST KEY EXISTS.
 		 *
 		 * @param string $key - THE POST DATA KEY.
-		 * @return bool
+		 *
+		 * @return bool - TRUE IF THE POST DATA KEY EXISTS, FALSE OTHERWISE.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -177,7 +180,8 @@
 		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
 		 *
 		 * @param string|null $key - THE KEY FOR THE POST DATA.
-		 * @return mixed
+		 *
+		 * @return mixed - THE SPECIFIC POST DATA IF KEY IS PROVIDED, OR ALL POST DATA IF NO KEY IS PROVIDED.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -195,7 +199,7 @@
 		/**
 		 * GET THE USER AGENT STRING.
 		 *
-		 * @return string
+		 * @return string - THE USER AGENT STRING.
 		 *
 		 * @example
 		 * $request = Request::getInstance();
@@ -210,7 +214,7 @@
 		/**
 		 * FETCH THE CLIENT'S IP ADDRESS.
 		 *
-		 * @return string
+		 * @return string - THE CLIENT'S IP ADDRESS.
 		 */
 		public function getClientIp(): string {
 			$remote_addr = $this -> server['REMOTE_ADDR'] ?? null;
@@ -221,7 +225,7 @@
 		/**
 		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
-		 * @return array<string, string>
+		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING THE QUERY PARAMETERS.
 		 *
 		 * @example
 		 * $request = Request::getInstance();

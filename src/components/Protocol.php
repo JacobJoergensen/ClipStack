@@ -7,17 +7,23 @@
 		 */
 		private Request $request;
 
+		/**
+		 * PROTOCOL CONSTRUCTOR
+		 *
+		 * @param Request $request - AN INSTANCE OF THE REQUEST CLASS.
+		 */
 		public function __construct(Request $request) {
 			$this -> request = $request;
 		}
 
 		/**
-		 * GET THE CURRENT WEBSITE'S PROTOCOL (HTTP OR HTTPS).
+		 * GET THE CURRENT WEBSITE'S PROTOCOL (http OR https).
 		 *
-		 * @return string - RETURNS 'HTTP' OR 'HTTPS' BASED ON THE CURRENT PROTOCOL.
+		 * @return string - RETURNS 'http' OR 'https' BASED ON THE CURRENT PROTOCOL.
+		 *
 		 * @example
-		 * $protocol = new Protocol();
-		 * echo $protocol -> get();  // OUTPUTS: 'HTTP' OR 'HTTPS'
+		 * $protocol = new Protocol($request);
+		 * echo $protocol -> get();  // OUTPUTS: 'http' OR 'https'
 		 */
 		public function get(): string {
 			return $this -> isSecure() ? 'https' : 'http';
@@ -35,6 +41,8 @@
 
 		/**
 		 * REDIRECT TO THE HTTPS VERSION OF THE CURRENT URL.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public function redirectToSecure(): void {
 			if (!$this -> isSecure()) {
@@ -45,6 +53,8 @@
 
 		/**
 		 * FORCE THE WEBSITE TO USE HTTPS. IF NOT USING HTTPS, IT WILL REDIRECT TO THE HTTPS VERSION.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public function forceHTTPS(): void {
 			if (!$this -> isSecure()) {

@@ -1,7 +1,12 @@
 <?php
 	namespace ClipStack\Component;
 
+	use RuntimeException;
+
 	class Image {
+		/**
+		 * @var string
+		 */
 		private string $upload_dir = 'uploads/';
 
 		/**
@@ -86,7 +91,7 @@
 
 			imagecopyresampled($new_image, $source, 0, 0, 0, 0, (int)$width, (int)$height, $original_width, $original_height);
 
-			$success = match ((string) strtolower($extension)) {
+			$success = match ((string)strtolower($extension)) {
 				'jpeg', 'jpg' => imagejpeg($new_image, $file_path, $quality),
 				'png' => imagepng($new_image, $file_path),
 				'gif' => imagegif($new_image, $file_path)
@@ -211,14 +216,14 @@
 			}
 
 			if ($watermark === false) {
-				return false;
+				throw new RuntimeException('Failed to create watermark from file.');
 			}
 
 			$watermark_width = imagesx($watermark);
 			$watermark_height = imagesy($watermark);
 
 			if ($image === false) {
-				return false;
+				throw new RuntimeException('Failed to create image from file.');
 			}
 
 			$dest_x = imagesx($image) - $watermark_width - 5;

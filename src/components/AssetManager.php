@@ -1,7 +1,7 @@
 <?php
 	namespace ClipStack\Component;
 
-	class StylesheetFile {
+	readonly class StylesheetFile {
 		/**
 		 * STYLESHEET CONSTRUCTOR.
 		 *
@@ -9,14 +9,14 @@
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE STYLESHEET.
 		 */
 		public function __construct(
-			private readonly string $path,
-			private readonly ?string $integrity = null
+			private string $path,
+			private ?string $integrity = null
 		) {}
 
 		/**
 		 * GET THE PATH OF THE STYLESHEET.
 		 *
-		 * @return string
+		 * @return string - THE PATH TO THIS STYLESHEET FILE.
 		 */
 		public function getPath(): string {
 			return $this -> path;
@@ -25,14 +25,14 @@
 		/**
 		 * GET THE INTEGRITY HASH OF THE STYLESHEET.
 		 *
-		 * @return string|null
+		 * @return string|null - THE INTEGRITY HASH OF THIS STYLESHEET, OR NULL IF NOT PROVIDED.
 		 */
 		public function getIntegrity(): ?string {
 			return $this -> integrity;
 		}
 	}
 
-	class ScriptFile {
+	readonly class ScriptFile {
 		/**
 		 * SCRIPTABLE CONSTRUCTOR.
 		 *
@@ -42,16 +42,16 @@
 		 * @param bool $defer - INDICATES IF SCRIPT EXECUTION SHOULD BE DEFERRED.
 		 */
 		public function __construct(
-			private readonly string $path,
-			private readonly ?string $integrity = null,
-			private readonly bool $async = false,
-			private readonly bool $defer = false
+			private string $path,
+			private ?string $integrity = null,
+			private bool $async = false,
+			private bool $defer = false
 		) {}
 
 		/**
 		 * GET THE PATH OF THE SCRIPT.
 		 *
-		 * @return string
+		 * @return string - THE PATH TO THIS SCRIPT FILE.
 		 */
 		public function getPath(): string {
 			return $this -> path;
@@ -60,7 +60,7 @@
 		/**
 		 * GET THE INTEGRITY HASH OF THE SCRIPT.
 		 *
-		 * @return string|null
+		 * @return string|null - THE INTEGRITY HASH OF THIS SCRIPT, OR NULL IF NOT PROVIDED.
 		 */
 		public function getIntegrity(): ?string {
 			return $this -> integrity;
@@ -70,7 +70,7 @@
 		/**
 		 * CHECK IF THE SCRIPT SHOULD BE LOADED ASYNCHRONOUSLY.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THIS SCRIPT SHOULD BE LOADED ASYNCHRONOUSLY, FALSE OTHERWISE.
 		 */
 		public function isAsync(): bool {
 			return $this -> async;
@@ -79,7 +79,7 @@
 		/**
 		 * CHECK IF THE SCRIPT EXECUTION SHOULD BE DEFERRED.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF THE EXECUTION OF THIS SCRIPT SHOULD BE DEFERRED, FALSE.
 		 */
 		public function isDefer(): bool {
 			return $this -> defer;
@@ -88,14 +88,14 @@
 
 	class CSS {
 		/**
-		 * @var StylesheetFile[]
+		 * @var StylesheetFile[] - AN ARRAY TO STORE ALL STYLESHEET FILES TO BE IMPORTED.
 		 */
 		private array $files = [];
 
 		/**
-		 * IMPORT A NEW STYLESHEET FILE.
+		 * ADD A NEW STYLESHEET FILE TO THE ARRAY OF FILES TO BE IMPORTED.
 		 *
-		 * @param string $path - PATH TO THE STYLESHEET FILE.
+		 * @param string $path - THE PATH TO THE CSS FILE TO BE IMPORTED.
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE STYLESHEET.
 		 *
 		 * @example
@@ -108,7 +108,7 @@
 		/**
 		 * RENDER THE IMPORTED STYLESHEET LINKS.
 		 *
-		 * @return string
+		 * @return string - A STRING OF HTML <LINK> ELEMENTS FOR ALL IMPORTED STYLESHEET FILES.
 		 *
 		 * @example
 		 * echo $css -> render();
@@ -134,17 +134,17 @@
 
 	class JS {
 		/**
-		 * @var ScriptFile[]
+		 * @var ScriptFile[] - AN ARRAY TO STORE ALL SCRIPT FILES TO BE IMPORTED.
 		 */
 		private array $files = [];
 
 		/**
-		 * IMPORT A NEW SCRIPT FILE.
+		 * ADD A NEW SCRIPT FILE TO THE ARRAY OF FILES TO BE IMPORTED.
 		 *
-		 * @param string $path - PATH TO THE SCRIPT FILE.
+		 * @param string $path - THE PATH TO THE JAVASCRIPT FILE TO BE IMPORTED.
 		 * @param string|null $integrity - OPTIONAL INTEGRITY HASH FOR THE SCRIPT.
-		 * @param bool $async - INDICATES IF SCRIPT SHOULD BE LOADED ASYNCHRONOUSLY.
-		 * @param bool $defer - INDICATES IF SCRIPT EXECUTION SHOULD BE DEFERRED.
+		 * @param bool $async - IF TRUE, THE <script> ELEMENT WILL GET THE ASYNC ATTRIBUTE.
+		 * @param bool $defer - IF TRUE, THE <script> ELEMENT WILL GET THE DEFER ATTRIBUTE.
 		 *
 		 * @example
 		 * $js -> import('/path/to/script.js', null, true, false);
@@ -156,7 +156,7 @@
 		/**
 		 * RENDER THE IMPORTED SCRIPT TAGS.
 		 *
-		 * @return string
+		 * @return string - A STRING OF HTML <script> ELEMENTS FOR ALL IMPORTED SCRIPT FILES.
 		 *
 		 * @example
 		 * echo $js -> render();

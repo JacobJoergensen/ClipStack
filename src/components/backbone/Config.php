@@ -1,22 +1,22 @@
 <?php
 	declare(strict_types = 1);
-	
+
 	namespace ClipStack\Component\Backbone;
-	
+
 	use InvalidArgumentException;
 	use RuntimeException;
-	
+
 	class Config {
 		/**
 		 * @var Config|null - HOLDS THE SINGLETON INSTANCE OF THE CONFIG CLASS.
 		 */
 		private static ?Config $instance = null;
-	
+
 		/**
 		 * @var array<string, mixed> - HOLDS THE LOADED CONFIGURATIONS.
 		 */
 		private array $configurations;
-	
+
 		/**
 		 * CONFIG CONSTRUCTOR. PRIVATE TO PREVENT MULTIPLE INSTANCES.
 		 *
@@ -25,7 +25,7 @@
 		public function __construct(array $config) {
 			$this -> configurations = $config;
 		}
-	
+
 		/**
 		 * GET THE SINGLETON INSTANCE OF THE CONFIG CLASS.
 		 * IF IT DOESN'T EXIST, IT'S CREATED WITH THE PROVIDED CONFIG.
@@ -41,10 +41,10 @@
 			if (self::$instance === null) {
 				self::$instance = new Config($config);
 			}
-	
+
 			return self::$instance;
 		}
-	
+
 		/**
 		 * A COMBINED METHOD TO GET OR SET CONFIGURATIONS.
 		 *
@@ -68,12 +68,12 @@
 			if ($value === null) {
 				return $this -> get($key);
 			}
-	
+
 			$this -> set($key, $value);
-	
+
 			return $value;
 		}
-	
+
 		/**
 		 * RETRIEVE A CONFIGURATION VALUE USING "DOT" NOTATION.
 		 *
@@ -82,34 +82,38 @@
 		 *
 		 * @return mixed - THE CONFIGURATION VALUE.
 		 *
+		 * @throws InvalidArgumentException - IF THE PROVIDED KEY IS NOT FOUND AND NO DEFAULT VALUE IS PROVIDED.
+		 *
 		 * @example
 		 * $app_name = $configInstance -> get('app.name', 'DefaultAppName');
 		 */
 		public function get(string $key, mixed $default = null): mixed {
 			$keys = explode('.', $key);
 			$temp = $this -> configurations;
-	
-			foreach ($keys as $k) {
-				if (!is_array($temp) || !isset($temp[$k])) {
+
+			foreach ($keys as $current_key) {
+				if (!is_array($temp) || !isset($temp[$current_key])) {
 					// IF NO DEFAULT VALUE IS PROVIDED, THROW AN EXCEPTION.
 					if ($default === null) {
 						throw new InvalidArgumentException("Configuration key '$key' not found!");
 					}
-	
+
 					return $default;
 				}
-	
-				$temp = $temp[$k];
+
+				$temp = $temp[$current_key];
 			}
-	
+
 			return $temp;
 		}
-	
+
 		/**
 		 * SET A CONFIGURATION VALUE USING "DOT" NOTATION.
 		 *
 		 * @param string $key - THE KEY TO SET.
 		 * @param mixed $value - THE VALUE TO SET.
+		 *
+		 * @throws RuntimeException - IF AN INCORRECT TYPE IS ENCOUNTERED WHILE TRAVERSING THE CONFIGURATION ARRAY.
 		 *
 		 * @example
 		 * $config_instance -> set('app.version', '1.0.1');
@@ -117,22 +121,22 @@
 		public function set(string $key, mixed $value): void {
 			$keys = explode('.', $key);
 			$temp = $this -> configurations;
-	
-			foreach ($keys as $index => $k) {
+
+			foreach ($keys as $index => $current_key) {
 				if ($index === count($keys) - 1) {
-					$temp[$k] = $value;
+					$temp[$current_key] = $value;
 				} else {
-					if (!isset($temp[$k])) {
-						$temp[$k] = [];
-					} elseif (!is_array($temp[$k])) {
+					if (!isset($temp[$current_key])) {
+						$temp[$current_key] = [];
+					} elseif (!is_array($temp[$current_key])) {
 						throw new RuntimeException("Configuration key '$key' is expected to be an array, but a different type was found.");
 					}
-	
-					$temp =& $temp[$k];
+
+					$temp =& $temp[$current_key];
 				}
 			}
 		}
-	
+
 		/**
 		 * CHECK IF A CONFIGURATION EXISTS.
 		 *
@@ -148,17 +152,15 @@
 		public function has(string $key): bool {
 			$keys = explode('.', $key);
 			$temp = $this -> configurations;
-	
-			foreach ($keys as $k) {
-				if (!is_array($temp) || !isset($temp[$k])) {
+
+			foreach ($keys as $current_key) {
+				if (!is_array($temp) || !isset($temp[$current_key])) {
 					return false;
 				}
-	
-				$temp = $temp[$k];
+
+				$temp = $temp[$current_key];
 			}
-	
+
 			return true;
 		}
 	}
-
-

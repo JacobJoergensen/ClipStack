@@ -3,39 +3,48 @@
 
 	use ClipStack\Component\Backbone\Config;
 
-	use DateTime;
+	use AllowDynamicProperties;
 	use InvalidArgumentException;
 	use JsonException;
 	use RuntimeException;
 
-	class Cookie {
+	#[AllowDynamicProperties] class Cookie {
+		/**
+		 * @var Config
+		 */
 		private Config $config;
 
-		public function __construct(Config $config) {
-			$this -> config = $config;
-		}
+		/**
+		 * @var string
+		 */
+		private string $prefix;
 
 		/**
-		 * SET A COOKIE.
-		 *
-		 * @param string $name
-		 * @param mixed $value
-		 * @param DateTime|int $expires
-		 * @param string $path
-		 * @param string $domain
-		 * @param array<string, mixed> $additional_attributes
-		 *
-		 * @throws RuntimeException
-		 * @throws InvalidArgumentException
+		 * @var array<string, mixed>
 		 */
-		public function set(
-			string $name,
-			mixed $value,
-			DateTime|int $expires = 0,
-			string $path = '/',
-			string $domain = '',
-			array $additional_attributes = []
-		): void {
+		private array $default_attributes = [
+			'expires' => 0,
+			'path' => '/',
+			'domain' => '',
+			'secure' => false,
+			'httponly' => false,
+			'samesite' => 'Lax'
+		];
+
+		/**
+		 * @var array<string, mixed>
+		 */
+		private array $cookie_attributes = [];
+
+		/**
+		 * @param Config $config - CREATE AN INSTANCE OF THE COOKIE CLASS.
+		 * IT REQUIRES A CONFIG CLASS OBJECT TO GET THE SESSION SETTINGS STORED IN IT.
+		 *
+		 * @throws RuntimeException - IF THE SESSION CONFIGURATIONS AREN'T AN ARRAY OR IF THE COOKIE_PREFIX IS INVALID.
+		 */
+		public function __construct(Config $config) {
+			$this -> config = $config;
+
 			$configurations = $this -> config -> get('session');
 
 			if (!is_array($configurations)) {
@@ -46,89 +55,147 @@
 			$cookie_secure = $configurations['cookie_secure'] ?? false;
 			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
 
-			if (empty($cookie_prefix) || !is_bool($cookie_secure) || !is_bool($cookie_http_only)) {
+			$this -> default_attributes['secure'] = $cookie_secure;
+			$this -> default_attributes['httponly'] = $cookie_http_only;
+
+
+			if (empty($cookie_prefix)) {
 				throw new RuntimeException('Invalid cookie configuration.');
 			}
 
-			$name = $cookie_prefix . $name;
+			$this -> prefix = $cookie_prefix;
+		}
 
-			if ($expires instanceof DateTime) {
-				$expires = $expires -> getTimestamp();
-			} elseif (!is_numeric($expires)) {
-				throw new InvalidArgumentException('Invalid expiration time format.');
+		/**
+		 * SET DEFAULT ATTRIBUTES FOR ALL COOKIES SET BY AN INSTANCE OF COOKIE CLASS.
+		 *
+		 * @param array<string, mixed> $attributes - DEFAULT COOKIE ATTRIBUTES.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 */
+		public function setDefaultAttributes(array $attributes): void {
+			$this -> default_attributes = array_merge($this -> default_attributes, $attributes);
+		}
+
+		/**
+		 * GET ALL ATTRIBUTES OF A SPECIFIC COOKIE.
+		 *
+		 * @param string $name - THE NAME OF THE COOKIE.
+		 *
+		 * @return array<string, mixed>|null - RETURNS ARRAY OF COOKIE ATTRIBUTES OR NULL IF COOKIE NAME ISN'T REGISTERED.
+		 */
+		public function getAttributes(string $name): ?array {
+			$name_with_prefix = $this -> prefix . $name;
+
+			if (isset($_COOKIE[$name_with_prefix], $this -> cookie_attributes[$name]) && is_array($this -> cookie_attributes[$name])) {
+				return $this -> cookie_attributes[$name];
 			}
 
-			/** @var array{expires?: int, path?: string, domain?: string, secure?: bool, httponly?: bool, samesite?: 'Lax'|'lax'|'None'|'none'|'Strict'|'strict'} */
-			$cookie_attributes = array_merge([
-				'expires' => (int)$expires,
-				'path' => $path,
-				'domain' => $domain,
-				'secure' => $cookie_secure,
-				'httponly' => $cookie_http_only,
-				'samesite' => 'Lax'
-			], $additional_attributes);
+			return null;
+		}
 
-			try {
-				$encoded_value = is_array($value) ? json_encode($value, JSON_THROW_ON_ERROR) : $value;
-
-				if (!is_string($encoded_value)) {
-					throw new InvalidArgumentException('Invalid value type. Expected a string.');
-				}
-			} catch (JsonException $exception) {
-				// Handle the JSON encoding error, e.g., log it or throw a more specific exception.
-				throw new RuntimeException('Error encoding value to JSON: ' . $exception -> getMessage(), $exception -> getCode(), $exception);
+		/**
+		 * SET A COOKIE.
+		 *
+		 * @param string $name - THE NAME OF THE COOKIE.
+		 * @param mixed $value - THE VALUE OF THE COOKIE.
+		 * @param array{
+		 *      expires?: int,
+		 *      path?: string,
+		 *      domain?: string,
+		 *      secure?: bool,
+		 *      httponly?: bool,
+		 *      samesite?: 'Lax'|'lax'|'Strict'|'strict'|'None'|'none'
+		 *  } $attributes
+		 * 
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 *
+		 * @throws RuntimeException - IF THE COOKIE CONFIGURATION IS NOT VALID.
+		 * @throws InvalidArgumentException - IF THE NAME OF THE COOKIE IS EMPTY OR INVALID, OR IF THE COOKIE VALUE IS TOO LONG.
+		 * @throws JsonException - IF JSON ENCODING OF THE COOKIE VALUE FAILS.
+		 *
+		 * @example
+		 * $cookie -> set('example_cookie', 'example_value');
+		 *
+		 * // ATTRIBUTES EXAMPLE: SET COOKIE ATTRIBUTES.
+		 * $attributes = [
+		 * 'expires' => time() + 3600, // EXPIRES IN 1 HOUR.
+		 * 'path' => '/path',
+		 * 'domain' => 'example.com',
+		 * 'secure' => true,
+		 * 'httponly' => true,
+		 * 'samesite' => 'lax'
+		 * ];
+		 *
+		 * $cookie -> set('example_cookie_with_attributes', ['key' => 'value'], $attributes);
+		 */
+		public function set(string $name, mixed $value, array $attributes = []): void {
+			if (!$name) {
+				throw new InvalidArgumentException('Cookie name cannot be empty.');
 			}
 
-			setcookie($name, $encoded_value, $cookie_attributes);
+			if (preg_match('/[=,; \t\r\n\013\014]/', $name)) {
+				throw new InvalidArgumentException('Cookie name cannot contain invalid characters: =,; \t\r\n\013\014');
+			}
+
+			if (!is_string($value) && !is_array($value)) {
+				throw new InvalidArgumentException('Invalid value for cookie. Value should be a string or an array.');
+			}
+
+			if (is_string($value) && strlen($value) > 4096) {
+				throw new InvalidArgumentException('Cookie value cannot exceed 4096 characters.');
+			}
+
+			$final_attributes = array_merge( $this -> default_attributes, is_array($this -> cookie_attributes[$name]) ? $this -> cookie_attributes[$name] : [], $attributes );
+
+			$this -> cookie_attributes[$name] = $final_attributes;
+			$name = $this -> prefix . $name;
+
+			if (is_array($value)) {
+				$value = json_encode($value, JSON_THROW_ON_ERROR);
+			}
+
+			setcookie($name, $value, $final_attributes);
 		}
 
 		/**
 		 * GET THE VALUE OF A COOKIE.
 		 *
-		 * @param string $name
-		 * @param string $default
+		 * @param string $name - THE NAME OF THE COOKIE.
 		 *
-		 * @return string
+		 * @return mixed - THE VALUE OF THE COOKIE WHICH CAN BE OF ANY TYPE OR NULL IF COOKIE DOES NOT EXIST.
+		 *
+		 * @throws JsonException - IF JSON DECODING FAILED.
 		 */
-		public function get(string $name, string $default = ''): string {
-			$configurations = $this -> config -> get('session');
+		public function get(string $name): mixed {
+			$name = $this -> prefix . $name;
 
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
+			if (!isset($_COOKIE[$name])) {
+				return null;
 			}
 
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
+			$value = $_COOKIE[$name];
 
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
+			$decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+
+			if (json_last_error() === JSON_ERROR_NONE) {
+				return $decoded;
 			}
 
-			$name = $cookie_prefix . $name;
-
-			return $_COOKIE[$name] ?? $default;
+			return $value;
 		}
 
 		/**
 		 * DELETE A COOKIE.
 		 *
-		 * @param string $name
-		 * @param string $path
-		 * @param string $domain
+		 * @param string $name - THE NAME OF THE COOKIE.
+		 * @param string $path - (OPTIONAL) THE PATH WHERE THE COOKIE EXISTS.
+		 * @param string $domain - (OPTIONAL) THE DOMAIN FROM WHERE THE COOKIE EXISTS.
+		 *
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public function delete(string $name, string $path = '/', string $domain = ''): void {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			setcookie($name, '', time() - 3600, $path, $domain);
 
@@ -138,53 +205,29 @@
 		/**
 		 * CHECK IF A COOKIE EXISTS.
 		 *
-		 * @param string $name
+		 * @param string $name - THE NAME OF THE COOKIE.
 		 *
-		 * @return bool
+		 * @return bool - TRUE IF COOKIE EXISTS, FALSE OTHERWISE.
 		 */
 		public function exists(string $name): bool {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
-			$name = $cookie_prefix . $name;
+			$name = $this -> prefix . $name;
 
 			return isset($_COOKIE[$name]);
 		}
 
 		/**
-		 * GET ALL COOKIES.
+		 * GET ALL COOKIES SET BY THIS CLASS INSTANCE.
 		 *
-		 * @return array<string, string>
+		 * @return array<string, string> - ALL COOKIES IN ASSOCIATIVE ARRAY WHERE KEY IS COOKIE NAME AND VALUE IS COOKIE VALUE.
 		 *
-		 * @throws RuntimeException
+		 * @throws RuntimeException - IF ANY OPERATION ON COOKIES FAILED.
 		 */
 		public function getAll(): array {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
 			$cookies = [];
 
 			foreach ($_COOKIE as $name => $value) {
-				if (str_starts_with($name, $cookie_prefix)) {
-					$cookies[substr($name, strlen($cookie_prefix))] = $value;
+				if (str_starts_with($name, $this -> prefix)) {
+					$cookies[substr($name, strlen($this -> prefix))] = $value;
 				}
 			}
 
@@ -192,35 +235,25 @@
 		}
 
 		/**
-		 * FILTER COOKIES BASED ON CRITERIA.
+		 * FILTER COOKIES BASED ON USER-PROVIDED CRITERIA.
 		 *
-		 * @param callable $filter
+		 * @param callable $filter - CALLABLE TO USE FOR FILTERING COOKIES.
+		 * IT MUST TAKE TWO PARAMETERS - COOKIE NAME AND VALUE - AND RETURN BOOLEAN.
 		 *
-		 * @return array<string, string>
+		 * @return array<string, string> - FILTERED COOKIES IN ASSOCIATIVE ARRAY WHERE KEY IS COOKIE NAME AND VALUE IS COOKIE VALUE.
 		 *
-		 * @throws RuntimeException
+		 * @throws RuntimeException - IF ANY OPERATION ON COOKIES FAILED.
 		 */
 		public function filter(callable $filter): array {
-			$configurations = $this -> config -> get('session');
-
-			if (!is_array($configurations)) {
-				throw new RuntimeException('Session configuration is not valid.');
-			}
-
-			$cookie_prefix = $configurations['cookie_prefix'] ?? '';
-
-			if (empty($cookie_prefix)) {
-				throw new RuntimeException('Invalid cookie configuration.');
-			}
-
 			$filtered_cookies = [];
 
 			foreach ($_COOKIE as $name => $value) {
-				if (str_starts_with($name, $cookie_prefix) && $filter($name, $value)) {
-					$filtered_cookies[substr($name, strlen($cookie_prefix))] = $value;
+				if (str_starts_with($name, $this -> prefix) && $filter($name, $value)) {
+					$filtered_cookies[substr($name, strlen($this -> prefix))] = $value;
 				}
 			}
 
 			return $filtered_cookies;
 		}
 	}
+

@@ -21,6 +21,11 @@
 			'src_path' => __DIR__ . '/src'
 		],
 
+		'csrf' => [
+			'key' => '_csrf_token',
+			'lifetime' => '900'
+		],
+
 		'dateTime' => [
 			// DEFAULT TIMEZONE FOR YOUR APPLICATION
 			'timezone' => 'UTC',
@@ -38,7 +43,7 @@
 
 			// DATABASE SERVER HOST
 			'host' => 'localhost',
-	
+
 			// PORT FOR THE DATABASE SERVER
 			'port' => '3306',
 
@@ -78,6 +83,11 @@
 			]
 		],
 
+		'logger' => [
+			'levels' => ['INFO', 'WARNING', 'ERROR'],
+			'format' => '[%s] [%s] %s: %s\n'
+		],
+
 		'mail' => [
 			// MAIL SENDING MECHANISM OR DRIVER (E.G., 'SMTP', 'SENDMAIL', 'MAILGUN')
 			'driver' => 'smtp',
@@ -114,7 +124,7 @@
 			'session_prefix' => 'clipstack_',
 
 			// SESSION LIFETIME IN MINUTES
-			'lifetime' => '120',
+			'session_lifetime' => '120',
 
 			// PREFIX FOR THE COOKIE
 			'cookie_prefix' => 'clipstack_',
@@ -123,6 +133,9 @@
 			'cookie_secure' => false,
 
 			// ENSURES THE COOKIE CAN ONLY BE ACCESSED VIA HTTP(S) NOT BY SCRIPTS
-			'cookie_http_only' => true
+			'cookie_http_only' => true,
+
+			// SPECIFIES same_site ATTRIBUTE FOR COOKIES (E.G., 'lax', 'strict', 'none')
+			'same_site' => 'lax'
 		]
 	];
