@@ -48,7 +48,7 @@ jobs:
 
     - name: Run PHPStan (Static Analysis)
       run: |
-        vendor/bin/phpstan analyse --level max --autoload-file=vendor/autoload.php
+        vendor/bin/phpstan analyse --level max
       shell: bash
       
     - name: Run Tests with Coverage
