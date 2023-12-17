@@ -10,7 +10,7 @@
 		/**
 		 * PROTOCOL CONSTRUCTOR
 		 *
-		 * @param Request $request
+		 * @param Request $request - AN INSTANCE OF THE REQUEST CLASS.
 		 */
 		public function __construct(Request $request) {
 			$this -> request = $request;
