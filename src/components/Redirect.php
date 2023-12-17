@@ -10,7 +10,9 @@
 		 * @param string $url - THE URL TO REDIRECT TO.
 		 * @param bool $permanent - WHETHER THE REDIRECTION IS PERMANENT (HTTP 301).
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
+		 *
+		 * @throws InvalidArgumentException - IF THE PROVIDED URL IS INVALID.
 		 *
 		 * @example
 		 * Redirect::to('https://www.example.com', true);
@@ -35,20 +37,22 @@
 		 *
 		 * @param string $default - DEFAULT URL IF THERE ISN'T A PREVIOUS URL.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public static function back(string $default = '/'): void {
 			$url = $_SERVER['HTTP_REFERER'] ?? $default;
+
 			self::to($url);
 		}
 
 		/**
 		 * REFRESH THE CURRENT PAGE.
 		 *
-		 * @return void
+		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
 		public static function refresh(): void {
 			$url = $_SERVER['REQUEST_URI'];
+
 			self::to($url);
 		}
 	}
