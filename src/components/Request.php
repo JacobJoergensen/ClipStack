@@ -2,6 +2,7 @@
 	namespace ClipStack\Component;
 
 	use ClipStack\Component\Backbone\Singleton;
+
 	use UnexpectedValueException;
 
 	/**
@@ -149,6 +150,43 @@
 		}
 
 		/**
+		 * CHECK IF A POST KEY EXISTS.
+		 *
+		 * @param string $key - THE POST DATA KEY.
+		 *
+		 * @return bool - TRUE IF THE POST DATA KEY EXISTS, FALSE OTHERWISE.
+		 *
+		 * @example
+		 * $request = Request::getInstance();
+		 * if ($request -> hasPostDataKey('username')) {
+		 *     echo $request -> getPostData('username');
+		 * }
+		 */
+		public function hasPostDataKey(string $key): bool {
+			return array_key_exists($key, $this -> post);
+		}
+
+		/**
+		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
+		 *
+		 * @param string|null $key - THE KEY FOR THE POST DATA.
+		 *
+		 * @return mixed - THE SPECIFIC POST DATA IF KEY IS PROVIDED, OR ALL POST DATA IF NO KEY IS PROVIDED.
+		 *
+		 * @example
+		 * $request = Request::getInstance();
+		 * echo $request -> getPostData('username');  // GET SPECIFIC POST DATA BY KEY
+		 * print_r($request -> getPostData());  // GET ALL POST DATA
+		 */
+		public function getPostData(string $key = null): mixed {
+			if ($key === null) {
+				return $this -> post;
+			}
+
+			return $this -> post[$key] ?? null;
+		}
+
+		/**
 		 * RETRIEVE A SPECIFIC REQUEST HEADER.
 		 *
 		 * @param string $header - THE HEADER NAME.
@@ -190,43 +228,6 @@
 			}
 
 			return $headers;
-		}
-
-		/**
-		 * CHECK IF A POST KEY EXISTS.
-		 *
-		 * @param string $key - THE POST DATA KEY.
-		 *
-		 * @return bool - TRUE IF THE POST DATA KEY EXISTS, FALSE OTHERWISE.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * if ($request -> hasPostDataKey('username')) {
-		 *     echo $request -> getPostData('username');
-		 * }
-		 */
-		public function hasPostDataKey(string $key): bool {
-			return array_key_exists($key, $this -> post);
-		}
-
-		/**
-		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @param string|null $key - THE KEY FOR THE POST DATA.
-		 *
-		 * @return mixed - THE SPECIFIC POST DATA IF KEY IS PROVIDED, OR ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getPostData('username');  // GET SPECIFIC POST DATA BY KEY
-		 * print_r($request -> getPostData());  // GET ALL POST DATA
-		 */
-		public function getPostData(string $key = null): mixed {
-			if ($key === null) {
-				return $this -> post;
-			}
-
-			return $this -> post[$key] ?? null;
 		}
 
 		/**
