@@ -91,8 +91,18 @@
 		public function findAllByAttributes(array $attributes, callable $transform_result = null): ?array {
 			$results = $this -> database -> select($this -> table, $attributes);
 
+			if ($results === false) {
+				return null;
+			}
+
 			if($transform_result !== null && is_callable($transform_result)){
-				return array_map($transform_result, $results);
+				$mapped_results = array_map($transform_result, $results);
+
+				if ($mapped_results === false) {
+					return null;
+				}
+
+				return $mapped_results;
 			}
 
 			return $results;
