@@ -20,7 +20,7 @@
 		protected string $primary_key;
 
 		/**
-		 * @var array
+		 * @var array<string, mixed>
 		 */
 		protected array $schema;
 
@@ -69,11 +69,11 @@
 		/**
 		 * FINDS THE RECORD WITH THE GIVEN VALUE FOR THE PRIMARY KEY.
 		 *
-		 * @param $value - THE VALUE OF THE PRIMARY KEY TO SEARCH.
+		 * @param mixed $value - THE VALUE OF THE PRIMARY KEY TO SEARCH.
 		 *
-		 * @return array|null - THE CORRESPONDING RECORD OR NULL IF NOT FOUND.
+		 * @return array<string, mixed>|null - THE CORRESPONDING RECORD OR NULL IF NOT FOUND.
 		 */
-		public function find($value): ?array {
+		public function find(mixed $value): ?array {
 			$conditions = [$this -> primary_key => $value];
 			$result = $this -> database -> select($this -> table, $conditions);
 
@@ -83,10 +83,10 @@
 		/**
 		 * FINDS ALL RECORDS THAT MATCH THE SPECIFIED ATTRIBUTES.
 		 *
-		 * @param array $attributes - THE ATTRIBUTES TO MATCH.
+		 * @param array<string, mixed> $attributes - THE ATTRIBUTES TO MATCH.
 		 * @param callable|null $transform_result - A CALLABLE TRANSFORM FUNCTION TO APPLY TO THE RESULTS.
 		 *
-		 * @return array|null - THE FOUND RECORDS OR NULL IF NONE ARE FOUND.
+		 * @return array<array<string, mixed>>|null - THE FOUND RECORDS OR NULL IF NONE ARE FOUND.
 		 */
 		public function findAllByAttributes(array $attributes, callable $transform_result = null): ?array {
 			$results = $this -> database -> select($this -> table, $attributes);
@@ -101,11 +101,11 @@
 		/**
 		 * RETRIEVES THE RELATED RECORDS FOR A GIVEN RECORD IN A SPECIFIED FOREIGN TABLE.
 		 *
-		 * @param array $record - THE RECORD WHICH RELATED DATA WE WANT TO FIND.
+		 * @param array<string, mixed> $record - THE RECORD WHICH RELATED DATA WE WANT TO FIND.
 		 * @param string $related_table - THE FOREIGN TABLE TO FIND THE RELATED DATA IN.
 		 * @param string $foreign_key - THE FOREIGN KEY FIELD IN THE RELATED TABLE.
 		 *
-		 * @return array|null - THE RELATED RECORDS OR NULL IF NONE ARE FOUND.
+		 * @return array<array<string, mixed>>|null - THE RELATED RECORDS OR NULL IF NONE ARE FOUND.
 		 *
 		 * @throws RuntimeException - WHEN THE RECORD OR THE FOREIGN RECORD IS NOT FOUND.
 		 */
@@ -136,7 +136,7 @@
 		/**
 		 * INSERTS A NEW RECORD.
 		 *
-		 * @param array $record - THE RECORD TO INSERT.
+		 * @param array<string, mixed> $record - THE RECORD TO INSERT.
 		 *
 		 * @return bool - WHETHER THE OPERATION WAS SUCCESSFUL.
 		 */
@@ -149,7 +149,7 @@
 		/**
 		 * UPDATES AN EXISTING RECORD.
 		 *
-		 * @param array $record - THE NEW RECORD DATA.
+		 * @param array<string, mixed> $record - THE NEW RECORD DATA.
 		 *
 		 * @return bool - WHETHER THE OPERATION WAS SUCCESSFUL.
 		 */
