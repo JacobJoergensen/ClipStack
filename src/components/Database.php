@@ -191,7 +191,7 @@
 		 * @param string $table2_column - THE COLUMN FROM THE SECOND TABLE.
 		 * @param string $type - THE TYPE OF JOIN OPERATION ('INNER' BY DEFAULT).
 		 *
-		 * @return array - THE RESULT SET OF THE JOIN OPERATION.
+		 * @return array<mixed> - THE RESULT SET OF THE JOIN OPERATION.
 		 */
 		public function join(string $table1, string $table2, string $table1_column, string $table2_column, string $type = 'INNER'): array {
 			$table1 = $this -> getPrefixedTableName($table1);
@@ -199,7 +199,13 @@
 
 			$sql = "$type JOIN $table2 ON $table1.$table1_column = $table2.$table2_column";
 
-			return $this -> pdo -> query($sql) -> fetchAll(PDO::FETCH_ASSOC);
+			$statement = $this -> pdo -> query($sql);
+
+			if ($statement === false) {
+				throw new PDOException('Error executing the JOIN query.');
+			}
+
+			return $statement -> fetchAll(PDO::FETCH_ASSOC);
 		}
 
 		/**
