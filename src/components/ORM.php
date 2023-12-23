@@ -37,17 +37,20 @@
 			$this -> database = $database;
 			$this -> table = $table;
 			$this -> primary_key = $primary_key;
-			$this->schema = $database -> getSchema($table);
 
-			if (!$this -> schema) {
+			$schema = $database -> getSchema($table);
+
+			if ($schema === false) {
 				throw new RuntimeException("Unable to fetch schema for table $table");
 			}
+
+			$this -> schema = $schema;
 		}
 
 		/**
 		 * VALIDATE THE PROVIDED DATA AGAINST THE TABLE'S SCHEMA.
 		 *
-		 * @param array $data - THE DATA FOR VALIDATION.
+		 * @param array<string, mixed> $data - THE DATA FOR VALIDATION.
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 *
@@ -63,7 +66,6 @@
 					throw new RuntimeException("Invalid datatype for field $key");
 				}
 			}
-
 		}
 
 		/**
@@ -98,7 +100,7 @@
 			if ($transform_result !== null && is_callable($transform_result)) {
 				$mapped_results = array_map($transform_result, $results);
 
-				if ($mapped_results === false) {
+				if (!$mapped_results) {
 					return null;
 				}
 
