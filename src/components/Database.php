@@ -119,6 +119,28 @@
 		}
 
 		/**
+		 * GETS THE SCHEMA OF THE TABLE.
+		 *
+		 * @param string $table_name - THE NAME OF THE TABLE.
+		 *
+		 * @return array<string>|false - RETURNS AN ARRAY OF COLUMN NAMES, OR FALSE IF TABLE DOES NOT EXIST.
+		 */
+		public function getSchema(string $table_name): array|false {
+			$this -> ensureConnected();
+
+			$prefixed_table_name = $this -> getPrefixedTableName($table_name);
+			$statement = $this -> pdo -> prepare("DESCRIBE $prefixed_table_name");
+
+			if ($statement -> execute()) {
+				$result = $statement -> fetchAll(PDO::FETCH_COLUMN);
+
+				return array_map('strtoupper', $result);
+			}
+
+			return false;
+		}
+
+		/**
 		 * ESTABLISH A DATABASE CONNECTION.
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
