@@ -95,7 +95,7 @@
 				return null;
 			}
 
-			if($transform_result !== null && is_callable($transform_result)){
+			if ($transform_result !== null && is_callable($transform_result)) {
 				$mapped_results = array_map($transform_result, $results);
 
 				if ($mapped_results === false) {
