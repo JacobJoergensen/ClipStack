@@ -403,7 +403,7 @@
 		private function buildWhereClause(array $conditions): string {
 			return implode(' AND ', array_map(static function ($field, $value) {
 				if (is_numeric($value) || is_string($value)) {
-					return "`$field` = '{$value}'";
+					return "`$field` = '$value'";
 				}
 
 				throw new InvalidArgumentException("The value for '$field' cannot be cast to string");
