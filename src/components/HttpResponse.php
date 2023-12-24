@@ -52,7 +52,7 @@
 		/**
 		 * GET ALL REQUEST HEADERS.
 		 *
-		 * @return array<string, string> - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
+		 * @return array<mixed> - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
 		 */
 		public function getAllRequestHeaders(): array {
 			if (function_exists('getallheaders')) {
@@ -64,7 +64,7 @@
 			foreach ($this -> request_headers as $key => $value) {
 				if (str_starts_with($key, 'HTTP_')) {
 					$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-					$headers[$header_key] = is_string($value) ? $value : '';
+					$headers[$header_key] = $value;
 				}
 			}
 
