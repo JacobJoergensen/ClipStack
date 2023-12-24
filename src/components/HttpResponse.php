@@ -11,13 +11,6 @@
 		private array $request_headers = [];
 
 		/**
-		 * @noinspection all
-		 *
-		 * @var array<mixed>
-		 */
-		//private array $response_headers = [];
-
-		/**
 		 * ADD A HEADER TO THE RESPONSE.
 		 *
 		 * @param string $name - THE NAME OF THE HEADER.
@@ -32,7 +25,7 @@
 				throw new InvalidArgumentException('Invalid header name or value provided.');
 			}
 
-			$this -> response_headers[] = [$name, $value];
+			header("$name: $value");
 		}
 
 		/**
