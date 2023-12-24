@@ -15,7 +15,7 @@
 		 *
 		 * @var array<mixed>
 		 */
-		private array $response_headers = [];
+		//private array $response_headers = [];
 
 		/**
 		 * ADD A HEADER TO THE RESPONSE.
@@ -52,7 +52,7 @@
 		/**
 		 * GET ALL REQUEST HEADERS.
 		 *
-		 * @return array<mixed> - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
+		 * @return array<string, string> - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
 		 */
 		public function getAllRequestHeaders(): array {
 			if (function_exists('getallheaders')) {
