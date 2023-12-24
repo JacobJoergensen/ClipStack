@@ -21,6 +21,8 @@
 		protected HttpResponse $httpResponse;
 
 		/**
+		 * REDIRECT CONSTRUCTOR.
+		 *
 		 * @param string $current_url -
 		 * @param string|null $previous_url -
 		 */
