@@ -187,50 +187,6 @@
 		}
 
 		/**
-		 * RETRIEVE A SPECIFIC REQUEST HEADER.
-		 *
-		 * @param string $header - THE HEADER NAME.
-		 *
-		 * @return string|null - THE VALUE OF THE SPECIFIED REQUEST HEADER, OR NULL IF NOT FOUND.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getHeader('Accept-Language');
-		 */
-		public function getHeader(string $header): ?string {
-			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
-			$value = $this -> server[$key] ?? null;
-
-			return is_string($value) ? $value : null;
-		}
-
-		/**
-		 * RETRIEVE ALL REQUEST HEADERS.
-		 *
-		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING ALL REQUEST HEADERS.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * print_r($request -> getAllHeaders());
-		 */
-		public function getAllHeaders(): array {
-			if (function_exists('getallheaders')) {
-				return getallheaders();
-			}
-
-			$headers = [];
-
-			foreach ($this -> server as $key => $value) {
-				if (str_starts_with($key, 'HTTP_')) {
-					$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-					$headers[$header_key] = is_string($value) ? $value : '';
-				}
-			}
-
-			return $headers;
-		}
-
-		/**
 		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
 		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING THE QUERY PARAMETERS.
