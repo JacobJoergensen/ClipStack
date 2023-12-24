@@ -2,7 +2,6 @@
 	namespace ClipStack\Component;
 
 	use InvalidArgumentException;
-	use JetBrains\PhpStorm\NoReturn;
 	use RuntimeException;
 
 	class Redirect {
@@ -115,7 +114,7 @@
 		 *
 		 * @throws InvalidArgumentException - IF INVALID HTTP STATUS CODE IS PROVIDED.
 		 */
-		#[NoReturn] public function redirect(string $url, int $status_code = 302): void {
+		public function redirect(string $url, int $status_code = 302): void {
 			if (!($status_code >= 100 && $status_code < 600)) {
 				throw new InvalidArgumentException("Invalid HTTP status code provided: $status_code");
 			}
