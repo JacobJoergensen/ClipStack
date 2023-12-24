@@ -6,14 +6,14 @@
 
 	class HttpResponse {
 		/**
-		 * @var array
+		 * @var array<string, string>
 		 */
 		private array $request_headers = [];
 
 		/**
 		 * @noinspection all
 		 *
-		 * @var array
+		 * @var array<mixed>
 		 */
 		private array $response_headers = [];
 
@@ -52,7 +52,7 @@
 		/**
 		 * GET ALL REQUEST HEADERS.
 		 *
-		 * @return array - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
+		 * @return array<string, string> - AN ASSOCIATIVE ARRAY, WITH EACH KEY BEING A HEADER NAME AND EACH VALUE THE HEADER'S VALUE.
 		 */
 		public function getAllRequestHeaders(): array {
 			if (function_exists('getallheaders')) {
