@@ -41,7 +41,7 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Tests": "tests/",
+			"Tests\\": "tests/",
 			"Tests\\Component\\": "tests/components/",
 			"Tests\\Backbone\\": "tests/backbone/"
 		}
