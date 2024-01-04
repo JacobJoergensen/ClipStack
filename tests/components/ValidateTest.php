@@ -2,10 +2,12 @@
 	namespace Tests\Component;
 
 	use PHPUnit\Framework\TestCase;
+
 	use ClipStack\Component\Validate;
 	use ClipStack\Component\ErrorHandler;
 	use ClipStack\Component\DateTimeUtility;
 	use ClipStack\Component\Backbone\Config;
+
 	use Exception;
 
 	class ValidateTest extends TestCase {
