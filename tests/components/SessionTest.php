@@ -2,6 +2,7 @@
 	namespace Tests\Component;
 
 	use PHPUnit\Framework\TestCase;
+
 	use ClipStack\Component\Session;
 	use ClipStack\Component\Request;
 	use ClipStack\Component\Backbone\Config;
