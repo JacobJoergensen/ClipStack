@@ -7,7 +7,7 @@
 	use Random\RandomException;
 	use RuntimeException;
 
-	#[AllowDynamicProperties] class CSRFToken {
+	#[AllowDynamicProperties] class CSRF {
 		/**
 		 * @var Config
 		 */
@@ -72,27 +72,6 @@
 		}
 
 		/**
-		 * CALCULATE THE ENTROPY OF A PROVIDED STRING.
-		 *
-		 * @param string $input - THE STRING TO CALCULATE THE ENTROPY OF.
-		 *
-		 * @return float - THE ENTROPY OF THE INPUT STRING.
-		 */
-		private function calculateEntropy(string $input): float {
-			$len = strlen($input);
-			$entropy = 0;
-
-			if ($len > 0) {
-				foreach ((array)count_chars($input, 1) as $frequency) {
-					$probability = (int)$frequency / $len;
-					$entropy -= $probability * log($probability, 2);
-				}
-			}
-
-			return $entropy;
-		}
-
-		/**
 		 * GENERATE A NEW CSRF TOKEN, STORE IT IN THE SESSION, AND RETURN IT.
 		 *
 		 * IT ENSURES THE GENERATED TOKEN HAS A MINIMUM ENTROPY OF 4.
@@ -107,13 +86,11 @@
 		 * $token = $csrf -> generateCSRFToken();
 		 * echo '<input type="hidden" name="_csrf_token" value="' . $token . '">';
 		 */
-		public function generateCSRFToken(): string {
+		public function generateToken(): string {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
-			do {
-				$token = bin2hex(random_bytes(32));
-			} while ($this -> calculateEntropy($token) < 4);
+			$token = bin2hex(random_bytes(32));
 
 			$token_data = [
 				'token' => $token,
@@ -180,7 +157,7 @@
 		 *     throw new RuntimeException('CSRF token validation failed.');
 		 * }
 		 */
-		public function validateCSRFToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
+		public function validateToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
@@ -205,7 +182,7 @@
 				$this -> session -> remove($this -> key);
 
 				if ($regenerate_on_validation) {
-					$this -> generateCSRFToken();
+					$this -> generateToken();
 				}
 
 				return true;

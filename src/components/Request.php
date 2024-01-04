@@ -3,6 +3,8 @@
 
 	use ClipStack\Component\Backbone\Singleton;
 
+	use UnexpectedValueException;
+
 	/**
 	 * @template-uses Singleton<Request>
 	 */
@@ -23,6 +25,16 @@
 		 * @var array<string, mixed>
 		 */
 		private array $post;
+
+		/**
+		 * @var string
+		 */
+		private const string PROTOCOL_HTTP = 'http';
+
+		/**
+		 * @var string
+		 */
+		private const string PROTOCOL_HTTPS = 'https';
 
 		/**
 		 * PRIVATE CONSTRUCTOR FOR SINGLETON PATTERN.
@@ -58,11 +70,29 @@
 		 * RETRIEVES A VALUE FROM THE $server ARRAY BASED ON THE PROVIDED KEY.
 		 *
 		 * @param string $key - THE KEY TO LOOK UP IN THE $server ARRAY.
+		 * @param mixed $default - DEFAULT VALUE TO RETURN IF THE KEY DOES NOT EXIST.
 		 *
 		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
 		 */
-		public function getServerValue(string $key): mixed {
-			return $this -> server[$key] ?? null;
+		public function getServerValue(string $key, mixed $default = null): mixed {
+			return $this -> server[$key] ?? $default;
+		}
+
+		/**
+		 * GET THE DOCUMENT ROOT OF THE URL.
+		 *
+		 * @return string - THE DOCUMENT ROOT OF THE URL.
+		 *
+		 * @throws UnexpectedValueException - IF AN INVALID DOCUMENT ROOT IS ENCOUNTERED.
+		 */
+		public function getDocumentRoot(): string {
+			$document_root = $this -> server['DOCUMENT_ROOT'] ?? '';
+
+			if (!is_string($document_root)) {
+				throw new UnexpectedValueException("Invalid document root encountered.");
+			}
+
+			return $document_root;
 		}
 
 		/**
@@ -72,10 +102,14 @@
 		 *
 		 * @example
 		 * $request = Request::getInstance();
-		 * echo $request -> getFullUrl();
+		 * echo $request -> getUrl();
 		 */
-		public function getFullUrl(): string {
-			$protocol = (isset($this -> server['HTTPS']) && $this -> server['HTTPS'] === 'on') ? "https" : "http";
+		public function getUrl(): string {
+			$protocol = (
+				(isset($this -> server['HTTPS']) && $this -> server['HTTPS'] !== 'off') ||
+				(isset($this -> server['SERVER_PORT']) && $this -> server['SERVER_PORT'] === 443) ||
+				(isset($this -> server['HTTP_X_FORWARDED_PROTO']) && $this -> server['HTTP_X_FORWARDED_PROTO'] === 'https')
+			) ? self::PROTOCOL_HTTPS : self::PROTOCOL_HTTP;
 
 			return $protocol . "://" . ($this -> server['HTTP_HOST'] ?? '') . ($this -> server['REQUEST_URI'] ?? '');
 		}
@@ -116,50 +150,6 @@
 		}
 
 		/**
-		 * RETRIEVE A SPECIFIC REQUEST HEADER.
-		 *
-		 * @param string $header - THE HEADER NAME.
-		 *
-		 * @return string|null - THE VALUE OF THE SPECIFIED REQUEST HEADER, OR NULL IF NOT FOUND.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getHeader('Accept-Language');
-		 */
-		public function getHeader(string $header): ?string {
-			$key = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
-			$value = $this -> server[$key] ?? null;
-
-			return is_string($value) ? $value : null;
-		}
-
-		/**
-		 * RETRIEVE ALL REQUEST HEADERS.
-		 *
-		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING ALL REQUEST HEADERS.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * print_r($request -> getAllHeaders());
-		 */
-		public function getAllHeaders(): array {
-			if (function_exists('getallheaders')) {
-				return getallheaders();
-			}
-
-			$headers = [];
-
-			foreach ($this -> server as $key => $value) {
-				if (str_starts_with($key, 'HTTP_')) {
-					$header_key = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-					$headers[$header_key] = is_string($value) ? $value : '';
-				}
-			}
-
-			return $headers;
-		}
-
-		/**
 		 * CHECK IF A POST KEY EXISTS.
 		 *
 		 * @param string $key - THE POST DATA KEY.
@@ -197,32 +187,6 @@
 		}
 
 		/**
-		 * GET THE USER AGENT STRING.
-		 *
-		 * @return string - THE USER AGENT STRING.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getUserAgent();
-		 */
-		public function getUserAgent(): string {
-			$user_agent = $this -> server['HTTP_USER_AGENT'] ?? '';
-
-			return is_string($user_agent) ? $user_agent : '';
-		}
-
-		/**
-		 * FETCH THE CLIENT'S IP ADDRESS.
-		 *
-		 * @return string - THE CLIENT'S IP ADDRESS.
-		 */
-		public function getClientIp(): string {
-			$remote_addr = $this -> server['REMOTE_ADDR'] ?? null;
-
-			return is_string($remote_addr) ? $remote_addr : '';
-		}
-
-		/**
 		 * GET THE QUERY PARAMETERS OF THE REQUEST.
 		 *
 		 * @return array<string, string> - AN ASSOCIATIVE ARRAY CONTAINING THE QUERY PARAMETERS.
@@ -242,5 +206,47 @@
 			return array_filter($params, static function ($key, $value) {
 				return is_string($key) && is_string($value);
 			}, ARRAY_FILTER_USE_BOTH);
+		}
+
+		/**
+		 * GET THE USER AGENT STRING.
+		 *
+		 * @return string - THE USER AGENT STRING.
+		 *
+		 * @throws UnexpectedValueException - IF AN INVALID USER AGENT STRING IS ENCOUNTERED.
+		 *
+		 * @example
+		 * $request = Request::getInstance();
+		 * echo $request -> getUserAgent();
+		 */
+		public function getUserAgent(): string {
+			$user_agent = $this -> server['HTTP_USER_AGENT'] ?? '';
+
+			if (!is_string($user_agent)) {
+				throw new UnexpectedValueException("Invalid user agent string encountered.");
+			}
+
+			return $user_agent;
+		}
+
+		/**
+		 * FETCH THE CLIENT'S IP ADDRESS.
+		 *
+		 * @return string - THE CLIENT'S IP ADDRESS.
+		 *
+		 * @throws UnexpectedValueException - IF AN INVALID IP ADDRESS IS ENCOUNTERED.
+		 */
+		public function getClientIp(): string {
+			$remote_addr = $this -> server['REMOTE_ADDR'] ?? null;
+
+			if (!is_string($remote_addr) || (
+					!filter_var($remote_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) &&
+					!filter_var($remote_addr, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)
+				)) {
+
+				throw new UnexpectedValueException("Invalid IP address encountered.");
+			}
+
+			return $remote_addr;
 		}
 	}
