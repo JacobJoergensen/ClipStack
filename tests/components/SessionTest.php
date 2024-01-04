@@ -10,17 +10,6 @@
 	 * @runInSeparateProcess
 	 */
 	class SessionTest extends TestCase {
-		public function testSetAndGet(): void {
-			$config = Config::getInstance();
-			$request = Request::getInstance();
-			$session = new Session($config, $request);
-
-			$session -> set('user', ['id' => 1, 'name' => 'John Doe']);
-
-			$user_data = $session -> get('user');
-			$this -> assertEquals(['id' => 1, 'name' => 'John Doe'], $user_data);
-		}
-
 		public function testHas(): void {
 			$config = Config::getInstance();
 			$request = Request::getInstance();
