@@ -6,5 +6,5 @@
 	use ClipStack\Component\AssetManager;
 
 	class AssetManagerTest extends TestCase {
-		// ADD TESTS FIR ASSETMANAGER HERE.
+		// ADD TESTS FOR ASSETMANAGER HERE.
 	}
