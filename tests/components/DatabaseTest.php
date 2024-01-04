@@ -4,6 +4,7 @@
 	use PHPUnit\Framework\TestCase;
 	use ClipStack\Component\Database;
 	use ClipStack\Component\Backbone\Config;
+	use ClipStack\Component\Logger;
 	use ClipStack\Component\ErrorHandler;
 	use ClipStack\Component\DateTimeUtility;
 	use ClipStack\Component\Validate;
@@ -31,7 +32,8 @@
 			];
 
 			$config = Config::getInstance($config_array);
-			$error_handler = new ErrorHandler($config);
+			$logger = new Logger($config);
+			$error_handler = new ErrorHandler($logger);
 			$date_time_utility = new DateTimeUtility($config);
 			$validate = new Validate($error_handler, $date_time_utility);
 			$this -> database = Database::getInstance($config, $validate);
