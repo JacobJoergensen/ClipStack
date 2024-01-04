@@ -7,7 +7,7 @@
 	use Random\RandomException;
 	use RuntimeException;
 
-	#[AllowDynamicProperties] class CSRFToken {
+	#[AllowDynamicProperties] class CSRF {
 		/**
 		 * @var Config
 		 */
@@ -86,7 +86,7 @@
 		 * $token = $csrf -> generateCSRFToken();
 		 * echo '<input type="hidden" name="_csrf_token" value="' . $token . '">';
 		 */
-		public function generateCSRFToken(): string {
+		public function generateToken(): string {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
@@ -157,7 +157,7 @@
 		 *     throw new RuntimeException('CSRF token validation failed.');
 		 * }
 		 */
-		public function validateCSRFToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
+		public function validateToken(string $token, ?int $max_usage = 1, bool $regenerate_on_validation = true): bool {
 			// CLEAR ANY EXPIRED TOKENS FIRST.
 			$this -> clearExpiredTokens();
 
@@ -182,7 +182,7 @@
 				$this -> session -> remove($this -> key);
 
 				if ($regenerate_on_validation) {
-					$this -> generateCSRFToken();
+					$this -> generateToken();
 				}
 
 				return true;
