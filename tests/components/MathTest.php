@@ -1,9 +1,11 @@
 <?php
 	namespace Tests\Component;
 
-	use InvalidArgumentException;
 	use PHPUnit\Framework\TestCase;
+
 	use ClipStack\Component\Math;
+
+	use InvalidArgumentException;
 	use Random\RandomException;
 
 	class MathTest extends TestCase {
