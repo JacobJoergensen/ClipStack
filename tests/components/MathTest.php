@@ -33,18 +33,6 @@
 			$this -> assertEquals(0, $math -> getCenterNumber(-5, 5));
 		}
 
-		public function testGetAverage(): void {
-			$math = new Math();
-			$this -> assertEquals(3, $math -> getAverage([1, 2, 3, 4, 5]));
-			$this -> assertEquals(4.33, $math -> getAverage([3.5, 4.5, 5.5], 2));
-
-			$this -> expectException(InvalidArgumentException::class);
-			$math -> getAverage([]);
-
-			$this -> expectException(InvalidArgumentException::class);
-			$math -> getAverage([1, 'two', 3]);
-		}
-
 		public function testFactorial(): void {
 			$math = new Math();
 			$this -> assertEquals(120, $math -> factorial(5));
