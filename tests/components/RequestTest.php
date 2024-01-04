@@ -2,6 +2,7 @@
 	namespace Tests\Component;
 
 	use PHPUnit\Framework\TestCase;
+
 	use ClipStack\Component\Request;
 
 	/**
