@@ -3,17 +3,14 @@
 
 	use PHPUnit\Framework\TestCase;
 
-	use ClipStack\Component\StylesheetFile;
-	use ClipStack\Component\ScriptFile;
-	use ClipStack\Component\Css;
-	use ClipStack\Component\Js;
+	use ClipStack\Component\AssetManager;
 
 	class AssetManagerTest extends TestCase {
 		public function testStylesheetFile(): void {
 			$file = new StylesheetFile('/path/to/style.css', 'example-integrity-hash');
 
-			$this -> assertEquals('/path/to/style.css', $file->getPath());
-			$this -> assertEquals('example-integrity-hash', $file->getIntegrity());
+			$this -> assertEquals('/path/to/style.css', $file -> getPath());
+			$this -> assertEquals('example-integrity-hash', $file -> getIntegrity());
 		}
 
 		public function testScriptFile(): void {
