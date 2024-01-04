@@ -12,15 +12,6 @@
 		/**
 		 * @throws Exception
 		 */
-		protected function setUp(): void {
-			$config_instance = Config::getInstance();
-			$config = $config_instance -> get('dateTime.timezone');
-			$this -> dateTimeUtility = new DateTimeUtility($config);
-		}
-
-		/**
-		 * @throws Exception
-		 */
 		public function testSetTimezone(): void {
 			$this -> dateTimeUtility -> setTimezone('America/New_York');
 			$current_timezone = $this -> dateTimeUtility -> getCurrentTimezone();
