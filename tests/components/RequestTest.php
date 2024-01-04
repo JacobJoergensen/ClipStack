@@ -16,7 +16,7 @@
 			];
 
 			$request = Request::getInstance($server);
-			$full_url = $request -> getFullUrl();
+			$full_url = $request -> getUrl();
 
 			$expected_url = 'https://example.com/path/to/page';
 			$this -> assertEquals($expected_url, $full_url);
@@ -29,7 +29,7 @@
 			];
 
 			$request = Request::getInstance($server);
-			$full_url = $request -> getFullUrl();
+			$full_url = $request -> getUrl();
 
 			$expected_url = 'http://example.com/path/to/page';
 			$this -> assertEquals($expected_url, $full_url);
