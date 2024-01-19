@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/latest/phpunit.xsd"
- 	bootstrap="vendor/autoload.php"
-	colors="true"
-	verbose="true"
-	stopOnFailure="false">
-<coverage processUncoveredFiles="true">
-	<include>
-		<directory suffix=".php">./src/</directory>
-	</include>
-</coverage>
-<testsuites>
-	<testsuite name="ClipStackTests">
-		<directory>./tests</directory>
-	</testsuite>
-</testsuites>
+<phpunit bootstrap="vendor/autoload.php"
+		convertDeprecationsToExceptions="true"
+		colors="true"
+		verbose="true"
+		stopOnFailure="false">
+	<testsuites>
+		<testsuite name="ClipStackTests">
+			<directory>./tests</directory>
+		</testsuite>
+	</testsuites>
+
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./src/</directory>
+		</include>
+	</coverage>
 </phpunit>
