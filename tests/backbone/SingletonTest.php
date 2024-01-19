@@ -2,7 +2,9 @@
 	namespace Tests\Backbone;
 
 	use PHPUnit\Framework\TestCase;
+
 	use ClipStack\Component\Backbone\Singleton;
+
 	use ReflectionClass;
 	use ReflectionException;
 	use RuntimeException;

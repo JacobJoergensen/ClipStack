@@ -119,6 +119,28 @@
 		}
 
 		/**
+		 * GETS THE SCHEMA OF THE TABLE.
+		 *
+		 * @param string $table_name - THE NAME OF THE TABLE.
+		 *
+		 * @return array<string>|false - RETURNS AN ARRAY OF COLUMN NAMES, OR FALSE IF TABLE DOES NOT EXIST.
+		 */
+		public function getSchema(string $table_name): array|false {
+			$this -> ensureConnected();
+
+			$prefixed_table_name = $this -> getPrefixedTableName($table_name);
+			$statement = $this -> pdo -> prepare("DESCRIBE $prefixed_table_name");
+
+			if ($statement -> execute()) {
+				$result = $statement -> fetchAll(PDO::FETCH_COLUMN);
+
+				return array_map('strtoupper', $result);
+			}
+
+			return false;
+		}
+
+		/**
 		 * ESTABLISH A DATABASE CONNECTION.
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
@@ -183,6 +205,32 @@
 		}
 
 		/**
+		 * PERFORMS A JOIN OPERATION BETWEEN TWO TABLES.
+		 *
+		 * @param string $table1 - THE NAME OF THE FIRST TABLE.
+		 * @param string $table2 - THE NAME OF THE SECOND TABLE.
+		 * @param string $table1_column - THE COLUMN FROM THE FIRST TABLE.
+		 * @param string $table2_column - THE COLUMN FROM THE SECOND TABLE.
+		 * @param string $type - THE TYPE OF JOIN OPERATION ('INNER' BY DEFAULT).
+		 *
+		 * @return array<mixed> - THE RESULT SET OF THE JOIN OPERATION.
+		 */
+		public function join(string $table1, string $table2, string $table1_column, string $table2_column, string $type = 'INNER'): array {
+			$table1 = $this -> getPrefixedTableName($table1);
+			$table2 = $this -> getPrefixedTableName($table2);
+
+			$sql = "$type JOIN $table2 ON $table1.$table1_column = $table2.$table2_column";
+
+			$statement = $this -> pdo -> query($sql);
+
+			if ($statement === false) {
+				throw new PDOException('Error executing the JOIN query.');
+			}
+
+			return $statement -> fetchAll(PDO::FETCH_ASSOC);
+		}
+
+		/**
 		 * RUN A SQL QUERY AGAINST THE DATABASE.
 		 *
 		 * @param string $query - SQL QUERY TO BE EXECUTED.
@@ -224,15 +272,21 @@
 		 * @return false|array<array<string, mixed>> - AN ARRAY WITH THE RESULTING ROWS AS ASSOCIATIVE ARRAYS, FALSE IF THE QUERY FAILED.
 		 */
 		public function select(string $table, array $conditions = []): false|array {
-			$where = implode(' AND ', array_map(static function ($k) {
-				return "`$k` = :$k";
+			$where = implode(' AND ', array_map(static function ($key) {
+				return "`$key` = :$key";
 			}, array_keys($conditions)));
 
-			$stmt = $this -> pdo -> prepare("SELECT * FROM $table WHERE $where");
+			$statement = $this -> pdo -> prepare("SELECT * FROM $table WHERE $where");
 
-			$stmt -> execute($conditions);
+			foreach ($conditions as $key => &$value) {
+				$statement -> bindParam(":$key", $value);
+			}
 
-			return $stmt -> fetchAll(PDO::FETCH_ASSOC);
+			unset($value);
+
+			$statement -> execute();
+
+			return $statement -> fetchAll(PDO::FETCH_ASSOC);
 		}
 
 		/**
@@ -248,13 +302,23 @@
 		public function delete(string $table, array $conditions = []): PDOStatement {
 			$where = $this -> buildWhereClause($conditions);
 
-			$result = $this -> query("DELETE FROM $table WHERE $where");
+			$sql = "DELETE FROM $table WHERE $where";
 
-			if ($result === null) {
-				throw new UnexpectedValueException("The DELETE query did not execute as expected.");
+			try {
+				$statement = $this->pdo->prepare($sql);
+
+				foreach ($conditions as $key => &$value) {
+					$statement->bindParam(":$key", $value);
+				}
+
+				unset($value);
+
+				$statement->execute();
+			} catch (PDOException $exception) {
+				throw new UnexpectedValueException("The DELETE query did not execute as expected. PDOException: " . $exception -> getMessage());
 			}
 
-			return $result;
+			return $statement;
 		}
 
 		/**
@@ -277,10 +341,15 @@
 
 			$fields = implode(', ', array_keys($data));
 			$placeholders = ':' . implode(', :', array_keys($data));
-
 			$sql = "INSERT INTO $table ($fields) VALUES ($placeholders)";
 
-			return $this -> query($sql, $data) !== null;
+			$statement = $this -> pdo -> prepare($sql);
+
+			foreach ($data as $key => &$value) {
+				$statement -> bindParam(":$key", $value);
+			}
+
+			return $statement -> execute();
 		}
 
 		/**
@@ -307,7 +376,13 @@
 
 			$params = array_merge($set_data, $where_data);
 
-			return $this -> query($sql, $params) !== null;
+			$statement = $this->pdo->prepare($sql);
+
+			foreach ($params as $key => &$value) {
+				$statement -> bindParam(":$key", $value);
+			}
+
+			return $statement -> execute();
 		}
 
 		/**
@@ -403,7 +478,7 @@
 		private function buildWhereClause(array $conditions): string {
 			return implode(' AND ', array_map(static function ($field, $value) {
 				if (is_numeric($value) || is_string($value)) {
-					return "`$field` = '{$value}'";
+					return "`$field` = '$value'";
 				}
 
 				throw new InvalidArgumentException("The value for '$field' cannot be cast to string");
