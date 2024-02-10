@@ -51,5 +51,5 @@ jobs:
         vendor/bin/phpstan analyse --level max
       shell: bash
       
-    - name: Run Tests with Coverage
-      run: vendor/bin/phpunit --coverage-text
+    - name: Run Unit Tests
+      run: vendor/bin/phpunit --configuration phpunit.xml
