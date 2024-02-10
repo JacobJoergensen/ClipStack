@@ -36,7 +36,7 @@ jobs:
 
     - name: Setup Cache for Composer
       id: composer-cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -51,5 +51,5 @@ jobs:
         vendor/bin/phpstan analyse --level max
       shell: bash
       
-    - name: Run Tests with Coverage
-      run: vendor/bin/phpunit --coverage-text
+    - name: Run Unit Tests
+      run: vendor/bin/phpunit --configuration phpunit.xml
