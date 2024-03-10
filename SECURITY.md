@@ -16,7 +16,7 @@ If you discover a security vulnerability in ClipStack, please help us by reporti
 
 To report a vulnerability, follow these steps:
 
-1. **Create a New Issue:** [Create a new issue]([link to your issue tracker](https://github.com/JacobJoergensen/ClipStack/issues/)) on our issue tracker.
+1. **Create a New Issue:** ([Create a new issue](https://github.com/JacobJoergensen/ClipStack/issues/)) on our issue tracker.
 2. **Use the Security Template:** Select the "Security Vulnerability" template when creating the issue.
 3. **Provide Details:** Include as much detail as possible, including a clear description of the vulnerability, steps to reproduce it, and any potential impact.
 4. **Stay Engaged:** Respond promptly to any follow-up questions or requests for clarification from our team.
