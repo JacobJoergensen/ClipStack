@@ -1,6 +1,6 @@
-# PiperLang Pull Request Template
+# ClipStack Pull Request Template
 
-Thank you for contributing to PiperLang. Before you submit your pull request, please make sure to fulfil the following requirements.
+Thank you for contributing to ClipStack. Before you submit your pull request, please make sure to fulfil the following requirements.
 
 ## Pull Request Description
 Please provide a clear description. Replace this paragraph with your description and include:
@@ -13,7 +13,7 @@ Please identify the type of pull request.
 
 - [ ] Feature Implementation
 - [ ] Bug Fix
-- [ ] Refactoring
+- [ ] Refactoring or Improvement
 - [ ] Documentation
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 
