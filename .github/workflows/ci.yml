@@ -1,15 +1,22 @@
-name: Test Circle
+name: CI
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types: [ opened, reopened, synchronize, labeled ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.operating-system }}
     strategy:
+      matrix:
+        operating-system: [ 'ubuntu-latest']
+        php-versions: ['8.3']
       fail-fast: true
 
     steps:
@@ -23,25 +30,22 @@ jobs:
       id: setup-php
       uses: shivammathur/setup-php@2.30.0
       with:
-        php-version: '8.3'
+        php-version: ${{ matrix.php-versions }}
         extensions: mbstring, intl
         ini-values: post_max_size=256M, max_execution_time=180
-        coverage: xdebug3
+        coverage: none
         tools: phpstan, phpunit
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Print PHP Version
       run: echo ${{ steps.setup-php.outputs.php-version }}
 
-    - name: Setup Cache for Composer
-      id: composer-cache
+    - name: Cache Composer packages
       uses: actions/cache@v4
       with:
         path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        key: ${{ runner.os }}-php-${{ matrix.php-versions }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
-          ${{ runner.os }}-php-
+          ${{ runner.os }}-composer-
 
     - name: Install Dependencies
       run: composer install --prefer-dist --no-progress
@@ -49,7 +53,6 @@ jobs:
     - name: Run PHPStan (Static Analysis)
       run: |
         vendor/bin/phpstan analyse --level max
-      shell: bash
       
     - name: Run Unit Tests
       run: vendor/bin/phpunit --configuration phpunit.xml
