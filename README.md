@@ -6,3 +6,6 @@ ClipStack is a lightweight php framework, that focus on simplicity and quality. 
 > :warning: **Beta Stage Warning:** ClipStack is currently in a Beta stage. It is a work in progress and should not be used in production applications at the moment. Unexpected bugs and errors may happen, and features may change without prior announcements. We encourage you to participate in our testing and development phases by reporting any encountered issues.
 >
 > :information_source: **PHP Version:** The development cycle of ClipStack operates on PHP 8.3. For optimal compatibility and performance, we recommend using this version when working with ClipStack.
+
+## 🚀 ClipStack Open Beta Release Announcement 🚀
+We are thrilled to announce that ClipStack, our lightweight PHP framework, has entered the open beta phase! As of today, ClipStack is now a public project available on GitHub, inviting developers from all around the world to explore, contribute, and help shape its future.
