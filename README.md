@@ -1,5 +1,5 @@
 # ClipStack (BETA STAGE - WORK IN PROGRESS)
-A PHP website framework for small and medium websites
+ClipStack is a lightweight php framework, that focus on simplicity and quality. Created for small and medium websites that want to have more advanced features but without having to use one of the large php frameworks or the need to code a lot of backend code themself.
 
 <br>
 
