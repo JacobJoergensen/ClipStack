@@ -4,20 +4,16 @@
 # SOURCE CODE
 *.css   text
 *.html  text diff=html
-*.js    text
 *.json  text
 *.md    text
 *.php   text diff=php
-*.sql   text
 *.xml   text
 
 # CONFIGS
 .editorconfig   text
-.htaccess       text
 *.lock          text -diff
 *.yaml          text
 *.yml           text
-browserslist    text
 Makefile        text
 makefile        text
 
@@ -32,17 +28,6 @@ makefile        text
 *.tiff  binary
 *.wbmp  binary
 *.webp  binary
-
-# FONTS
-*.eot   binary
-*.ttf   binary
-*.otf   binary
-*.woff  binary
-*.woff2 binary
-
-# ARCHIVES
-*.rar   binary
-*.zip   binary
 
 # IGNORE
 *.*ignore   text
