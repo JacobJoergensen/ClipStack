@@ -3,7 +3,7 @@
 	"type": "project",
 	"description": "A PHP website framework for small and medium websites.",
 	"homepage": "https://clipstack.net",
-	"readme": "https://github.com/Beehubs/ClipStack/blob/main/README.md",
+	"readme": "https://github.com/JacobJoergensen/ClipStack/blob/main/README.md",
 	"license": "MIT",
 	"authors": [
 		{
@@ -14,8 +14,8 @@
 		}
 	],
 	"support": {
-		"issues": "https://github.com/Beehubs/ClipStack/issues",
-		"source": "https://github.com/Beehubs/ClipStack"
+		"issues": "https://github.com/JacobJoergensen/ClipStack/issues",
+		"source": "https://github.com/JacobJoergensen/ClipStack"
 	},
 	"require": {
 		"php": ">=8.3",
