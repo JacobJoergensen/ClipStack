@@ -24,7 +24,7 @@
 		/**
 		 * @var array<string, mixed>
 		 */
-		private array $post;
+		private ?array $post;
 
 		/**
 		 * @var string
@@ -42,9 +42,9 @@
 		 * @param array<string, mixed> $server
 		 * @param array<string, mixed> $post
 		 */
-		private function __construct(array $server, array $post) {
+		public function __construct(array $server, ?array $post = null) {
 			$this -> server = $server;
-			$this -> post = $post;
+			$this -> post = $post ?? [];
 		}
 
 		/**
@@ -67,18 +67,6 @@
 		}
 
 		/**
-		 * RETRIEVES A VALUE FROM THE $server ARRAY BASED ON THE PROVIDED KEY.
-		 *
-		 * @param string $key - THE KEY TO LOOK UP IN THE $server ARRAY.
-		 * @param mixed $default - DEFAULT VALUE TO RETURN IF THE KEY DOES NOT EXIST.
-		 *
-		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
-		 */
-		public function getServerValue(string $key, mixed $default = null): mixed {
-			return $this -> server[$key] ?? $default;
-		}
-
-		/**
 		 * GET THE DOCUMENT ROOT OF THE URL.
 		 *
 		 * @return string - THE DOCUMENT ROOT OF THE URL.
@@ -88,11 +76,7 @@
 		public function getDocumentRoot(): string {
 			$document_root = $this -> server['DOCUMENT_ROOT'] ?? '';
 
-			if (!is_string($document_root)) {
-				throw new UnexpectedValueException("Invalid document root encountered.");
-			}
-
-			return $document_root;
+			return is_string($document_root) ? $document_root : '';
 		}
 
 		/**
