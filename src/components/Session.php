@@ -106,7 +106,7 @@
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
-		private function ensureSessionStarted(): void {
+		public function ensureSessionStarted(): void {
 			if (session_status() !== PHP_SESSION_ACTIVE) {
 				session_start();
 			}
