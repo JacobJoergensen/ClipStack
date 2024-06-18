@@ -4,6 +4,9 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use AllowDynamicProperties;
+	use DateTime;
+	use DateTimeInterface;
+	use InvalidArgumentException;
 	use RuntimeException;
 
 	#[AllowDynamicProperties] class Session {
@@ -109,6 +112,19 @@
 			}
 		}
 
+		/**
+		 * HANDLE REGENERATION.
+		 *
+		 * @return void
+		 */
+		private function handleRegeneration(): void {
+			$last_regeneration_time = (int) ($_SESSION['last_regeneration'] ?? 0);
+
+			if (time() - $last_regeneration_time >= $this -> lifetime) {
+				session_regenerate_id(true);
+				$_SESSION['last_regeneration'] = time();
+			}
+		}
 
 		/**
 		 * VALIDATE IF THE CURRENT SESSION HAS EXPIRED.
@@ -116,15 +132,21 @@
 		 * @return bool - TRUE IF THE SESSION HAS EXPIRED, FALSE OTHERWISE.
 		 */
 		public function hasExpired(): bool {
-			$last_activity = $this -> get('_last_activity', time());
+			$last_activity = $this -> get('_last_activity', new DateTime());
 
-			if ((time() - $last_activity) > $this -> lifetime) {
-				return true;
+			if (!$last_activity instanceof DateTimeInterface) {
+				throw new InvalidArgumentException("_last_activity needs to be of type DateTimeInterface");
 			}
 
-			$this -> set('_last_activity', time());
+			$now = new DateTime();
+			$interval = $now -> diff($last_activity);
 
-			return false;
+			$interval_seconds = ($interval -> days * 24 * 60 * 60) +
+				($interval -> h * 60 * 60) +
+				($interval -> i * 60) +
+				$interval -> s;
+
+			return $interval_seconds > $this -> lifetime;
 		}
 
 		/**
@@ -140,6 +162,9 @@
 		 */
 		public function set(string $key, mixed $value): void {
 			$_SESSION[$this -> prefixKey($key)] = $value;
+			$_SESSION[$this -> prefixKey('_last_activity')] = new DateTime();
+
+			session_write_close();
 		}
 
 		/**
@@ -154,7 +179,11 @@
 		 * $user = $session -> get('user');
 		 */
 		public function get(string $key, mixed $default = null): mixed {
-			return $_SESSION[$this -> prefixKey($key)] ?? $default;
+			$value = $_SESSION[$this -> prefixKey($key)] ?? $default;
+
+			session_write_close();
+
+			return $value;
 		}
 
 		/**
