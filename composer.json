@@ -30,8 +30,8 @@
 		"website"
 	],
 	"require-dev": {
-		"phpstan/phpstan": "^1.10.60",
-		"phpunit/phpunit": "^11.0"
+		"phpstan/phpstan": "^1.11.4",
+		"phpunit/phpunit": "^11.2"
 	},
 	"autoload": {
 		"psr-4": {
