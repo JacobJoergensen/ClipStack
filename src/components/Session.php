@@ -90,6 +90,7 @@
 			ini_set('session.use_cookies', '1');
 			ini_set('session.use_only_cookies', '1');
 			ini_set('session.cookie_httponly', $this -> http_only);
+			ini_set('session.use_strict_mode', '1');
 			ini_set('session.gc_maxlifetime', $this -> lifetime);
 
 			if ($this -> request -> isHttps()) {
