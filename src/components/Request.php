@@ -22,11 +22,6 @@
 		public array $server;
 
 		/**
-		 * @var array<string, mixed>
-		 */
-		private ?array $post;
-
-		/**
 		 * @var string
 		 */
 		private const string PROTOCOL_HTTP = 'http';
@@ -40,27 +35,23 @@
 		 * PRIVATE CONSTRUCTOR FOR SINGLETON PATTERN.
 		 *
 		 * @param array<string, mixed> $server
-		 * @param array<string, mixed> $post
 		 */
-		public function __construct(array $server, ?array $post = null) {
+		public function __construct(array $server) {
 			$this -> server = $server;
-			$this -> post = $post ?? [];
 		}
 
 		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 *
 		 * @param array<string, mixed> $server - AN ASSOCIATIVE ARRAY REPRESENTING SERVER DATA.
-		 * @param array<string, mixed> $post - AN ASSOCIATIVE ARRAY REPRESENTING POST DATA.
 		 *
 		 * @return Request - THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 */
-		public static function getInstance(array $server = [], array $post = []): Request {
+		public static function getInstance(array $server = []): Request {
 			if (self::$instance === null) {
 				$server = !empty($server) ? $server : $_SERVER;
-				$post = !empty($post) ? $post : $_POST;
 
-				self::$instance = new self($server, $post);
+				self::$instance = new self($server);
 			}
 
 			return self::$instance;
@@ -131,43 +122,6 @@
 		 */
 		public function isHttps(): bool {
 			return isset($this -> server['HTTPS']) && ($this -> server['HTTPS'] === 'on' || $this -> server['HTTPS'] === 1);
-		}
-
-		/**
-		 * CHECK IF A POST KEY EXISTS.
-		 *
-		 * @param string $key - THE POST DATA KEY.
-		 *
-		 * @return bool - TRUE IF THE POST DATA KEY EXISTS, FALSE OTHERWISE.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * if ($request -> hasPostDataKey('username')) {
-		 *     echo $request -> getPostData('username');
-		 * }
-		 */
-		public function hasPostDataKey(string $key): bool {
-			return array_key_exists($key, $this -> post);
-		}
-
-		/**
-		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @param string|null $key - THE KEY FOR THE POST DATA.
-		 *
-		 * @return mixed - THE SPECIFIC POST DATA IF KEY IS PROVIDED, OR ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getPostData('username');  // GET SPECIFIC POST DATA BY KEY
-		 * print_r($request -> getPostData());  // GET ALL POST DATA
-		 */
-		public function getPostData(string $key = null): mixed {
-			if ($key === null) {
-				return $this -> post;
-			}
-
-			return $this -> post[$key] ?? null;
 		}
 
 		/**
