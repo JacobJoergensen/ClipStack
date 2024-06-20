@@ -66,6 +66,7 @@
 			$session_name = $configurations['session_name'] ?? '';
 			$session_prefix = $configurations['session_prefix'] ?? '';
 			$session_lifetime = $configurations['session_lifetime'] ?? '';
+			$cookie_regenerate = $configurations['session_regenerate'] ?? true;
 			$cookie_secure = $configurations['cookie_secure'] ?? false;
 			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
 
@@ -76,12 +77,16 @@
 			$this -> name = $session_name;
 			$this -> prefix = $session_prefix;
 			$this -> lifetime = $session_lifetime;
+			$this -> regenerate = $cookie_regenerate;
 			$this -> secure = $cookie_secure;
 			$this -> http_only = $cookie_http_only;
 
 			$this -> initSessionConfigurations();
 			$this -> ensureSessionStarted();
-			$this -> handleRegeneration();
+			
+			if ($this -> regenerate) {
+				$this->handleRegeneration();
+			}
 		}
 
 		/**
