@@ -16,7 +16,8 @@
 	],
 	"support": {
 		"issues": "https://github.com/JacobJoergensen/ClipStack/issues",
-		"source": "https://github.com/JacobJoergensen/ClipStack"
+		"source": "https://github.com/JacobJoergensen/ClipStack",
+		"security": "https://github.com/JacobJoergensen/PiperLang/security/policy"
 	},
 	"require": {
 		"php": ">=8.3",
