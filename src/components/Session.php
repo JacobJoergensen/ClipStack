@@ -38,6 +38,11 @@
 		/**
 		 * @var bool
 		 */
+		private bool $regenerate;
+
+		/**
+		 * @var bool
+		 */
 		private bool $secure;
 
 		/**
