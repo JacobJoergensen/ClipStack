@@ -85,7 +85,7 @@
 			$this -> ensureSessionStarted();
 			
 			if ($this -> regenerate) {
-				$this->handleRegeneration();
+				$this -> handleRegeneration();
 			}
 		}
 
