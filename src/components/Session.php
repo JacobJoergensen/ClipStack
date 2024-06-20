@@ -56,8 +56,6 @@
 		public function __construct(Config $config, Request $request) {
 			$this -> config = $config;
 			$this -> request = $request;
-			$this -> initSessionConfigurations();
-			$this -> ensureSessionStarted();
 
 			$configurations = $this -> config -> get('session');
 
@@ -80,6 +78,10 @@
 			$this -> lifetime = $session_lifetime;
 			$this -> secure = $cookie_secure;
 			$this -> http_only = $cookie_http_only;
+
+			$this -> initSessionConfigurations();
+			$this -> ensureSessionStarted();
+			$this -> handleRegeneration();
 		}
 
 		/**
