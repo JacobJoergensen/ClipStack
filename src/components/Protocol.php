@@ -36,7 +36,7 @@
 		 */
 		public function isSecure(): bool {
 			return $this -> request -> isHttps() ||
-				($this -> request -> getServerValue('HTTP_X_FORWARDED_PROTO') === 'https');
+				($this -> request -> server['HTTP_X_FORWARDED_PROTO'] === 'https');
 		}
 
 		/**

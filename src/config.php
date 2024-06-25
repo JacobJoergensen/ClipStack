@@ -126,6 +126,9 @@
 			// SESSION LIFETIME IN MINUTES
 			'session_lifetime' => '120',
 
+			// IF THE SESSION SHOULD REGENERATE WHEN session_lifetime IS ACHIEVED
+			'session_regenerate' => true,
+
 			// PREFIX FOR THE COOKIE
 			'cookie_prefix' => 'clipstack_',
 
