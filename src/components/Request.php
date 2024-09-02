@@ -22,11 +22,6 @@
 		public array $server;
 
 		/**
-		 * @var array<string, mixed>
-		 */
-		private array $post;
-
-		/**
 		 * @var string
 		 */
 		private const string PROTOCOL_HTTP = 'http';
@@ -40,42 +35,26 @@
 		 * PRIVATE CONSTRUCTOR FOR SINGLETON PATTERN.
 		 *
 		 * @param array<string, mixed> $server
-		 * @param array<string, mixed> $post
 		 */
-		private function __construct(array $server, array $post) {
+		public function __construct(array $server) {
 			$this -> server = $server;
-			$this -> post = $post;
 		}
 
 		/**
 		 * RETRIEVE THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 *
 		 * @param array<string, mixed> $server - AN ASSOCIATIVE ARRAY REPRESENTING SERVER DATA.
-		 * @param array<string, mixed> $post - AN ASSOCIATIVE ARRAY REPRESENTING POST DATA.
 		 *
 		 * @return Request - THE SINGLETON INSTANCE OF THE REQUEST CLASS.
 		 */
-		public static function getInstance(array $server = [], array $post = []): Request {
+		public static function getInstance(array $server = []): Request {
 			if (self::$instance === null) {
 				$server = !empty($server) ? $server : $_SERVER;
-				$post = !empty($post) ? $post : $_POST;
 
-				self::$instance = new self($server, $post);
+				self::$instance = new self($server);
 			}
 
 			return self::$instance;
-		}
-
-		/**
-		 * RETRIEVES A VALUE FROM THE $server ARRAY BASED ON THE PROVIDED KEY.
-		 *
-		 * @param string $key - THE KEY TO LOOK UP IN THE $server ARRAY.
-		 * @param mixed $default - DEFAULT VALUE TO RETURN IF THE KEY DOES NOT EXIST.
-		 *
-		 * @return mixed - THE VALUE ASSOCIATED WITH THE KEY, OR NULL IF THE KEY DOES NOT EXIST.
-		 */
-		public function getServerValue(string $key, mixed $default = null): mixed {
-			return $this -> server[$key] ?? $default;
 		}
 
 		/**
@@ -88,11 +67,7 @@
 		public function getDocumentRoot(): string {
 			$document_root = $this -> server['DOCUMENT_ROOT'] ?? '';
 
-			if (!is_string($document_root)) {
-				throw new UnexpectedValueException("Invalid document root encountered.");
-			}
-
-			return $document_root;
+			return is_string($document_root) ? $document_root : '';
 		}
 
 		/**
@@ -147,43 +122,6 @@
 		 */
 		public function isHttps(): bool {
 			return isset($this -> server['HTTPS']) && ($this -> server['HTTPS'] === 'on' || $this -> server['HTTPS'] === 1);
-		}
-
-		/**
-		 * CHECK IF A POST KEY EXISTS.
-		 *
-		 * @param string $key - THE POST DATA KEY.
-		 *
-		 * @return bool - TRUE IF THE POST DATA KEY EXISTS, FALSE OTHERWISE.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * if ($request -> hasPostDataKey('username')) {
-		 *     echo $request -> getPostData('username');
-		 * }
-		 */
-		public function hasPostDataKey(string $key): bool {
-			return array_key_exists($key, $this -> post);
-		}
-
-		/**
-		 * GET POST DATA BY KEY, OR RETURN ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @param string|null $key - THE KEY FOR THE POST DATA.
-		 *
-		 * @return mixed - THE SPECIFIC POST DATA IF KEY IS PROVIDED, OR ALL POST DATA IF NO KEY IS PROVIDED.
-		 *
-		 * @example
-		 * $request = Request::getInstance();
-		 * echo $request -> getPostData('username');  // GET SPECIFIC POST DATA BY KEY
-		 * print_r($request -> getPostData());  // GET ALL POST DATA
-		 */
-		public function getPostData(string $key = null): mixed {
-			if ($key === null) {
-				return $this -> post;
-			}
-
-			return $this -> post[$key] ?? null;
 		}
 
 		/**

@@ -6,8 +6,8 @@
 
 	use RuntimeException;
 
-	require 'components/backbone/config.php';
-	require 'components/backbone/version.php';
+	require('components/backbone/config.php');
+	require('components/backbone/version.php');
 
 	/**
 	 * LOAD AND VALIDATE THE CONFIGURATION FILE FOR ClipStack.
@@ -29,13 +29,6 @@
 		$env_string = var_export($environment, true);
 
 		throw new RuntimeException("The specified environment setting '$env_string' is not recognized. Valid environments are 'development', 'production'.");
-	}
-
-	/**
-	 * START A SESSION IF ONE HASN'T BEEN STARTED YET.
-	 */
-	if (session_status() === PHP_SESSION_NONE) {
-		session_start();
 	}
 
 	/**
@@ -122,31 +115,3 @@
 			//echo "There's a new version ($new_version) available for ClipStack! Consider updating for the latest features and security fixes.";
 		//}
 	//}
-
-	// REGISTER THE AUTOLOADER.
-	spl_autoload_register(function ($class) {
-		// PROJECT NAMESPACE PREFIX.
-		$prefix = 'ClipStack\\Component\\';
-
-		// BASE DIRECTORY FOR THE NAMESPACE PREFIX.
-		$base_dir = 'components/';
-
-		// CHECK IF THE CLASS USES THE NAMESPACE PREFIX.
-		$len = strlen($prefix);
-
-		if (strncmp($prefix, $class, $len) !== 0) {
-			// MOVE TO THE NEXT REGISTERED AUTOLOADER.
-			return;
-		}
-
-		// GET THE RELATIVE CLASS NAME.
-		$relative_class = substr($class, $len);
-
-		// REPLACE THE NAMESPACE PREFIX WITH THE BASE DIRECTORY, REPLACE NAMESPACE SEPARATORS WITH DIRECTORY SEPARATORS.
-		$file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
-		// IF THE FILE EXISTS, THEN REQUIRE IT.
-		if (file_exists($file)) {
-			require $file;
-		}
-	});

@@ -4,6 +4,9 @@
 	use ClipStack\Component\Backbone\Config;
 
 	use AllowDynamicProperties;
+	use DateTime;
+	use DateTimeInterface;
+	use InvalidArgumentException;
 	use RuntimeException;
 
 	#[AllowDynamicProperties] class Session {
@@ -35,6 +38,11 @@
 		/**
 		 * @var bool
 		 */
+		private bool $regenerate;
+
+		/**
+		 * @var bool
+		 */
 		private bool $secure;
 
 		/**
@@ -53,8 +61,6 @@
 		public function __construct(Config $config, Request $request) {
 			$this -> config = $config;
 			$this -> request = $request;
-			$this -> initSessionConfigurations();
-			$this -> ensureSessionStarted();
 
 			$configurations = $this -> config -> get('session');
 
@@ -65,6 +71,7 @@
 			$session_name = $configurations['session_name'] ?? '';
 			$session_prefix = $configurations['session_prefix'] ?? '';
 			$session_lifetime = $configurations['session_lifetime'] ?? '';
+			$cookie_regenerate = $configurations['session_regenerate'] ?? true;
 			$cookie_secure = $configurations['cookie_secure'] ?? false;
 			$cookie_http_only = $configurations['cookie_http_only'] ?? true;
 
@@ -75,8 +82,16 @@
 			$this -> name = $session_name;
 			$this -> prefix = $session_prefix;
 			$this -> lifetime = $session_lifetime;
+			$this -> regenerate = $cookie_regenerate;
 			$this -> secure = $cookie_secure;
 			$this -> http_only = $cookie_http_only;
+
+			$this -> initSessionConfigurations();
+			$this -> ensureSessionStarted();
+			
+			if ($this -> regenerate) {
+				$this -> handleRegeneration();
+			}
 		}
 
 		/**
@@ -90,6 +105,7 @@
 			ini_set('session.use_cookies', '1');
 			ini_set('session.use_only_cookies', '1');
 			ini_set('session.cookie_httponly', $this -> http_only);
+			ini_set('session.use_strict_mode', '1');
 			ini_set('session.gc_maxlifetime', $this -> lifetime);
 
 			if ($this -> request -> isHttps()) {
@@ -102,12 +118,25 @@
 		 *
 		 * @return void - THIS METHOD DOES NOT RETURN A VALUE.
 		 */
-		private function ensureSessionStarted(): void {
+		public function ensureSessionStarted(): void {
 			if (session_status() !== PHP_SESSION_ACTIVE) {
 				session_start();
 			}
 		}
 
+		/**
+		 * HANDLE REGENERATION.
+		 *
+		 * @return void
+		 */
+		private function handleRegeneration(): void {
+			$last_regeneration_time = (int) ($_SESSION['last_regeneration'] ?? 0);
+
+			if (time() - $last_regeneration_time >= $this -> lifetime) {
+				session_regenerate_id(true);
+				$_SESSION['last_regeneration'] = time();
+			}
+		}
 
 		/**
 		 * VALIDATE IF THE CURRENT SESSION HAS EXPIRED.
@@ -115,15 +144,21 @@
 		 * @return bool - TRUE IF THE SESSION HAS EXPIRED, FALSE OTHERWISE.
 		 */
 		public function hasExpired(): bool {
-			$last_activity = $this -> get('_last_activity', time());
+			$last_activity = $this -> get('_last_activity', new DateTime());
 
-			if ((time() - $last_activity) > $this -> lifetime) {
-				return true;
+			if (!$last_activity instanceof DateTimeInterface) {
+				throw new InvalidArgumentException("_last_activity needs to be of type DateTimeInterface");
 			}
 
-			$this -> set('_last_activity', time());
+			$now = new DateTime();
+			$interval = $now -> diff($last_activity);
 
-			return false;
+			$interval_seconds = ($interval -> days * 24 * 60 * 60) +
+				($interval -> h * 60 * 60) +
+				($interval -> i * 60) +
+				$interval -> s;
+
+			return $interval_seconds > $this -> lifetime;
 		}
 
 		/**
@@ -139,6 +174,9 @@
 		 */
 		public function set(string $key, mixed $value): void {
 			$_SESSION[$this -> prefixKey($key)] = $value;
+			$_SESSION[$this -> prefixKey('_last_activity')] = new DateTime();
+
+			session_write_close();
 		}
 
 		/**
@@ -153,7 +191,11 @@
 		 * $user = $session -> get('user');
 		 */
 		public function get(string $key, mixed $default = null): mixed {
-			return $_SESSION[$this -> prefixKey($key)] ?? $default;
+			$value = $_SESSION[$this -> prefixKey($key)] ?? $default;
+
+			session_write_close();
+
+			return $value;
 		}
 
 		/**
