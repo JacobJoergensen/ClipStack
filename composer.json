@@ -30,7 +30,7 @@
 		"website"
 	],
 	"require-dev": {
-		"phpstan/phpstan": "^1.12.3",
+		"phpstan/phpstan": "^1.12.4",
 		"phpunit/phpunit": "^11.3"
 	},
 	"autoload": {
